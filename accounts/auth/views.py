@@ -235,24 +235,39 @@ class TokenRefreshView(BaseAPIView):
                     )
             if success:
                 get_token(request)
+                # Log activité de renouvellement de token si utilisateur identifiable
+                try:
+                    from accounts.models import User as UserModel
+                    token_data = response_data.get("data", {})
+                    uid = token_data.get("user_id") if isinstance(token_data, dict) else None
+                    if uid:
+                        user_obj = UserModel.objects.filter(id=uid).first()
+                        if user_obj:
+                            UserActivity.objects.create(
+                                user=user_obj,
+                                action="login",
+                                details="Renouvellement de token",
+                                ip_address=get_client_ip(request),
+                                user_agent=request.META.get("HTTP_USER_AGENT", ""),
+                            )
+                except Exception:
+                    pass  # Le logging ne doit pas bloquer le refresh
 
             return response
         except Exception as e:
             logger.error(f"Token refresh error: {str(e)}")
-            return (
-                Response(
-                    standardized_response(
-                        success=False, error="An error occurred during token refresh"
-                    ),
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            return Response(
+                standardized_response(
+                    success=False, error="An error occurred during token refresh"
                 ),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
 class ValidateTokenView(BaseAPIView):
     """Token validation with additional security checks"""
 
-    permissions_classes = {IsAuthenticated}
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
@@ -277,7 +292,7 @@ class ValidateTokenView(BaseAPIView):
 class LogOutView(BaseAPIView):
     """Logout endpoint that invalidates tokens"""
 
-    permissions_classes = {IsAuthenticated}
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -289,7 +304,7 @@ class LogOutView(BaseAPIView):
                 refresh_token = request.data.get("refresh_token")
             # try to get from cookie
             elif settings.JWT_AUTH_COOKIE_SECURE:
-                refresh_token = request.COOKIE.get(settings.JWT_COOKIE_NAME)
+                refresh_token = request.COOKIES.get(settings.JWT_COOKIE_NAME)
             # use service layer for logout
             success, response_data, status_code = AuthenticationService.logout(
                 user=user, refresh_token=refresh_token
@@ -339,35 +354,42 @@ class LogOutView(BaseAPIView):
 
 class ChangePasswordView(BaseAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ChangePasswordSerializer
 
-    def get_object(self):
-        return self.request.user
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        serializer = ChangePasswordSerializer(data=request.data)
 
-    def update(self, request, *args, **kwargs):
-        user = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            # Check old password
-            if not user.check_password(serializer.validated_data["old_password"]):
-                return Response(
-                    {"old_password": ["Mot de passe incorrect"]},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            # Set new password
-            user.set_password(serializer.validated_data["new_password"])
-            user.save()
-
-            # Log activity
-            UserActivity.objects.create(
-                user=user, action="update", details="Changement de mot de passe"
+        if not serializer.is_valid():
+            return Response(
+                standardized_response(success=False, error=serializer.errors),
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-            return Response({"message": "Mot de passe mis à jour avec succès"})
+        if not user.check_password(serializer.validated_data["old_password"]):
+            return Response(
+                standardized_response(success=False, error="Mot de passe actuel incorrect"),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(serializer.validated_data["new_password"])
+        user.save(update_fields=["password"])
+
+        # Invalider tous les tokens existants
+        from accounts.core.jwt_utils import TokenManager
+        TokenManager.blacklist_all_user_tokens(user.id)
+
+        # Log activité
+        UserActivity.objects.create(
+            user=user,
+            action="update",
+            details="Changement de mot de passe",
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get("HTTP_USER_AGENT", ""),
+        )
+
+        return Response(
+            standardized_response(success=True, message="Mot de passe mis à jour avec succès")
+        )
 
 
 class UserListView(BaseAPIView):

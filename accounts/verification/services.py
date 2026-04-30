@@ -57,7 +57,7 @@ class EmailVerificationService:
             cache_key = EmailVerificationService.get_verification_cache_key(user.id) 
 
             # set the verified status to true in cache
-            cache.set(cache_key,True,timeout=3600)
+            cache.set(cache_key, True, timeout=86400)  # 24h — aligné avec le cycle de token
             
             logger.info(f"Updated verification cache for user {user.id} set to True")
 
@@ -108,19 +108,19 @@ class EmailVerificationService:
             # queue verification email to be sent on background
             try:
                 # Queue verification email to be sent in background
-                threading.thread(
+                threading.Thread(
                     target=EmailVerificationService.send_verification_email_background,
                     args=(user.id,),
                     daemon=True,
                 ).start()
-                # set rate limiting of backrground thread success
+                # set rate limiting after background thread launch
                 cache.set(rate_key, True, timeout=300)  # 5 minutes rate limit
                 logger.info(f"Queued verification email for user {user.email}")
                 return (
                     True,
                     {
                         "success": True,
-                        "message": "Verificztion email has been sent successfully, please check your inbox.",
+                        "message": "L'email de vérification a été envoyé, veuillez consulter votre boîte de réception.",
                     },
                     200,
                 )
@@ -198,7 +198,7 @@ class EmailVerificationService:
                 is_verified = fresh_user.is_verified
 
                 # cache the result for future queries
-                cache.set(cache_key, is_verified, timeout=3600)
+                cache.set(cache_key, is_verified, timeout=86400)  # 24h — aligné avec le cycle de token
 
                 logger.info(
                     f"fetched verification status from DB for user: {user.pk}: {is_verified}"

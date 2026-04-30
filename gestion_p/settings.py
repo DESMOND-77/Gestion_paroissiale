@@ -165,6 +165,17 @@ os.makedirs(os.path.join(BASE_DIR, "logs"), exist_ok=True)
 # Cors
 CORS_ALLOW_ALL_ORIGINS = True  # en prod, restreindre aux domaines front
 
+# CSRF — config complète selon l'environnement
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+    # SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
+else:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
 # REST Framework + SimpleJWT
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -273,6 +284,7 @@ JWT_COOKIE_NAME = "refresh_token"
 
 
 EMAIL_VERIFICATION_TIMEOUT = 3600 * 24 * 3  # 3 DAYS
+PASSWORD_RESET_TIMEOUT = 7200  # 2 heures (Django utilise cette valeur pour les tokens de reset)
 MOBILE_VERIFICATION_REDIRECT = True  # Enable redirect after mobile verification
 
 REQUIRE_EMAIL_VERIFICATION = True  # Require email verification on registration

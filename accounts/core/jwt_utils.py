@@ -326,7 +326,7 @@ class TokenManager:
                         pipeline = redis_client.pipeline()
                         # Blacklister chaque token
                         for jti in tokens:
-                            blacklist_key = f"blacklisted_token:{jti}"
+                            blacklist_key = f"blacklisted_tokens:{jti}"  # cohérent avec is_token_blacklisted
                             pipeline.setex(blacklist_key, 86400 * 14, 1)  # 14 jours
 
                         # Supprimer l'ensemble des tokens de l'utilisateur

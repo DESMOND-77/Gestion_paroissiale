@@ -121,6 +121,28 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_role_display_name(self):
         return dict(self.ROLES_CHOICES).get(self.role, self.role)
 
+    # Permissions métier basées sur le rôle
+    ROLE_PERMISSIONS = {
+        "admin": {
+            "admin_access", "manage_users", "manage_finances", "manage_events",
+            "manage_groups", "manage_membres", "view_activities", "manage_librairie",
+        },
+        "pretre": {
+            "manage_finances", "manage_events", "manage_groups",
+            "manage_membres", "manage_librairie",
+        },
+        "tresorier": {"manage_finances", "manage_membres", "view_activities"},
+        "secretaire": {
+            "manage_events", "manage_groups", "manage_membres", "manage_librairie",
+        },
+        "responsable": {"manage_membres", "manage_groups"},
+        "fidele": set(),
+    }
+
+    def has_permission(self, permission_name):
+        """Vérifie si l'utilisateur possède une permission métier par son nom."""
+        return permission_name in self.ROLE_PERMISSIONS.get(self.role, set())
+
     # Méthode importante pour l'admin Django
     def has_module_perms(self, app_label):
         """Retourne True si l'utilisateur a les permissions pour l'app donnée."""

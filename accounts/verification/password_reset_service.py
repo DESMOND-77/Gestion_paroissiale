@@ -45,7 +45,7 @@ class PasswordResetService:
                 # send email in background thread
                 threading.Thread(
                     target=EmailService.send_password_reset_email,
-                    args=user,
+                    args=(user,),
                     daemon=True,
                 ).start()
             except User.DoesNotExist:
@@ -103,26 +103,23 @@ class PasswordResetService:
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
-            return False, {"success": False, "error": ",".join(e.message)}, 400
+            return False, {"success": False, "error": ", ".join(e.messages)}, 400
 
         # Update password
         user.set_password(new_password)
         user.save(update_fields=["password"])
 
         # Log password reset for security audit
-
         logger.info(f"Password reset completed for user {user.id} via link")
 
-        # Invalidate all existing refresh token for security
+        # Invalidate all existing refresh tokens for security
         TokenManager.blacklist_all_user_tokens(user.id)
 
         return (
             True,
             {
                 "success": True,
-                "message": "Password  has been reset successfully, you can now login with your new password".join(
-                    e.message
-                ),
+                "message": "Mot de passe réinitialisé avec succès, vous pouvez maintenant vous connecter.",
             },
             200,
         )

@@ -127,26 +127,26 @@ class ProfileService:
             logger.info(f"Error processing profile picture: {str(e)}")
 
     @staticmethod
-    def _process_password_change(user, new_password, current_password):
+    def _process_password_change(user, current_password, new_password):
         """Process password change
 
         Args:
             user (object): User object
-            new_password (str): New password to set
             current_password (str): Current user password
+            new_password (str): New password to set
 
         Returns:
             dict: Result flag and error message if applicable
         """
         # Verify current password
         if not user.check_password(current_password):
-            return {"success": False, "error": "Current_password is incorrect"}
+            return {"success": False, "error": "Mot de passe actuel incorrect"}
 
-        # Validate ne password
+        # Validate new password
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
-            return {"success": False, "error": ", ".join(e.message)}
+            return {"success": False, "error": ", ".join(e.messages)}
 
         # update password
         user.set_password(new_password)
@@ -155,8 +155,10 @@ class ProfileService:
         # Log password change for security audit
         logger.info(f"Password changed for user: {user.id}")
 
-        # Invalidate all existing refresh token for security
+        # Invalidate all existing refresh tokens for security
         TokenManager.blacklist_all_user_tokens(user.id)
+
+        return {"success": True, "message": "Mot de passe modifié avec succès"}
 
     @staticmethod
     def _is_valid_image_file(file):
@@ -169,7 +171,7 @@ class ProfileService:
                 bool: True if valid uploaded file
         """
         # check if it's a proper uploaded file
-        if not isinstance(file, InMemoryUploadedFile, UploadedFile):
+        if not isinstance(file, (InMemoryUploadedFile, UploadedFile)):  # BUG#3 fix
             return False
 
         # Check content type
@@ -178,7 +180,7 @@ class ProfileService:
             return False
 
         # Check file extensions
-        valid_extensions = [".jpeg", ".png", ".gif", ".webp"]
-        file_ext = os.path.splitext(file.name()[1].lower())
+        valid_extensions = [".jpeg", ".jpg", ".png", ".gif", ".webp"]
+        _, file_ext = os.path.splitext(file.name.lower())  # name est une propriété, pas une méthode
         if file_ext not in valid_extensions:
             return False
