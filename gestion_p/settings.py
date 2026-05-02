@@ -284,7 +284,9 @@ JWT_COOKIE_NAME = "refresh_token"
 
 
 EMAIL_VERIFICATION_TIMEOUT = 3600 * 24 * 3  # 3 DAYS
-PASSWORD_RESET_TIMEOUT = 7200  # 2 heures (Django utilise cette valeur pour les tokens de reset)
+PASSWORD_RESET_TIMEOUT = (
+    7200  # 2 heures (Django utilise cette valeur pour les tokens de reset)
+)
 MOBILE_VERIFICATION_REDIRECT = True  # Enable redirect after mobile verification
 
 REQUIRE_EMAIL_VERIFICATION = True  # Require email verification on registration
@@ -294,11 +296,11 @@ APP_NAME = "Gestion Paroissiale"
 # Email settings
 # Gmail SMTP configuration
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = "guimapidesmond@gmail.com"
-EMAIL_HOST_PASSWORD = "shqs xmkh izrk hgar"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = default = EMAIL_HOST_USER
 

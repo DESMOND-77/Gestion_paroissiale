@@ -20,19 +20,8 @@ class AuthenticationService:
     """Service pour la gestion de l'authentification des utilisateurs."""
 
     @staticmethod
-    def register(email,password, phone_number=None, role=None, request_meta=None):
-        """Enregistre un nouvel utilisateur avec email et mot de passe.
+    def register(email,password, first_name,last_name , request_meta=None):
 
-        Args:
-            email (str): L'email de l'utilisateur.
-            password (str): Le mot de passe de l'utilisateur.
-            phone_number (str, optional): Le numéro de téléphone de l'utilisateur.
-            full_name (str, optional): Le nom complet de l'utilisateur.
-            request_meta (dict, optional): Les métadonnées de la requête pour le logging.
-
-            returns:
-               tuple"(success,response_dict,status_code)
-        """
         from accounts.verification.services import EmailVerificationService
 
         if not email or not password:
@@ -70,22 +59,23 @@ class AuthenticationService:
             user = User.objects.create_user(
                 email=email,
                 password=password,
-                phone_number=phone_number,
+                first_name=first_name,
+                last_name=last_name,
                 is_verified=False,
             )
 
             # mettre a jour les champs supplémentaires si fournis
-            if phone_number:
-                user.phone_number = phone_number
-            if role:
-                user.role = role
-            user.save(update_fields=["phone_number", "role"])
-            if role.lower() == 'administrateur':
-                user.is_superuser=True
-                user.is_staff = True
-            user.save(update_fields=["is_superuser", "is_staff"])
+            # if phone_number:
+            #     user.phone_number = phone_number
+            # if role:
+            #     user.role = role
+            # user.save(update_fields=["phone_number", "role"])
+            # if role.lower() == 'administrateur':
+            #     user.is_superuser=True
+            #     user.is_staff = True
+            # user.save(update_fields=["is_superuser", "is_staff"])
             
-            role_name = role        
+            # role_name = role        
             # if role_name:
             #     role, created_at = Role.objects.get_or_create(name=role_name)
             #     UserRole.objects.create(user=user, role=role)
@@ -143,7 +133,7 @@ class AuthenticationService:
             )
 
     @staticmethod
-    def login(request,email, password, device_info=None, request_meta=None):
+    def login(request,email,password, device_info=None, request_meta=None):
         """
         Handle user login with email and password.
         Args:

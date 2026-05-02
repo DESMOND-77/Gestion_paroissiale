@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from accounts.core.base_view import BaseAPIView
 from accounts.core.response import standardized_response
@@ -17,10 +19,14 @@ from accounts.models import User, UserActivity
 
 from accounts.serializers import (
     ChangePasswordSerializer,
-
     UserActivitySerializer,
     UserSerializer,
-    UserSerializer,
+    UserRegistrationSerializer,
+    UserLoginSerializer,
+    PasswordResetSerializer,
+    ConfirmPasswordResetSerializer,
+    TokenRefreshSerializer,
+    LogoutSerializer,
 )
 
 from .services import AuthenticationService
@@ -43,20 +49,69 @@ class UserRegistrationView(BaseAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+    @swagger_auto_schema(
+        operation_description="Créer un nouveau compte utilisateur",
+        request_body=UserRegistrationSerializer,
+        responses={
+            201: openapi.Response(
+                description="Enregistrement réussi",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "data": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "user": openapi.Schema(type=openapi.TYPE_OBJECT),
+                                "tokens": openapi.Schema(
+                                    type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        "access_token": openapi.Schema(
+                                            type=openapi.TYPE_STRING
+                                        ),
+                                        "refresh_token": openapi.Schema(
+                                            type=openapi.TYPE_STRING
+                                        ),
+                                    },
+                                ),
+                                "message": openapi.Schema(type=openapi.TYPE_STRING),
+                            },
+                        ),
+                        "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Erreur de validation",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "error": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         try:
+            print("Request data:", request)  # Debug log for incoming data 
             email = request.data.get("email")
             password = request.data.get("password")
-            phone_number = request.data.get("phone_number")
-            
-            role = request.data.get("role")
+            first_name = request.data.get("first_name")
+            last_name = request.data.get("last_name")
+            # phone_number = request.data.get("phone_number")
+
+            # role = request.data.get("role")
 
             # use service layer for registration logic
             success, response_data, status_code = AuthenticationService.register(
                 email=email,
                 password=password,
-                phone_number=phone_number,               
-                role=role,
+                first_name=first_name,
+                last_name=last_name,
+               
                 request_meta=request.META,
             )
 
@@ -114,9 +169,47 @@ class UserRegistrationView(BaseAPIView):
 
 class UserLoginView(APIView):
     """API endpoint for user login with enhanced security features"""
+
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+    @swagger_auto_schema(
+        operation_description="Connecter un utilisateur et obtenir les tokens JWT",
+        request_body=UserLoginSerializer,
+        responses={
+            200: openapi.Response(
+                description="Connexion réussie",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "data": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "user": openapi.Schema(type=openapi.TYPE_OBJECT),
+                                "tokens": openapi.Schema(
+                                    type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        "access_token": openapi.Schema(
+                                            type=openapi.TYPE_STRING
+                                        ),
+                                        "refresh_token": openapi.Schema(
+                                            type=openapi.TYPE_STRING
+                                        ),
+                                    },
+                                ),
+                            },
+                        ),
+                        "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            401: openapi.Response(
+                description="Identifiants invalides ou compte verrouillé"
+            ),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         try:
 
@@ -198,9 +291,37 @@ class TokenRefreshView(BaseAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+    @swagger_auto_schema(
+        operation_description="Rafraîchir le JWT access token avec le refresh token",
+        request_body=TokenRefreshSerializer,
+        responses={
+            200: openapi.Response(
+                description="Token rafraîchi avec succès",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "data": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "access_token": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                                "refresh_token": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                            },
+                        ),
+                    },
+                ),
+            ),
+            401: openapi.Response(description="Token invalide ou expiré"),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         try:
-           
+
             # first try to get refresh token from request body
             refresh_token = request.data.get("refresh_token")
             # if not in body, try get from HTTP-only cookie
@@ -238,8 +359,13 @@ class TokenRefreshView(BaseAPIView):
                 # Log activité de renouvellement de token si utilisateur identifiable
                 try:
                     from accounts.models import User as UserModel
+
                     token_data = response_data.get("data", {})
-                    uid = token_data.get("user_id") if isinstance(token_data, dict) else None
+                    uid = (
+                        token_data.get("user_id")
+                        if isinstance(token_data, dict)
+                        else None
+                    )
                     if uid:
                         user_obj = UserModel.objects.filter(id=uid).first()
                         if user_obj:
@@ -294,6 +420,24 @@ class LogOutView(BaseAPIView):
 
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Déconnecter l'utilisateur et invalider les tokens",
+        request_body=LogoutSerializer,
+        responses={
+            200: openapi.Response(
+                description="Déconnexion réussie",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            401: openapi.Response(description="Non authentifié"),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         try:
             user = request.user
@@ -355,6 +499,27 @@ class LogOutView(BaseAPIView):
 class ChangePasswordView(BaseAPIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Changer le mot de passe de l'utilisateur authentifié",
+        request_body=ChangePasswordSerializer,
+        responses={
+            200: openapi.Response(
+                description="Mot de passe changé avec succès",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "success": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Validation échouée ou ancien mot de passe incorrect"
+            ),
+            401: openapi.Response(description="Non authentifié"),
+        },
+        tags=["Password Management"],
+    )
     def post(self, request, *args, **kwargs):
         user = request.user
         serializer = ChangePasswordSerializer(data=request.data)
@@ -367,7 +532,9 @@ class ChangePasswordView(BaseAPIView):
 
         if not user.check_password(serializer.validated_data["old_password"]):
             return Response(
-                standardized_response(success=False, error="Mot de passe actuel incorrect"),
+                standardized_response(
+                    success=False, error="Mot de passe actuel incorrect"
+                ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -376,6 +543,7 @@ class ChangePasswordView(BaseAPIView):
 
         # Invalider tous les tokens existants
         from accounts.core.jwt_utils import TokenManager
+
         TokenManager.blacklist_all_user_tokens(user.id)
 
         # Log activité
@@ -388,7 +556,9 @@ class ChangePasswordView(BaseAPIView):
         )
 
         return Response(
-            standardized_response(success=True, message="Mot de passe mis à jour avec succès")
+            standardized_response(
+                success=True, message="Mot de passe mis à jour avec succès"
+            )
         )
 
 
@@ -438,10 +608,9 @@ class UserActivityView(generics.ListAPIView):
         return UserActivity.objects.all().order_by("-timestamp")
 
 
-
-
 class MeView(BaseAPIView):
     """Retourne le profil de l'utilisateur connecté."""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

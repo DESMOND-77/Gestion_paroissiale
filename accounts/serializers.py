@@ -5,6 +5,61 @@ from rest_framework import serializers
 from .models import  User, UserActivity
 
 
+class UserRegistrationSerializer(serializers.Serializer):
+    """Serializer for user registration"""
+    email = serializers.EmailField(required=True, help_text="Email de l'utilisateur")
+    password = serializers.CharField(required=True, min_length=8, help_text="Mot de passe (minimum 8 caractères)")
+    first_name = serializers.CharField(required=True, help_text="Prénom de l'utilisateur")
+    last_name = serializers.CharField(required=True, help_text="Nom de l'utilisateur")
+    # phone_number = serializers.CharField(required=False, allow_blank=True, help_text="Numéro de téléphone (optionnel)")
+    # role = serializers.ChoiceField(
+    #     choices=['fidele', 'etudiant', 'pretre', 'admin'],
+    #     required=False,
+    #     default='fidele',
+    #     help_text="Rôle de l'utilisateur"
+    # )
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Un utilisateur avec cet email existe déjà.")
+        return value
+
+
+class UserLoginSerializer(serializers.Serializer):
+    """Serializer for user login"""
+    email = serializers.EmailField(required=True, help_text="Email de l'utilisateur")
+    password = serializers.CharField(required=True, help_text="Mot de passe")
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """Serializer for password reset request"""
+    email = serializers.EmailField(required=True, help_text="Email de l'utilisateur pour réinitialiser le mot de passe")
+
+
+class ConfirmPasswordResetSerializer(serializers.Serializer):
+    """Serializer for password reset confirmation"""
+    token = serializers.CharField(required=True, help_text="Token de réinitialisation reçu par email")
+    new_password = serializers.CharField(required=True, min_length=8, help_text="Nouveau mot de passe (minimum 8 caractères)")
+    confirm_password = serializers.CharField(required=True, help_text="Confirmation du nouveau mot de passe")
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError(
+                {"new_password": "Les mots de passe ne correspondent pas."}
+            )
+        return data
+
+
+class TokenRefreshSerializer(serializers.Serializer):
+    """Serializer for token refresh"""
+    refresh_token = serializers.CharField(required=True, help_text="Token de rafraîchissement JWT")
+
+
+class LogoutSerializer(serializers.Serializer):
+    """Serializer for logout"""
+    refresh_token = serializers.CharField(required=False, allow_blank=True, help_text="Token de rafraîchissement (optionnel)")
+
+
 class UserSerializer(serializers.ModelSerializer):
    
 

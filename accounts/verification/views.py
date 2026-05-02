@@ -3,12 +3,15 @@ from rest_framework.views import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 from accounts.core.base_view import BaseAPIView
 from accounts.verification.password_reset_service import PasswordResetService
 from ..core.response import standardized_response
 from .services import EmailVerificationService, User
+from accounts.serializers import PasswordResetSerializer, ConfirmPasswordResetSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +125,26 @@ class PasswordResetView(BaseAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+    @swagger_auto_schema(
+        operation_description="Demander la réinitialisation du mot de passe",
+        request_body=PasswordResetSerializer,
+        responses={
+            200: openapi.Response(
+                description="Demande traitée avec succès",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Email invalide ou manquant"
+            ),
+        },
+        tags=['Password Reset']
+    )
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -161,6 +184,26 @@ class ConfirmPasswordResetView(BaseAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+    @swagger_auto_schema(
+        operation_description="Confirmer la réinitialisation du mot de passe avec le token",
+        request_body=ConfirmPasswordResetSerializer,
+        responses={
+            200: openapi.Response(
+                description="Mot de passe réinitialisé avec succès",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Token invalide ou mot de passe manquant"
+            ),
+        },
+        tags=['Password Reset']
+    )
     def post(self, request):
         try:
             # use query parameters or POST data ( for flexibility)
