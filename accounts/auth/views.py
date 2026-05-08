@@ -96,7 +96,7 @@ class UserRegistrationView(BaseAPIView):
     )
     def post(self, request):
         try:
-            print("Request data:", request)  # Debug log for incoming data 
+            print("Request data:", request)  # Debug log for incoming data
             email = request.data.get("email")
             password = request.data.get("password")
             first_name = request.data.get("first_name")

@@ -19,7 +19,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def get_enregistre_par_nom(self, obj):
         if obj.enregistre_par:
-            return obj.enregistre_par.get_full_name() or obj.enregistre_par.email
+            return obj.enregistre_par.full_name or obj.enregistre_par.email
         return None
 
     def get_membre_nom(self, obj):

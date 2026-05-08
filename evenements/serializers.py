@@ -30,7 +30,7 @@ class EvenementSerializer(serializers.ModelSerializer):
 
     def get_createur_nom(self, obj):
         if obj.createur:
-            return obj.createur.get_full_name() or obj.createur.email
+            return obj.createur.full_name or obj.createur.email
         return None
 
     def get_nb_participants(self, obj):

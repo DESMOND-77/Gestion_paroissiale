@@ -13,4 +13,4 @@ class ArticleAdmin(admin.ModelAdmin):
 class VenteAdmin(admin.ModelAdmin):
     list_display = ["article", "quantite", "prix_total", "date", "membre"]
     list_filter = ["article__categorie"]
-    date_hierarchy = "date"
+    # date_hierarchy = "date"

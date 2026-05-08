@@ -182,6 +182,12 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PARSER_CLASSES": (
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ),
+    "EXCEPTION_HANDLER": "accounts.core.exception_handler.custom_exception_handler",
 }
 
 # Pour xhtml2pdf
@@ -305,7 +311,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = default = EMAIL_HOST_USER
 
 
-# FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8000/api")
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8000/api")
 
 
 # Default primary key field type
@@ -325,5 +331,5 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

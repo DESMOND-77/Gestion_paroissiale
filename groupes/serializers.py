@@ -12,5 +12,5 @@ class GroupeSerializer(serializers.ModelSerializer):
 
     def get_responsable_nom(self, obj):
         if obj.responsable:
-            return obj.responsable.get_full_name() or obj.responsable.email
+            return obj.responsable.full_name or obj.responsable.email
         return None

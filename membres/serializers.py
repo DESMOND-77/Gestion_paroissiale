@@ -16,7 +16,7 @@ class SacrementSerializer(serializers.ModelSerializer):
 
     def get_officiant_nom(self, obj):
         if obj.officiant:
-            return obj.officiant.get_full_name() or obj.officiant.email
+            return obj.officiant.full_name or obj.officiant.email
         return None
 
 
