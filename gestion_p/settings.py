@@ -1,4 +1,6 @@
 import os
+import logging
+import logging.handlers
 from datetime import timedelta
 from pathlib import Path
 import environ
@@ -132,28 +134,85 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "[{asctime}] {levelname}: {message}",
+            "format": "[{asctime}] {levelname} - {name} - {funcName}:{lineno} - {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "simple": {
+            "format": "[{levelname}] {name}: {message}",
             "style": "{",
         },
     },
     "handlers": {
+        # "console": {
+        #     "level": "DEBUG",
+        #     "class": "logging.StreamHandler",
+        #     "formatter": "simple",
+        # },
         "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "gestion_paroisse.log"),
+            "maxBytes": 5242880,  # 5MB
+            "backupCount": 5,
             "formatter": "verbose",
         },
-        # "console": {
-        #     "class": "logging.StreamHandler",
-        #     "formatter": "verbose",
-        # },
+        "auth_file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "auth.log"),
+            "maxBytes": 5242880,
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
+        "finance_file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "finance.log"),
+            "maxBytes": 5242880,
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
     },
     "loggers": {
-        "tickets": {
-            "handlers": [
-                "file",
-            ],
-            "level": "INFO",
+        "accounts": {
+            "handlers": [ "file", "auth_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "accounts.auth": {
+            "handlers": [ "auth_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "accounts.core": {
+            "handlers": [ "auth_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "finances": {
+            "handlers": [ "file", "finance_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "groupes": {
+            "handlers": [ "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "membres": {
+            "handlers": [ "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "evenements": {
+            "handlers": [ "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "librairie": {
+            "handlers": [ "file"],
+            "level": "DEBUG",
             "propagate": False,
         },
     },

@@ -15,4 +15,5 @@ __init__.py
 .DS_Store
 .idea/
 .vscode/
+CLAUDE.md
 .gitignore

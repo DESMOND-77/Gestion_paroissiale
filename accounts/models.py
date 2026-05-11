@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -8,6 +9,8 @@ from django.db import models
 
 from django.core.validators import RegexValidator
 
+logger = logging.getLogger(__name__)
+
 
 class UserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
@@ -15,6 +18,7 @@ class UserManager(BaseUserManager):
         Crée un superuser.
         """
         if not password:
+            logger.error(f"Attempt to create superuser {email} without password")
             raise ValueError("mot de passe non definit pour le superUser")
 
         extra_fields.setdefault("is_staff", True)
@@ -23,26 +27,33 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("role", "admin")  # Ajouté
 
         if extra_fields.get("is_staff") is not True:
+            logger.error(f"Superuser creation failed for {email}: is_staff not True")
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
+            logger.error(f"Superuser creation failed for {email}: is_superuser not True")
             raise ValueError("Superuser must have is_superuser=True.")
 
+        logger.info(f"Creating superuser: {email}")
         return self.create_user(email, password, **extra_fields)
 
     def create_user(self, email, password=None, **extra_fields):
         """Créer un utilisateur"""
         if not email:
+            logger.error("Attempt to create user without email")
             raise ValueError("Email obligatoire")
         if not password:
+            logger.error(f"Attempt to create user {email} without password")
             raise ValueError("Mot de passe obligatoire")
 
         if not extra_fields.get("username"):
             extra_fields["username"] = email.split("@")[0]
 
         email = self.normalize_email(email)
+        logger.debug(f"Creating user with email: {email}, username: {extra_fields.get('username')}")
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        logger.info(f"User created successfully: {email} (role: {extra_fields.get('role', 'not set')})")
         return user
 
 
@@ -141,12 +152,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_permission(self, permission_name):
         """Vérifie si l'utilisateur possède une permission métier par son nom."""
-        return permission_name in self.ROLE_PERMISSIONS.get(self.role, set())
+        has_perm = permission_name in self.ROLE_PERMISSIONS.get(self.role, set())
+        logger.debug(f"User {self.email} permission check for '{permission_name}': {has_perm}")
+        return has_perm
 
     # Méthode importante pour l'admin Django
     def has_module_perms(self, app_label):
         """Retourne True si l'utilisateur a les permissions pour l'app donnée."""
-        return self.is_staff or self.is_superuser
+        can_access = self.is_staff or self.is_superuser
+        logger.debug(f"User {self.email} module access check for '{app_label}': {can_access}")
+        return can_access
 
 
 class UserActivity(models.Model):

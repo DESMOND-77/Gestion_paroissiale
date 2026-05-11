@@ -1,5 +1,5 @@
 import logging
-
+import datetime
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -29,19 +29,24 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return [IsSecretaryOrAbove()]
 
     def list(self, request, *args, **kwargs):
+        logger.debug(f"Listing articles for user {request.user}")
         qs = self.get_queryset()
+        logger.info(f"Retrieved {qs.count()} articles")
         serializer = self.get_serializer(qs, many=True)
         return Response(standardized_response(data=serializer.data))
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        logger.debug(f"Retrieving article {instance.id} for user {request.user}")
         serializer = self.get_serializer(instance)
         return Response(standardized_response(data=serializer.data))
 
     def create(self, request, *args, **kwargs):
+        logger.info(f"Creating article by user {request.user}: {request.data.get('nom', 'Unknown')}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        article = serializer.save()
+        logger.info(f"Article created successfully: {article.id} ({article.nom})")
         return Response(
             standardized_response(data=serializer.data, message="Article ajouté"),
             status=status.HTTP_201_CREATED,
@@ -50,16 +55,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
+        logger.info(f"Updating article {instance.id} by user {request.user} (partial={partial})")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(f"Article {instance.id} updated successfully")
         return Response(
             standardized_response(data=serializer.data, message="Article modifié")
         )
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        logger.warning(f"Deleting article {instance.id} ({instance.nom}) by user {request.user}")
         instance.delete()
+        logger.info(f"Article {instance.id} deleted successfully")
         return Response(
             standardized_response(message="Article supprimé"),
             status=status.HTTP_204_NO_CONTENT,
@@ -67,7 +76,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"], permission_classes=[IsSecretaryOrAbove])
     def alertes(self, request):
+        logger.debug(f"Retrieving alert articles for user {request.user}")
         articles_alerte = [a for a in self.get_queryset() if a.en_alerte]
+        logger.info(f"Found {len(articles_alerte)} articles in alert")
         serializer = self.get_serializer(articles_alerte, many=True)
         return Response(standardized_response(data=serializer.data))
 
@@ -82,29 +93,38 @@ class VenteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSecretaryOrAbove]
 
     def list(self, request, *args, **kwargs):
+        logger.debug(f"Listing ventes for user {request.user}")
         qs = self.get_queryset()
+        logger.info(f"Retrieved {qs.count()} ventes")
         serializer = self.get_serializer(qs, many=True)
         return Response(standardized_response(data=serializer.data))
 
     def create(self, request, *args, **kwargs):
+        logger.info(f"Creating vente by user {request.user}: {request.data}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(enregistre_par=request.user)
-        print(request.data)
-        if serializer.is_valid:
-            article = self.article_model.objects.get(id=request.data.get("article"))
-            self.transaction_model.objects.create(
-                categorie="librairie",
-                type="recette",
-                description=f"Vente de l'article:\n {article.nom}\n Qte: {request.data.get("quantite")}\npar: {request.user}",
-                montant=article.prix_unitaire * request.data.get("quantite"),
-                enregistre_par=request.user,
-                membre=self.membre_model.objects.get(id=request.data.get("membre"))
-               
-            )
-            logger.info(
-                f"Vente de l'article:\n {article.nom}\n Qte: {self.article_model.objects.get(id=request.data.get("quantite"))}\npar: {request.user}",
-            )
+        vente = serializer.save(enregistre_par=request.user)
+        logger.debug(f"Vente {vente.id} saved, creating transaction")
+
+        try:
+            if serializer.is_valid:
+                article = self.article_model.objects.get(id=request.data.get("article"))
+                quantite = request.data.get("quantite")
+                montant = article.prix_unitaire * quantite
+
+                transaction = self.transaction_model.objects.create(
+                    categorie="librairie",
+                    type="recette",
+                    description=f"Vente de l'article: {article.nom}, Qte: {quantite}, par: {request.user.first_name}",
+                    montant=montant,
+                    date=datetime.datetime.now(),
+                    enregistre_par=request.user,
+                    membre=self.membre_model.objects.get(id=request.data.get("membre"))
+                )
+                logger.info(f"Transaction {transaction.id} created for vente {vente.id}: {montant} (article: {article.nom}, qty: {quantite})")
+        except Exception as e:
+            logger.error(f"Error creating transaction for vente {vente.id}: {str(e)}")
+
         return Response(
             standardized_response(data=serializer.data, message="Vente enregistrée"),
             status=status.HTTP_201_CREATED,
