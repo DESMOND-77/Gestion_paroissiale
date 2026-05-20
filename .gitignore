@@ -1,6 +1,5 @@
 .venv/
 __pycache__/
-__init__.py
 *.pyc
 *.cpython-*.pyc
 *.pyo
@@ -15,5 +14,3 @@ __init__.py
 .DS_Store
 .idea/
 .vscode/
-CLAUDE.md
-.gitignore

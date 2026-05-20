@@ -1180,3 +1180,409 @@
 [2026-05-10 20:04:45] INFO - groupes.views - list:29 - Retrieved 3 groupes
 [2026-05-10 20:04:45] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
 [2026-05-10 20:04:45] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:35:03] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 12:35:03] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 12:35:04] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 12:35:04] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 12:35:04] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 12:35:04] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 12:35:04] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 12:35:04] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:35:04] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-12 12:35:04] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-12 12:39:15] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-12 12:39:15] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-12 12:39:30] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-12 12:39:30] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-12 12:40:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 12:40:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 12:40:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 12:40:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 12:40:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 12:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 12:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 12:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:45:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 12:45:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 12:45:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 12:45:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 12:45:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 12:45:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 12:45:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 12:45:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:50:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 12:50:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 12:50:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 12:50:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 12:50:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 12:50:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 12:50:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 12:50:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:55:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 12:55:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 12:55:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 12:55:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 12:55:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 12:55:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 12:55:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 12:55:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:00:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:00:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:00:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:00:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:00:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:00:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:00:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:00:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:05:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:05:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:05:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:05:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:05:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:05:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:05:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:05:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:10:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:10:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:10:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:10:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:10:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:10:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:10:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:10:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:15:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:15:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:15:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:15:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:15:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:15:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:15:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:15:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:20:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:20:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:20:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:20:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:20:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:20:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:20:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:20:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:25:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:25:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:25:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:25:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:25:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:25:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:25:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:25:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:30:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:30:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:30:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:30:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:30:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:30:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:30:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:30:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:35:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:35:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:35:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:35:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:35:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:35:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:35:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:35:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:40:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:40:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:40:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:40:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:40:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:45:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:45:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:45:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:45:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:45:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:45:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:45:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:45:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:50:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:50:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:50:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:50:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:50:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:50:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:50:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:50:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 13:55:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 13:55:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 13:55:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 13:55:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 13:55:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 13:55:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 13:55:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 13:55:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:00:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:00:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:00:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:00:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:00:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:00:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:00:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:00:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:05:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:05:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:05:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:05:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:05:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:05:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:05:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:05:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:10:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:10:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:10:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:10:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:10:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:10:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:10:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:10:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:15:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:15:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:15:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:15:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:15:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:15:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:15:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:15:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:20:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:20:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:20:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:20:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:20:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:20:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:20:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:20:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:25:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:25:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:25:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:25:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:25:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:25:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:25:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:25:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:30:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:30:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:30:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:30:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:30:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:30:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:30:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:30:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:35:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:35:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:35:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:35:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:35:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:35:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:35:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:35:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:40:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:40:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:40:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:40:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:40:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:45:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:45:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:45:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:45:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:45:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:45:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:45:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:45:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:50:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:50:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:50:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:50:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:50:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:50:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:50:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:50:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 14:55:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 14:55:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 14:55:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 14:55:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 14:55:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 14:55:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 14:55:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 14:55:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:00:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:00:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:00:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:00:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:00:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:00:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:00:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:00:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:05:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:05:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:05:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:05:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:05:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:05:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:05:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:05:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:10:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:10:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:10:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:10:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:10:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:10:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:10:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:10:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:15:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:15:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:15:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:15:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:15:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:15:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:15:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:15:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:20:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:20:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:20:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:20:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:20:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:20:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:20:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:20:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:25:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:25:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:25:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:25:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:25:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:25:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:25:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:25:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:30:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:30:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:30:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:30:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:30:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:30:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:30:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:30:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:35:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:35:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:35:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:35:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:35:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:35:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:35:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:35:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:40:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:40:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:40:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:40:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:40:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:45:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:45:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:45:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:45:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:45:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:45:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:45:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:45:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:50:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:50:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 15:50:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:50:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:50:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:50:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:50:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:50:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:55:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 15:55:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 15:55:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 15:55:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 15:55:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 15:55:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 15:55:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 15:55:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:00:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:00:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:00:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:00:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:00:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:00:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:00:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:00:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:05:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:05:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:05:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:05:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:05:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:05:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:05:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:05:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:10:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:10:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:10:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:10:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:10:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:10:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:10:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:10:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:15:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:15:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:15:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:15:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:15:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:15:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:15:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:15:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:20:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:20:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:20:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:20:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:20:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:20:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:20:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:20:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:25:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:25:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:25:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:25:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:25:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:25:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:25:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:25:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:30:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:30:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:30:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:30:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:30:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:30:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:30:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:30:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:35:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:35:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:35:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:35:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:35:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:35:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:35:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:35:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-12 16:40:00] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-12 16:40:00] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-12 16:40:00] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-12 16:40:00] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-12 16:40:00] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-12 16:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-12 16:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-12 16:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
