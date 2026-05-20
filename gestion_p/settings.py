@@ -4,7 +4,6 @@ import logging.handlers
 from datetime import timedelta
 from pathlib import Path
 import environ
-
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
 env = environ.Env(DEBUG=(bool, False))
 
