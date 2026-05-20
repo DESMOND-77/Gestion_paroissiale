@@ -4,6 +4,8 @@ import logging.handlers
 from datetime import timedelta
 from pathlib import Path
 import environ
+import dj_database_url
+
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
 env = environ.Env(DEBUG=(bool, False))
 
@@ -19,11 +21,6 @@ REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-fwx0-5z-kp)1@e3hml21ynf)-60&42c$h5%sj4ksamkg2=f7_r'
-
 
 # Application definition
 
@@ -79,20 +76,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "gestion_p.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 # DB config (MySQL)
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": env("DB_NAME"),
-    #     "USER": env("DB_USER"),
-    #     "PASSWORD": env("DB_PASSWORD"),
-    #     "HOST": env("DB_HOST"),
-    #     "PORT": env("DB_PORT"),
-    # },
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": env("DB_NAME"),
@@ -105,11 +90,12 @@ DATABASES = {
         },
     }
 }
+# Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
+DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
 
 AUTH_USER_MODEL = "accounts.User"
-
+ 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -175,42 +161,42 @@ LOGGING = {
     },
     "loggers": {
         "accounts": {
-            "handlers": [ "file", "auth_file"],
+            "handlers": ["file", "auth_file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "accounts.auth": {
-            "handlers": [ "auth_file"],
+            "handlers": ["auth_file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "accounts.core": {
-            "handlers": [ "auth_file"],
+            "handlers": ["auth_file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "finances": {
-            "handlers": [ "file", "finance_file"],
+            "handlers": ["file", "finance_file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "groupes": {
-            "handlers": [ "file"],
+            "handlers": ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "membres": {
-            "handlers": [ "file"],
+            "handlers": ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "evenements": {
-            "handlers": [ "file"],
+            "handlers": ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
         "librairie": {
-            "handlers": [ "file"],
+            "handlers": ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
