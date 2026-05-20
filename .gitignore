@@ -7,10 +7,11 @@ __pycache__/
 *.db
 *.sqlite3
 *.log
-*.env
+.env
 *.pot
 *.mo
 *.swp
 .DS_Store
 .idea/
 .vscode/
+migrations/
