@@ -80,7 +80,6 @@ class EmailService:
                     subject,
                     message=plain_message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    auth_password=settings.EMAIL_HOST_PASSWORD,
                     recipient_list=[user.email],
                     html_message=html_message,
                     fail_silently=False,
@@ -98,8 +97,8 @@ class EmailService:
             return False
 
     @staticmethod
-    def send_verification_email_background_with_retry(user_id, max_attempts=3):
-        """Sends verification email in background thread"""
+    def _send_verification_email_with_retry(user_id, max_attempts=3):
+        """Internal method to send verification email with retries (runs in background thread)"""
         try:
             try:
                 user = User.objects.get(id=user_id)
@@ -144,6 +143,16 @@ class EmailService:
                 f"Unexpected error in send_verification_email_background_with_retry: {str(e)}"
             )
             logger.error(f"Traceback: {traceback.format_exc()}")
+
+    @staticmethod
+    def send_verification_email_background_with_retry(user_id, max_attempts=3):
+        """Sends verification email in background thread (non-blocking)"""
+        thread = threading.Thread(
+            target=EmailService._send_verification_email_with_retry,
+            args=(user_id, max_attempts),
+            daemon=True
+        )
+        thread.start()
 
     @staticmethod
     def send_password_reset_email(user):
