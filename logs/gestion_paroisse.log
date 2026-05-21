@@ -1586,3 +1586,39 @@
 [2026-05-12 16:40:00] INFO - evenements.views - list:29 - Retrieved 3 evenements
 [2026-05-12 16:40:00] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
 [2026-05-12 16:40:00] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-20 22:28:13] INFO - accounts.models - create_superuser:36 - Creating superuser: admin@test.com
+[2026-05-20 22:28:13] DEBUG - accounts.models - create_user:52 - Creating user with email: admin@test.com, username: admin
+[2026-05-20 22:28:14] INFO - accounts.models - create_user:56 - User created successfully: admin@test.com (role: admin)
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'auth': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'groupes': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'finances': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'auth': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'groupes': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'finances': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-20 22:28:29] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'auth': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'accounts': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'groupes': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'membres': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'evenements': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'finances': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
