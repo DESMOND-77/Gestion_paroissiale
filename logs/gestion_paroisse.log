@@ -1622,3 +1622,55 @@
 [2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'finances': True
 [2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
 [2026-05-20 22:28:47] DEBUG - accounts.models - has_module_perms:163 - User admin@test.com module access check for 'librairie': True
+[2026-05-29 11:13:04] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:13:04] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:13:13] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:13:13] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:13:30] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-29 11:13:30] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-29 11:13:30] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-29 11:13:30] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-29 11:13:30] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-29 11:13:30] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-29 11:13:30] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-29 11:13:30] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-29 11:13:36] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:13:36] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:16:06] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:16:06] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:16:08] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:16:08] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:16:09] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:16:09] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:33:33] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-29 11:33:33] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-29 11:33:34] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-29 11:33:34] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-29 11:33:34] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-29 11:33:34] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-29 11:33:34] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-29 11:33:34] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-29 11:33:34] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:33:34] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:35:39] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:35:39] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:38:30] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-29 11:38:30] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-29 11:38:30] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-29 11:38:30] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-29 11:38:30] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-29 11:38:30] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-29 11:38:30] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-29 11:38:30] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-29 11:49:33] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:49:33] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00
+[2026-05-29 11:49:49] DEBUG - membres.views - list:31 - Listing membres for user admin (admin@test.com)
+[2026-05-29 11:49:49] INFO - membres.views - list:33 - Retrieved 3 membres
+[2026-05-29 11:49:49] DEBUG - groupes.views - list:27 - Listing groupes for user admin (admin@test.com)
+[2026-05-29 11:49:49] INFO - groupes.views - list:29 - Retrieved 3 groupes
+[2026-05-29 11:49:49] DEBUG - evenements.views - list:27 - Listing evenements for user admin (admin@test.com)
+[2026-05-29 11:49:49] INFO - evenements.views - list:29 - Retrieved 3 evenements
+[2026-05-29 11:49:50] DEBUG - finances.views - list:25 - Listing transactions for user admin (admin@test.com)
+[2026-05-29 11:49:50] INFO - finances.views - list:28 - Retrieved 3 transactions
+[2026-05-29 11:49:50] INFO - finances.views - rapport:59 - Generating financial report for user admin (admin@test.com) (date_debut=None, date_fin=None)
+[2026-05-29 11:49:50] INFO - finances.views - rapport:74 - Financial report: recettes=283495.00, depenses=25000.00, solde=258495.00

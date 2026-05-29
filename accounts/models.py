@@ -150,8 +150,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         "fidele": set(),
     }
 
-    def has_permission(self, permission_name):
-        """Vérifie si l'utilisateur possède une permission métier par son nom."""
+    def has_permission(self, permission_name: str) -> bool:
+        """
+        Vérifie si l'utilisateur possède une permission métier par son nom.
+        
+        Args:
+            permission_name: Nom de la permission à vérifier
+            
+        Returns:
+            True si l'utilisateur a la permission, False sinon
+        """
         has_perm = permission_name in self.ROLE_PERMISSIONS.get(self.role, set())
         logger.debug(f"User {self.email} permission check for '{permission_name}': {has_perm}")
         return has_perm
