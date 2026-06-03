@@ -11,12 +11,12 @@ env = environ.Env(DEBUG=(bool, False))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",")
+SECRET_KEY = env("SECRET_KEY") or os.environ.get("SECRET_KEY")
+DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",") or os.environ.get('DJANGO_ALLOWED_HOSTS').split(",")
 
 # Environnement Redis
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") or os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 # Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
-# DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
+DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
 
 AUTH_USER_MODEL = "accounts.User"
  
@@ -348,17 +348,17 @@ APP_NAME = "Gestion Paroissiale"
 # Email settings
 # Gmail SMTP configuration
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_USE_SSL = env("EMAIL_USE_SSL")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_HOST = env("EMAIL_HOST") or os.environ.get("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT") or int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_USE_SSL = env("EMAIL_USE_SSL") or os.environ.get("EMAIL_USE_SSL", "False")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER") or os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD") or os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_TIMEOUT = 10  # 10 second timeout for SMTP connections
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = default = EMAIL_HOST_USER
 
 
-FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8000/api")
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8000/api") or os.environ.get("FRONTEND_URL", "http://localhost:8000/api")
 
 
 # Default primary key field type

@@ -11,21 +11,29 @@ membres, groupes, événements, finances et de la librairie de la paroisse.
 
 ## Sommaire
 
-- [Fonctionnalités](#fonctionnalités)
-- [Pile technique](#pile-technique)
-- [Architecture](#architecture)
-- [Prérequis](#prérequis)
-- [Installation](#installation)
-- [Configuration (.env)](#configuration-env)
-- [Lancer le projet](#lancer-le-projet)
-- [Rôles et permissions](#rôles-et-permissions)
-- [Authentification JWT](#authentification-jwt)
-- [Endpoints de l'API](#endpoints-de-lapi)
-- [Format des réponses](#format-des-réponses)
-- [Documentation interactive](#documentation-interactive)
-- [Tests](#tests)
-- [Journalisation (logs)](#journalisation-logs)
-- [Structure du projet](#structure-du-projet)
+- [Gestion Paroissiale — API REST](#gestion-paroissiale--api-rest)
+  - [Sommaire](#sommaire)
+  - [Fonctionnalités](#fonctionnalités)
+  - [Pile technique](#pile-technique)
+  - [Architecture](#architecture)
+    - [Flux d'une requête](#flux-dune-requête)
+    - [Responsabilités des couches](#responsabilités-des-couches)
+    - [Modules applicatifs](#modules-applicatifs)
+  - [Prérequis](#prérequis)
+  - [Installation](#installation)
+  - [Configuration (.env)](#configuration-env)
+  - [Lancer le projet](#lancer-le-projet)
+  - [Rôles et permissions](#rôles-et-permissions)
+  - [Authentification JWT](#authentification-jwt)
+  - [Endpoints de l'API](#endpoints-de-lapi)
+    - [Authentification \& comptes (`/api/`)](#authentification--comptes-api)
+    - [Modules métier](#modules-métier)
+  - [Format des réponses](#format-des-réponses)
+  - [Documentation interactive](#documentation-interactive)
+  - [Tests](#tests)
+  - [Journalisation (logs)](#journalisation-logs)
+  - [Structure du projet](#structure-du-projet)
+  - [Documents complémentaires](#documents-complémentaires)
 
 ---
 
@@ -338,6 +346,5 @@ backend/
 
 ## Documents complémentaires
 
-- [`CLAUDE.md`](CLAUDE.md) — guide d'architecture pour les assistants IA.
 - [`LOGGING.md`](LOGGING.md) — guide de configuration de la journalisation.
 - [`ANALYSE_COHERENCE_API.md`](ANALYSE_COHERENCE_API.md) / [`POST_ANALYSE_COHERENCE_API.md`](POST_ANALYSE_COHERENCE_API.md) — analyses de cohérence de l'API.
