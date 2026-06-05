@@ -16,5 +16,5 @@ __pycache__/
 .vscode/
 staticfiles/
 CLAUDE.md
-logs/
+logs/*
 .gitignore

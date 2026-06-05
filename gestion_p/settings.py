@@ -82,18 +82,18 @@ WSGI_APPLICATION = "gestion_p.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+        "NAME": env("DB_NAME") or os.environ.get("DB_NAME"),
+        "USER": env("DB_USER") or os.environ.get("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD") or os.environ.get("DB_PASSWORD"),
+        "HOST": env("DB_HOST") or os.environ.get("DB_HOST"),
+        "PORT": env("DB_PORT") or os.environ.get("DB_PORT"),
         "OPTIONS": {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
 }
 # Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
-DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
+# DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
 
 AUTH_USER_MODEL = "accounts.User"
  
@@ -139,7 +139,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "logs", "gestion_paroisse.log"),
+            "filename": os.path.join(BASE_DIR, "logs", "gestionparoisse.log"),
             "maxBytes": 5242880,  # 5MB
             "backupCount": 5,
             "formatter": "verbose",
