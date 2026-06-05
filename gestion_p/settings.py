@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 # Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
-# DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
+DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
 
 AUTH_USER_MODEL = "accounts.User"
  
