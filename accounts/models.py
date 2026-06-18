@@ -9,6 +9,8 @@ from django.db import models
 
 from django.core.validators import RegexValidator
 
+from membres.models import Membre
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,7 +59,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin,Membre):
     ROLES_CHOICES = [
         ("fidele", "Fidèle"),
         ("responsable", "Responsable"),
@@ -68,13 +70,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
 
     id = models.BigAutoField(primary_key=True)
-    username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(max_length=191, unique=True)
-    first_name = models.CharField(max_length=100, blank=True, verbose_name="Prénom")
-    last_name = models.CharField(max_length=100, blank=True, verbose_name="Nom")
-    birth_day = models.DateField(null=True, blank=True)
-    adresse = models.CharField(max_length=255, null=True, blank=True)
-    sacrement = models.CharField(max_length=100, null=True, blank=True)
+
 
     # Changé le default à "admin" pour correspondre à vos choix
     role = models.CharField(
@@ -113,6 +110,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["nom", "prenom", "role"]
 
     class Meta:
 
@@ -120,14 +118,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Utilisateurs"
 
     def __str__(self):
-        return f"{self.username} ({self.email})"
+        return f"{self.nom} ({self.email})"
 
     @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name}".strip()
+        return f"{self.nom_complet}"
 
     def get_short_name(self):
-        return self.first_name or self.username
+        return self.prenom 
 
     def get_role_display_name(self):
         return dict(self.ROLES_CHOICES).get(self.role, self.role)
@@ -187,12 +185,16 @@ class UserActivity(models.Model):
     details = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     user_agent = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True,)
 
     class Meta:
         verbose_name = "Activité utilisateur"
         verbose_name_plural = "Activités utilisateur"
         ordering = ["-timestamp"]
+        indexes = [
+            models.Index(fields=["user", "action"]),
+            models.Index(fields=["timestamp"]),
+        ]
 
     def __str__(self):
         return f"{self.user} - {self.action} - {self.timestamp}"

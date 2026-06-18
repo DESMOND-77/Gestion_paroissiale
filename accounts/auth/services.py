@@ -1,7 +1,7 @@
 import logging
 
 from django.conf import settings
-from gestion_p import settings as pj_settings
+from django.conf import settings as pj_settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.cache import cache
@@ -10,7 +10,7 @@ from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.core.jwt_utils import TokenManager
-from accounts.models import  User
+from accounts.models import User
 from accounts.serializers import UserSerializer
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class AuthenticationService:
     """Service pour la gestion de l'authentification des utilisateurs."""
 
     @staticmethod
-    def register(email,password, first_name,last_name , request_meta=None):
+    def register(email, password, first_name, last_name, request_meta=None):
 
         from accounts.verification.services import EmailVerificationService
 
@@ -63,23 +63,6 @@ class AuthenticationService:
                 last_name=last_name,
                 is_verified=False,
             )
-
-            # mettre a jour les champs supplémentaires si fournis
-            # if phone_number:
-            #     user.phone_number = phone_number
-            # if role:
-            #     user.role = role
-            # user.save(update_fields=["phone_number", "role"])
-            # if role.lower() == 'administrateur':
-            #     user.is_superuser=True
-            #     user.is_staff = True
-            # user.save(update_fields=["is_superuser", "is_staff"])
-            
-            # role_name = role        
-            # if role_name:
-            #     role, created_at = Role.objects.get_or_create(name=role_name)
-            #     UserRole.objects.create(user=user, role=role)
-            
 
             # engage le processus de vérification par email ici si nécessaire
             if user.email and pj_settings.REQUIRE_EMAIL_VERIFICATION:
@@ -133,7 +116,7 @@ class AuthenticationService:
             )
 
     @staticmethod
-    def login(request,email,password, device_info=None, request_meta=None):
+    def login(request, email, password, device_info=None, request_meta=None):
         """
         Handle user login with email and password.
         Args:
@@ -179,9 +162,8 @@ class AuthenticationService:
                 )
 
             # Authenticate
-            user = authenticate(request=request,username=email, password=password)
+            user = authenticate(request=request, username=email, password=password)
 
-            
             if not user:
                 failed_attempts = cache.get(FAIL_KEY, 0) + 1
                 cache.set(FAIL_KEY, failed_attempts, timeout=1800)
@@ -221,10 +203,8 @@ class AuthenticationService:
 
             user.last_login = timezone.now()
             user.save(update_fields=["last_login"])
-         
 
             logger.info(f"User logged in: {email}")
-          
 
             return (
                 True,

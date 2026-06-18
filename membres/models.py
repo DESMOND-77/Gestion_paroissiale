@@ -5,21 +5,19 @@ from django.db import models
 class Membre(models.Model):
     SEXE_CHOICES = [("M", "Masculin"), ("F", "Féminin")]
 
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+    nom = models.CharField(max_length=100,verbose_name="Nom")
+    prenom = models.CharField(max_length=100,verbose_name="Prénom")
+    date_naissance = models.DateField(null=True, blank=True)
+    sexe = models.CharField(max_length=1, choices=SEXE_CHOICES, blank=True)
+    sacrement = models.ForeignKey(
+        "Sacrement",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="membre_profil",
+        related_name="membres",
     )
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    date_naissance = models.DateField(null=True, blank=True)
-    sexe = models.CharField(max_length=1, choices=SEXE_CHOICES, blank=True)
-    telephone = models.CharField(max_length=20, blank=True)
-    email = models.EmailField(blank=True)
-    quartier = models.CharField(max_length=200, blank=True)
-    date_inscription = models.DateField(auto_now_add=True)
+    quartier = models.CharField(max_length=200, null=True,blank=True)
+    
     est_baptise = models.BooleanField(default=False)
     est_confirme = models.BooleanField(default=False)
     groupe = models.ForeignKey(
@@ -34,6 +32,10 @@ class Membre(models.Model):
         verbose_name = "Membre"
         verbose_name_plural = "Membres"
         ordering = ["nom", "prenom"]
+        indexes = [
+            models.Index(fields=["nom", "prenom"]),
+            models.Index(fields=["date_naissance"]),
+        ]
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"
@@ -68,6 +70,10 @@ class Sacrement(models.Model):
         verbose_name = "Sacrement"
         verbose_name_plural = "Sacrements"
         ordering = ["-date"]
+        indexes = [
+            models.Index(fields=["type"]),
+            models.Index(fields=["date"]),
+        ]
 
     def __str__(self):
         return f"{self.get_type_display()} — {self.membre}"

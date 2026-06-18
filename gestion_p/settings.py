@@ -5,22 +5,25 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 import dj_database_url
+import redis
 
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
 env = environ.Env(DEBUG=(bool, False))
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env("SECRET_KEY") or os.environ.get("SECRET_KEY")
 DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",") or os.environ.get('DJANGO_ALLOWED_HOSTS').split(",")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",") or os.environ.get(
+    "DJANGO_ALLOWED_HOSTS"
+).split(",")
 
 # Environnement Redis
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") or os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") or os.environ.get(
+    "REDIS_URL", "redis://localhost:6379/0"
+)
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Application definition
 
@@ -93,10 +96,10 @@ DATABASES = {
     }
 }
 # Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
-# DATABASES["default"] = dj_database_url.parse(env("DATABASE_URL"))
+
 
 AUTH_USER_MODEL = "accounts.User"
- 
+
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -131,11 +134,6 @@ LOGGING = {
         },
     },
     "handlers": {
-        # "console": {
-        #     "level": "DEBUG",
-        #     "class": "logging.StreamHandler",
-        #     "formatter": "simple",
-        # },
         "file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
@@ -208,25 +206,36 @@ LOGGING = {
 # Créez le dossier logs s'il n'existe pas
 os.makedirs(os.path.join(BASE_DIR, "logs"), exist_ok=True)
 
-# Cors
-CORS_ALLOW_ALL_ORIGINS = True  # en prod, restreindre aux domaines front
+SESSION_COOKIE_SECURE = True
 
 # CSRF — config complète selon l'environnement
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+    # Cors
+    CORS_ALLOW_ALL_ORIGINS = True  # en prod, restreindre aux domaines front
+
     # SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
 else:
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
+    # Cors
+    CORS_ALLOW_ALL_ORIGINS = False  # en prod, restreindre aux domaines front
+
     CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
 
 # REST Framework + SimpleJWT
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 50,
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "100/minute",  # Limite de 100 requêtes par utilisateur par minute
+        "anon": "100/minute",  # Limite de 100 requêtes par IP anonyme par minute
+    },
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PARSER_CLASSES": (
         "rest_framework.parsers.JSONParser",
@@ -281,13 +290,6 @@ try:
         }
     }
 
-    # Tester la connexion Redis
-    import redis
-
-    redis_client = redis.from_url(REDIS_URL)
-    redis_client.ping()
-    print("Redis cache configuré avec succès")
-
 except (redis.ConnectionError, ImportError) as e:
     # Fallback sur LocMemCache si Redis échoue
     print(f"Redis non disponible: {e}. Utilisation du cache mémoire.")
@@ -301,8 +303,12 @@ except (redis.ConnectionError, ImportError) as e:
 
 # Configuration Simple JWT optimisée pour Redis
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=3),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=15
+    ),  # en production, vous pouvez réduire à 15 minutes
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=7
+    ),  # en production, vous pouvez réduire à 7 jours
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
@@ -352,28 +358,28 @@ EMAIL_HOST = env("EMAIL_HOST") or os.environ.get("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT") or int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_SSL = env("EMAIL_USE_SSL") or os.environ.get("EMAIL_USE_SSL", "False")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER") or os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD") or os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD") or os.environ.get(
+    "EMAIL_HOST_PASSWORD"
+)
 EMAIL_TIMEOUT = 10  # 10 second timeout for SMTP connections
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = default = EMAIL_HOST_USER
 
 
-FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8000/api") or os.environ.get("FRONTEND_URL", "http://localhost:8000/api")
+FRONTEND_URL = env(
+    "FRONTEND_URL", default="http://localhost:8000/api"
+) or os.environ.get("FRONTEND_URL", "http://localhost:8000/api")
 
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
 
 LANGUAGE_CODE = "fr-fr"
 TIME_ZONE = "Africa/Libreville"
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"

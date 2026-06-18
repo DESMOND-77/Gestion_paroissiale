@@ -96,14 +96,11 @@ class UserRegistrationView(BaseAPIView):
     )
     def post(self, request):
         try:
-            print("Request data:", request)  # Debug log for incoming data
+            # print("Request data:", request)  # Debug log for incoming data
             email = request.data.get("email")
             password = request.data.get("password")
             first_name = request.data.get("first_name")
             last_name = request.data.get("last_name")
-            # phone_number = request.data.get("phone_number")
-
-            # role = request.data.get("role")
 
             # use service layer for registration logic
             success, response_data, status_code = AuthenticationService.register(
@@ -111,7 +108,6 @@ class UserRegistrationView(BaseAPIView):
                 password=password,
                 first_name=first_name,
                 last_name=last_name,
-               
                 request_meta=request.META,
             )
 

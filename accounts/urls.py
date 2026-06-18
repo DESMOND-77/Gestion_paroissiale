@@ -1,11 +1,9 @@
-# apps/accounts/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-# from .views import  UserViewSet
+
 from rest_framework_simplejwt.views import TokenRefreshView
 
-# from accounts.views import UserViewSet
 
 from .auth.views import (
     ChangePasswordView,
@@ -29,10 +27,6 @@ from .verification.views import (
     ConfirmPasswordResetView,
 )
 
-
-router = DefaultRouter()
-# router.register("users", UserViewSet, basename="users")
-
 urlpatterns = [
     # path("us", include(router.urls)),
     # Auth
@@ -40,7 +34,7 @@ urlpatterns = [
     path("auth/login/", UserLoginView.as_view(), name="login"),
     path("auth/logout/", LogOutView.as_view(), name="logout"),
     # token
-    path("auth/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/token/validate/", ValidateTokenView.as_view(), name="validate_token"),
     path("auth/me/", MeView.as_view(), name="me"),
     # password reset

@@ -12,8 +12,8 @@ class Transaction(models.Model):
         ("autre", "Autre"),
     ]
 
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    categorie = models.CharField(max_length=20, choices=CATEGORIE_CHOICES)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES,)
+    categorie = models.CharField(max_length=20, choices=CATEGORIE_CHOICES,)
     montant = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.TextField(blank=True)
     date = models.DateField()
@@ -35,6 +35,11 @@ class Transaction(models.Model):
         verbose_name = "Transaction"
         verbose_name_plural = "Transactions"
         ordering = ["-date"]
+        indexes = [
+            models.Index(fields=["categorie"], name="transaction_categorie_idx"),
+            models.Index(fields=["type","date"], name="transaction_type_idx"),
+            models.Index(fields=["date"], name="transaction_date_idx"),
+        ]
 
     def __str__(self):
         return f"{self.get_type_display()} — {self.montant} FCFA ({self.date})"

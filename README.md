@@ -307,7 +307,7 @@ Toutes les modules disposent d'une journalisation détaillée :
 
 - **Sortie console + fichiers** : les logs apparaissent dans le terminal et dans des fichiers rotatifs.
 - **Fichiers de log** :
-  - `logs/gestion_paroisse.log` — principal
+  - `logs/gestionparoisse.log` — principal
   - `logs/auth.log` — sécurité / authentification
   - `logs/finance.log` — opérations financières
 - **Niveaux** : DEBUG, INFO, WARNING, ERROR, CRITICAL.

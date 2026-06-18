@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class TokenManager:
-    """Gestion des tokens JWT."""
-
     """Gestion des tokens JWT avec Redis."""
 
     # Connexion Redis directe (pour les opérations avancées)
@@ -44,7 +42,6 @@ class TokenManager:
             if redis_client:
                 info = redis_client.info()
                 version = info["redis_version"]
-                # print(f"Version Redis détectée: {version}")
                 # Redis 4.0+ supporte HSET avec mapping, sinon utiliser l'ancienne syntaxe
                 return version >= "4.0.0"
         except Exception as e:
@@ -55,15 +52,6 @@ class TokenManager:
     def generate_token(user):
         """Génère un token JWT pour un utilisateur donné."""
         try:
-            # print("=" * 50)
-            # print("SIMPLE_JWT config:", settings.SIMPLE_JWT)
-            # print("=" * 50)
-            # Dans votre TokenManager.generate_token(), ajoutez :
-            # print("=" * 60)
-            # print("Vérification configuration SIMPLE_JWT:")
-            # print(f"  ACCESS_TOKEN_LIFETIME: {settings.SIMPLE_JWT.get('ACCESS_TOKEN_LIFETIME')}")
-            # print(f"  REFRESH_TOKEN_LIFETIME: {settings.SIMPLE_JWT.get('REFRESH_TOKEN_LIFETIME')}")
-            # print("=" * 60)
 
             # Récupérer la configuration D'ABORD
             access_expiry = settings.SIMPLE_JWT.get(
@@ -72,10 +60,6 @@ class TokenManager:
             refresh_expiry = settings.SIMPLE_JWT.get(
                 "REFRESH_TOKEN_LIFETIME", timedelta(days=14)
             )
-
-            # DEBUG: afficher la config
-            # print(f"Config ACCESS_TOKEN_LIFETIME: {access_expiry}")
-            # print(f"Config REFRESH_TOKEN_LIFETIME: {refresh_expiry}")
 
             # Générer le refresh token
             refresh = RefreshToken.for_user(user)
@@ -94,18 +78,8 @@ class TokenManager:
             access_token["type"] = "access"
             access_token["user_id"] = user.id
 
-            # Définir manuellement l'expiration
-            # current_time = datetime.now(timezone.utc)
-            # access_token.set_exp(from_time=current_time, lifetime=access_expiry)
-
             # Signer le token avec la clé secrète
             access_token_str = str(access_token)
-
-            # DEBUG: vérifier l'expiration
-            # print(f"Access token expiration: {access_token['exp']}")
-            # print(
-            #     f"Access token expiration (datetime): {datetime.fromtimestamp(access_token['exp'])}"
-            # )
 
             # Stocker le refresh token dans le cache
             TokenManager._store_token_metadata(
@@ -198,12 +172,7 @@ class TokenManager:
 
             # check expiration
             exp_timestamp = decoded.get("exp", 0)
-            # print(time.time(), exp_timestamp, sep="\t")
-            # print(
-            #     datetime.fromtimestamp(time.time()),
-            #     datetime.fromtimestamp(exp_timestamp),
-            #     sep="\n",
-            # )
+
             if exp_timestamp < time.time():
                 logger.debug(
                     f"Token has expired at : {datetime.fromtimestamp(exp_timestamp).isoformat()}"
