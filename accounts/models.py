@@ -78,7 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Changé le default à "admin" pour correspondre à vos choix
     role = models.CharField(
-        max_length=20, choices=ROLES_CHOICES, default="admin", verbose_name="Rôle"
+        max_length=20, choices=ROLES_CHOICES, default="fidele", verbose_name="Rôle"
     )
 
     is_active = models.BooleanField(
