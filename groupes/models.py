@@ -18,6 +18,10 @@ class Groupe(models.Model):
         verbose_name = "Groupe"
         verbose_name_plural = "Groupes"
         ordering = ["nom"]
+        indexes = [
+            models.Index(fields=["nom"], name="groupe_nom_idx"),
+            models.Index(fields=["responsable"], name="groupe_responsable_idx"),
+        ]
 
     def __str__(self):
         return self.nom

@@ -264,20 +264,9 @@ XHTML2PDF = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-# Channels (ASGI)
-ASGI_APPLICATION = "gestion_p.asgi.application"
-
-# Channels pour Redis (si vous utilisez WebSockets)
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL],
-            "capacity": 1500,
-            "expiry": 10,
-        },
-    },
-}
+# Note: ASGI/Channels not used - API is synchronous REST only
+# If WebSockets needed in future: install channels + channels-redis
+# and configure ASGI_APPLICATION + CHANNEL_LAYERS
 # Cache settings - UNE seule définition !
 try:
     # Essayer Redis d'abord

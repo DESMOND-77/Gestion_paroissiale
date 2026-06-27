@@ -3,7 +3,7 @@ version: '3.8'
 services:
   redis:
     image: redis:7-alpine
-    container_name: parrish_redis
+    container_name: parish_redis
     ports:
       - "6379:6379"
     volumes:
@@ -17,20 +17,35 @@ services:
       timeout: 10s
       retries: 3
 
-  # Votre service Django
   web:
-    gunicorn: gunicorn gestion_p.wsgi:application --bind 0.0.0.0:8000
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    build: .
+    container_name: parish_api
     ports:
       - "8000:8000"
     depends_on:
       redis:
         condition: service_healthy
     environment:
+      - DEBUG=False
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,127.0.0.1:8000
       - REDIS_URL=redis://redis:6379/0
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - DB_NAME=gestion_paroissiale_db
+      - DB_USER=root
+      - DB_PASSWORD=36090
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - EMAIL_BACKEND=anymail.backends.resend.EmailBackend
+      - RESEND_API_KEY=re_test_key
+      - DEFAULT_FROM_EMAIL=noreply@example.com
+      - FRONTEND_URL=http://localhost:3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
 
 volumes:
   redis_data:
