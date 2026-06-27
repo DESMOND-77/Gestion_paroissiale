@@ -96,18 +96,18 @@ class UserRegistrationView(BaseAPIView):
     )
     def post(self, request):
         try:
-            # print("Request data:", request)  # Debug log for incoming data
             email = request.data.get("email")
             password = request.data.get("password")
-            first_name = request.data.get("first_name")
-            last_name = request.data.get("last_name")
+            # Support both old (first_name/last_name) and new (prenom/nom) parameter names
+            prenom = request.data.get("prenom") or request.data.get("first_name")
+            nom = request.data.get("nom") or request.data.get("last_name")
 
             # use service layer for registration logic
             success, response_data, status_code = AuthenticationService.register(
                 email=email,
                 password=password,
-                first_name=first_name,
-                last_name=last_name,
+                prenom=prenom,
+                nom=nom,
                 request_meta=request.META,
             )
 

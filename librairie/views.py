@@ -115,7 +115,7 @@ class VenteViewSet(viewsets.ModelViewSet):
                 transaction = self.transaction_model.objects.create(
                     categorie="librairie",
                     type="recette",
-                    description=f"Vente de l'article: {article.nom}, Qte: {quantite}, par: {request.user.first_name}",
+                    description=f"Vente de l'article: {article.nom}, Qte: {quantite}, par: {request.user.prenom}",
                     montant=montant,
                     date=datetime.datetime.now(),
                     enregistre_par=request.user,

@@ -212,15 +212,23 @@ SESSION_COOKIE_SECURE = True
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
-    # Cors
-    CORS_ALLOW_ALL_ORIGINS = True  # en prod, restreindre aux domaines front
+    # CORS - Définir les origines autorisées en production
+    CORS_ALLOWED_ORIGINS = env.list(
+        "CORS_ALLOWED_ORIGINS",
+        default=["https://example.com"]  # À configurer via variable d'environnement
+    )
 
     # SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
 else:
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
-    # Cors
-    CORS_ALLOW_ALL_ORIGINS = False  # en prod, restreindre aux domaines front
+    # CORS - Autoriser localhost en développement
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
 
     CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
@@ -292,7 +300,7 @@ try:
 
 except (redis.ConnectionError, ImportError) as e:
     # Fallback sur LocMemCache si Redis échoue
-    print(f"Redis non disponible: {e}. Utilisation du cache mémoire.")
+    # Note: Redis connection errors are expected during development
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",

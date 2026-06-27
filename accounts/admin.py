@@ -6,9 +6,8 @@ from .models import  User,  UserActivity
 class UserAdmin(BaseUserAdmin):
     # model = User
     list_display = (
-        "username",
+        "nom",
         "email",
-        "sacrement",
         "role",
         "is_staff",
         "is_superuser",
@@ -17,16 +16,14 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         (
-            "Personal info",
+            "Infos personnelles",
             {
                 "fields": (
-                    "first_name",
-                    "last_name",
+                    "prenom",
+                    "nom",
                     "email",
-                    "sacrement",
                     "profile_picture",
                     "phone_number",
-                    "adresse",
                     "role",
                 )
             },
@@ -38,13 +35,12 @@ class UserAdmin(BaseUserAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
-                    "groups",
                     "user_permissions",
                 )
             },
         ),
         (
-            "Important dates",
+            "Dates importantes",
             {"fields": ("last_login", "created_at","updated_at"), },
         ),
     )
@@ -54,9 +50,9 @@ class UserAdmin(BaseUserAdmin):
             {
                 "classes": ("wide",),
                 "fields": (
-                    "username",
+                    "nom",
+                    "prenom",
                     "email",
-                    "sacrement",
                     "password1",
                     "password2",
                     'role',
@@ -67,14 +63,14 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-    search_fields = ('email', 'username', 'first_name', 'last_name', "sacrement")
-    ordering = ("username",)
+    search_fields = ('email', 'nom', 'prenom')
+    ordering = ("nom",)
     readonly_fields = ["updated_at","created_at"]
 
 class UserActivityAdmin(admin.ModelAdmin):
     list_display = ('user', 'action', 'ip_address', 'timestamp')
     list_filter = ('action', 'timestamp')
-    search_fields = ('user__email', 'user__username', 'details')
+    search_fields = ('user__email', 'user__nom', 'details')
     readonly_fields = ('user', 'action', 'details', 'ip_address', 'user_agent', 'timestamp')
 
 
