@@ -15,6 +15,7 @@ __pycache__/
 .idea/
 .vscode/
 staticfiles/
-CLAUDE.md
+# CLAUDE.md
 logs/*
+Audit_Technique_Gestion_paroissiale.pdf
 .gitignore

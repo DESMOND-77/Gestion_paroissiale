@@ -9,8 +9,8 @@ class UserRegistrationSerializer(serializers.Serializer):
     """Serializer for user registration"""
     email = serializers.EmailField(required=True, help_text="Email de l'utilisateur")
     password = serializers.CharField(required=True, min_length=8, help_text="Mot de passe (minimum 8 caractères)")
-    first_name = serializers.CharField(required=True, help_text="Prénom de l'utilisateur")
-    last_name = serializers.CharField(required=True, help_text="Nom de l'utilisateur")
+    prenom = serializers.CharField(required=True, help_text="Prénom de l'utilisateur")
+    nom = serializers.CharField(required=True, help_text="Nom de l'utilisateur")
     # phone_number = serializers.CharField(required=False, allow_blank=True, help_text="Numéro de téléphone (optionnel)")
     # role = serializers.ChoiceField(
     #     choices=['fidele', 'etudiant', 'pretre', 'admin'],
@@ -70,11 +70,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "email",
-            "first_name",
-            "last_name",
+            "prenom",
+            "nom",
             "phone_number",
             "role",
-            "sacrement",
             "username",
             "profile_picture",
             "profile_picture_url",
@@ -99,7 +98,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "phone_number"]
+        fields = ["prenom", "nom", "phone_number"]
 
 
 class ChangePasswordSerializer(serializers.Serializer):

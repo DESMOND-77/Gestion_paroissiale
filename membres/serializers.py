@@ -23,15 +23,18 @@ class SacrementSerializer(serializers.ModelSerializer):
 class MembreSerializer(serializers.ModelSerializer):
     nom_complet = serializers.ReadOnlyField()
     groupe_nom = serializers.SerializerMethodField()
+    # Informations utilisateur associé
+    email = serializers.CharField(source="user.email", read_only=True)
+    phone_number = serializers.CharField(source="user.phone_number", read_only=True)
 
     class Meta:
         model = Membre
         fields = [
             "id", "user", "nom", "prenom", "nom_complet", "date_naissance",
-            "sexe", "telephone", "email", "quartier", "date_inscription",
+            "sexe", "email", "phone_number", "quartier",
             "est_baptise", "est_confirme", "groupe", "groupe_nom",
         ]
-        read_only_fields = ["date_inscription", "nom_complet"]
+        read_only_fields = ["nom_complet", "email", "phone_number"]
 
     def get_groupe_nom(self, obj):
         return obj.groupe.nom if obj.groupe else None

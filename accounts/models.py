@@ -9,8 +9,6 @@ from django.db import models
 
 from django.core.validators import RegexValidator
 
-from membres.models import Membre
-
 logger = logging.getLogger(__name__)
 
 
@@ -59,7 +57,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin,Membre):
+class User(AbstractBaseUser, PermissionsMixin):
     ROLES_CHOICES = [
         ("fidele", "Fidèle"),
         ("responsable", "Responsable"),
@@ -69,9 +67,11 @@ class User(AbstractBaseUser, PermissionsMixin,Membre):
         ("admin", "Administrateur"),
     ]
 
-    id = models.BigAutoField(primary_key=True)
+    # id = models.BigAutoField(primary_key=True)
     email = models.EmailField(max_length=191, unique=True)
-
+    username = models.CharField(max_length=150, unique=True, blank=True, null=True)
+    nom = models.CharField(max_length=100, verbose_name="Nom")
+    prenom = models.CharField(max_length=100, verbose_name="Prénom")
 
     # Changé le default à "admin" pour correspondre à vos choix
     role = models.CharField(
@@ -116,6 +116,10 @@ class User(AbstractBaseUser, PermissionsMixin,Membre):
 
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
+        indexes = [
+            models.Index(fields=["email"]),
+            models.Index(fields=["created_by", "role"]),
+        ]
 
     def __str__(self):
         return f"{self.nom} ({self.email})"
@@ -123,6 +127,20 @@ class User(AbstractBaseUser, PermissionsMixin,Membre):
     @property
     def full_name(self):
         return f"{self.nom_complet}"
+
+    @property
+    def nom_complet(self):
+        return f"{self.prenom} {self.nom}"
+
+    @property
+    def first_name(self):
+        """Alias de compatibilité pour prenom"""
+        return self.prenom
+
+    @property
+    def last_name(self):
+        """Alias de compatibilité pour nom"""
+        return self.nom
 
     def get_short_name(self):
         return self.prenom 

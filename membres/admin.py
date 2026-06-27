@@ -4,9 +4,9 @@ from .models import Membre, Sacrement
 
 @admin.register(Membre)
 class MembreAdmin(admin.ModelAdmin):
-    list_display = ["nom", "prenom", "groupe", "telephone", "est_baptise", "est_confirme"]
+    list_display = ["nom", "prenom", "groupe", "est_baptise", "est_confirme"]
     list_filter = ["groupe", "sexe", "est_baptise", "est_confirme"]
-    search_fields = ["nom", "prenom", "email", "telephone"]
+    search_fields = ["nom", "prenom", "email", ]
 
 
 @admin.register(Sacrement)

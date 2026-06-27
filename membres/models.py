@@ -5,6 +5,13 @@ from django.db import models
 class Membre(models.Model):
     SEXE_CHOICES = [("M", "Masculin"), ("F", "Féminin")]
 
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="membre",
+        null=True,
+        blank=True,
+    )
     nom = models.CharField(max_length=100,verbose_name="Nom")
     prenom = models.CharField(max_length=100,verbose_name="Prénom")
     date_naissance = models.DateField(null=True, blank=True)

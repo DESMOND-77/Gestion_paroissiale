@@ -20,7 +20,7 @@ class AuthenticationService:
     """Service pour la gestion de l'authentification des utilisateurs."""
 
     @staticmethod
-    def register(email, password, first_name, last_name, request_meta=None):
+    def register(email, password, prenom, nom, request_meta=None):
 
         from accounts.verification.services import EmailVerificationService
 
@@ -59,8 +59,8 @@ class AuthenticationService:
             user = User.objects.create_user(
                 email=email,
                 password=password,
-                first_name=first_name,
-                last_name=last_name,
+                prenom=prenom,
+                nom=nom,
                 is_verified=False,
             )
 
