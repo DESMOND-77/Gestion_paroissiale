@@ -25,7 +25,11 @@ class AuthenticationService:
         from accounts.verification.services import EmailVerificationService
 
         if not email or not password:
-            return False, "Email et mot de passe sont requis.", 400
+            return (
+                False,
+                {"success": False, "error": "Email et mot de passe sont requis."},
+                400,
+            )
 
         # Log registration attempt
         if request_meta:
@@ -249,18 +253,21 @@ class AuthenticationService:
             # Use token manager to refresh the token
             tokens = TokenManager.refresh_token(refresh_token)
 
-            # Return successful response data
+            # TokenManager.refresh_token() peut renvoyer None si la rotation des
+            # refresh tokens est désactivée : on traite ce cas explicitement.
+            if not tokens:
+                return (
+                    False,
+                    {"success": False, "error": "Unable to refresh token"},
+                    401,
+                )
+
+            # Return successful response data. On renvoie la structure native de
+            # generate_token (access/refresh/access_expires_in/...) pour rester
+            # cohérent avec login et register.
             return (
                 True,
-                {
-                    "success": True,
-                    "data": {
-                        "access_token": tokens["access_token"],
-                        "refresh_token": tokens["refresh_token"],
-                        "token_type": tokens["token_type"],
-                        "expire_in": tokens["expire_in"],
-                    },
-                },
+                {"success": True, "data": tokens},
                 200,
             )
 

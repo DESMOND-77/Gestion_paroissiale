@@ -303,7 +303,7 @@ SIMPLE_JWT = {
         minutes=1
     ),  # en production, vous pouvez réduire à 15 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        minutes=2
+        days=7
     ),  # en production, vous pouvez réduire à 7 jours
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,

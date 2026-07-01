@@ -117,7 +117,7 @@ class UserRegistrationView(BaseAPIView):
             # create response based on service layer result
 
             response = Response(
-                standardized_response(response_data),
+                standardized_response(**response_data),
                 status=status_code,
             )
             # set refresh token cookie of registration was successful and cookie security is enable
@@ -345,12 +345,12 @@ class TokenRefreshView(BaseAPIView):
             # HTTP-only cookie if enable and refresh was successful
             if success and status_code == 200 and settings.JWT_AUTH_COOKIE_SECURE:
                 tokens = response_data.get("data", {})
-                if "refresh_token" in tokens and "expires_in" in tokens:
+                if "refresh" in tokens and "refresh_expires_in" in tokens:
                     response.set_cookie(
                         key=settings.JWT_COOKIE_NAME,
-                        value=tokens["refresh_token"],
+                        value=tokens["refresh"],
                         expires=timezone.now()
-                        + timedelta(seconds=tokens["expires_in"]),
+                        + timedelta(seconds=tokens["refresh_expires_in"]),
                         samesite="Strict",
                         secure=True,
                         httponly=True,
