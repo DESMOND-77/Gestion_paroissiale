@@ -1,12 +1,9 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import TransactionViewSet, MembreDonsView
-
-router = DefaultRouter()
-router.register("transactions", TransactionViewSet, basename="transactions")
+from django.urls import path
+from .views import TransactionListView, TransactionDetailView, RapportFinancierView, MembreDonsView
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("rapport/", TransactionViewSet.as_view({"get": "rapport"}), name="rapport_financier"),
-    path("membre/<int:pk>/dons/", MembreDonsView.as_view({"get": "retrieve"}), name="membre_dons"),
+    path("transactions/", TransactionListView.as_view(), name="transaction-list"),
+    path("transactions/<int:pk>/", TransactionDetailView.as_view(), name="transaction-detail"),
+    path("rapport/", RapportFinancierView.as_view(), name="rapport-financier"),
+    path("membre/<int:pk>/dons/", MembreDonsView.as_view(), name="membre-dons"),
 ]

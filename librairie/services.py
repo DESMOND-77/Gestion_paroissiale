@@ -75,14 +75,16 @@ class LibrairieService:
         return articles
 
     @staticmethod
-    def get_ventes_report(date_debut, date_fin):
-        """Get sales report between two dates"""
-        ventes = Vente.objects.filter(
-            date__range=[date_debut, date_fin]
-        ).values("article__categorie").annotate(
+    def get_ventes_report(date_debut=None, date_fin=None):
+        """Get sales report; both dates are optional."""
+        qs = Vente.objects.all()
+        if date_debut:
+            qs = qs.filter(date__gte=date_debut)
+        if date_fin:
+            qs = qs.filter(date__lte=date_fin)
+        result = qs.values("article__categorie").annotate(
             total_ventes=Sum("quantite"),
-            total_montant=Sum("prix_total")
+            total_montant=Sum("prix_total"),
         )
-
         logger.debug(f"Sales report: {date_debut} to {date_fin}")
-        return ventes
+        return result

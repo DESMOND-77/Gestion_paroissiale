@@ -250,7 +250,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
-    "EXCEPTION_HANDLER": "accounts.core.exception_handler.custom_exception_handler",
+    "EXCEPTION_HANDLER": "core.exception_handler.custom_exception_handler",
 }
 
 # Pour xhtml2pdf
@@ -286,7 +286,6 @@ try:
             "TIMEOUT": 86400 * 14,  # 14 jours pour les refresh tokens
         }
     }
-
 except (redis.ConnectionError, ImportError) as e:
     # Fallback sur LocMemCache si Redis échoue
     # Note: Redis connection errors are expected during development
@@ -301,10 +300,10 @@ except (redis.ConnectionError, ImportError) as e:
 # Configuration Simple JWT optimisée pour Redis
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=15
+        minutes=1
     ),  # en production, vous pouvez réduire à 15 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=7
+        minutes=2
     ),  # en production, vous pouvez réduire à 7 jours
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,

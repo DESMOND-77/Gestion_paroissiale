@@ -1,11 +1,12 @@
 import logging
+
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.base_view import BaseModelViewSet
-from core.permissions import IsAdmin, IsSecretaryOrAbove
+from core.base_view import BaseAPIView
+from core.permissions import IsAdmin
 from core.response import standardized_response
 from .models import Groupe
 from .serializers import GroupeSerializer
@@ -14,74 +15,107 @@ from .services import GroupeService
 logger = logging.getLogger(__name__)
 
 
-class GroupeViewSet(BaseModelViewSet):
-    queryset = Groupe.objects.select_related("responsable").all()
-    serializer_class = GroupeSerializer
+class GroupeListView(BaseAPIView):
+    """
+    GET  /api/groupes/          — liste (filtrable via ?nom=)
+    POST /api/groupes/          — création (admin uniquement)
+    """
 
     def get_permissions(self):
-        if self.action in ("list", "retrieve"):
-            return [IsAuthenticated()]
-        if self.action in ("create", "update", "partial_update", "destroy"):
+        if self.request.method == "POST":
             return [IsAdmin()]
         return [IsAuthenticated()]
 
-    def list(self, request, *args, **kwargs):
-        logger.debug(f"Listing groupes for user {request.user}")
-        qs = self.get_queryset()
-        logger.info(f"Retrieved {qs.count()} groupes")
-        serializer = self.get_serializer(qs, many=True)
-        return Response(standardized_response(data=serializer.data))
+    def get(self, request):
+        nom = request.query_params.get("nom", "")
+        qs = GroupeService.search_groupes(nom=nom).select_related("responsable")
+        logger.info(f"Retrieved {qs.count()} groupes for user {request.user}")
+        return Response(standardized_response(data=GroupeSerializer(qs, many=True).data))
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        logger.debug(f"Retrieving groupe {instance.id} for user {request.user}")
-        serializer = self.get_serializer(instance)
-        return Response(standardized_response(data=serializer.data))
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request):
         logger.info(f"Creating groupe by user {request.user}: {request.data.get('nom', 'Unknown')}")
-        serializer = self.get_serializer(data=request.data)
+        serializer = GroupeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        groupe = serializer.save()
+        validated = serializer.validated_data
+
+        groupe = GroupeService.create_groupe(
+            nom=validated["nom"],
+            responsable=validated.get("responsable"),
+            **{k: v for k, v in validated.items() if k not in ("nom", "responsable")},
+        )
         logger.info(f"Groupe created successfully: {groupe.id} ({groupe.nom})")
         return Response(
-            standardized_response(data=serializer.data, message="Groupe créé avec succès"),
+            standardized_response(data=GroupeSerializer(groupe).data, message="Groupe créé avec succès"),
             status=status.HTTP_201_CREATED,
         )
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        logger.info(f"Updating groupe {instance.id} by user {request.user} (partial={partial})")
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        logger.info(f"Groupe {instance.id} updated successfully")
-        return Response(standardized_response(data=serializer.data, message="Groupe modifié"))
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        logger.warning(f"Deleting groupe {instance.id} ({instance.nom}) by user {request.user}")
-        instance.delete()
-        logger.info(f"Groupe {instance.id} deleted successfully")
+class GroupeDetailView(BaseAPIView):
+    """
+    GET    /api/groupes/<pk>/   — détail
+    PUT    /api/groupes/<pk>/   — mise à jour complète (admin)
+    PATCH  /api/groupes/<pk>/   — mise à jour partielle (admin)
+    DELETE /api/groupes/<pk>/   — suppression (admin)
+    """
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [IsAdmin()]
+
+    def _get_groupe(self, pk):
+        return get_object_or_404(Groupe.objects.select_related("responsable"), pk=pk)
+
+    def get(self, request, pk):
+        groupe = self._get_groupe(pk)
+        logger.debug(f"Retrieving groupe {pk} for user {request.user}")
+        return Response(standardized_response(data=GroupeSerializer(groupe).data))
+
+    def put(self, request, pk):
+        groupe = self._get_groupe(pk)
+        logger.info(f"Updating groupe {pk} by user {request.user}")
+        serializer = GroupeSerializer(groupe, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        groupe = GroupeService.update_groupe(groupe, **serializer.validated_data)
+        logger.info(f"Groupe {pk} updated successfully")
+        return Response(standardized_response(data=GroupeSerializer(groupe).data, message="Groupe modifié"))
+
+    def patch(self, request, pk):
+        groupe = self._get_groupe(pk)
+        logger.info(f"Partial update groupe {pk} by user {request.user}")
+        serializer = GroupeSerializer(groupe, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        groupe = GroupeService.update_groupe(groupe, **serializer.validated_data)
+        logger.info(f"Groupe {pk} updated successfully")
+        return Response(standardized_response(data=GroupeSerializer(groupe).data, message="Groupe modifié"))
+
+    def delete(self, request, pk):
+        groupe = self._get_groupe(pk)
+        logger.warning(f"Deleting groupe {pk} ({groupe.nom}) by user {request.user}")
+        groupe.delete()
+        logger.info(f"Groupe {pk} deleted successfully")
         return Response(standardized_response(message="Groupe supprimé"), status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
-    def membres(self, request, pk=None):
-        groupe = self.get_object()
-        logger.debug(f"Retrieving membres for groupe {groupe.id}")
-        from membres.serializers import MembreSerializer
 
-        try:
-            # Use service to get member count
-            count = GroupeService.get_groupe_membres_count(groupe)
-            membres = groupe.membres.all()
-            logger.info(f"Retrieved {count} membres for groupe {groupe.id}")
-            serializer = MembreSerializer(membres, many=True)
-            return Response(standardized_response(data=serializer.data))
-        except Exception as e:
-            logger.error(f"Error retrieving membres for groupe {groupe.id}: {e}")
-            return Response(
-                standardized_response(success=False, error=str(e)),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+class GroupeMembresView(BaseAPIView):
+    """
+    GET /api/groupes/<pk>/membres/  — liste des membres du groupe avec statistiques
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        from membres.serializers import MembreSerializer
+        groupe = get_object_or_404(Groupe, pk=pk)
+        logger.debug(f"Retrieving membres for groupe {pk}")
+
+        count = GroupeService.get_groupe_membres_count(groupe)
+        membres = groupe.membres.select_related("user").all()
+        logger.info(f"Retrieved {count} membres for groupe {pk}")
+        return Response(standardized_response(
+            data={
+                "groupe": groupe.nom,
+                "total_membres": count,
+                "membres": MembreSerializer(membres, many=True).data,
+            }
+        ))

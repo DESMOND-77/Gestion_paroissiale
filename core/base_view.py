@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,8 +11,11 @@ from .response import standardized_response
 logger = logging.getLogger(__name__)
 
 
-class _ExceptionHandlerMixin:
-    """Shared error handling for all base view classes."""
+class BaseAPIView(APIView):
+    """
+    Vue de base pour toutes les vues APIView.
+    Centralise la gestion des erreurs et fournit check_extra_permission().
+    """
 
     def handle_exception(self, exc):
         if isinstance(exc, AuthenticationFailed):
@@ -25,17 +28,9 @@ class _ExceptionHandlerMixin:
         logger.error(f"Traceback: {traceback_str}")
         return super().handle_exception(exc)
 
-
-class BaseAPIView(_ExceptionHandlerMixin, APIView):
-    """Base view for APIView subclasses with centralised error handling."""
-    pass
-
-
-class BaseModelViewSet(_ExceptionHandlerMixin, viewsets.ModelViewSet):
-    """Base ModelViewSet with centralised error handling."""
-    pass
-
-
-class BaseViewSet(_ExceptionHandlerMixin, viewsets.ViewSet):
-    """Base ViewSet with centralised error handling."""
-    pass
+    def check_extra_permission(self, request, permission):
+        """Assert a single permission instance; raises PermissionDenied if it fails."""
+        if not permission.has_permission(request, self):
+            self.permission_denied(
+                request, message=getattr(permission, "message", None)
+            )

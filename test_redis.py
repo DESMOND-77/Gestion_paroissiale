@@ -53,7 +53,6 @@ def test_token_storage():
     print("\n🧪 Test du stockage des tokens...")
     
     from accounts.models import User 
-    from etablissement.models import Etablissement
     from core.jwt_utils import TokenManager
     
     try:

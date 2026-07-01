@@ -1,12 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ArticleViewSet, VenteViewSet
-
-router = DefaultRouter()
-router.register("articles", ArticleViewSet, basename="articles")
-router.register("ventes", VenteViewSet, basename="ventes")
+from django.urls import path
+from .views import ArticleListView, ArticleDetailView, ArticleAlertesView, VenteListView, VenteRapportView
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("alertes/", ArticleViewSet.as_view({"get": "alertes"}), name="alertes_stock"),
+    path("articles/", ArticleListView.as_view(), name="article-list"),
+    path("articles/<int:pk>/", ArticleDetailView.as_view(), name="article-detail"),
+    path("alertes/", ArticleAlertesView.as_view(), name="alertes-stock"),
+    path("ventes/", VenteListView.as_view(), name="vente-list"),
+    path("ventes/rapport/", VenteRapportView.as_view(), name="vente-rapport"),
 ]

@@ -1,93 +1,121 @@
 import logging
+
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.base_view import BaseModelViewSet
+from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
-from .models import Membre, Sacrement
+from .models import Membre
 from .serializers import MembreSerializer, MembreDetailSerializer, SacrementSerializer
 from .services import MembreService
 
 logger = logging.getLogger(__name__)
 
 
-class MembreViewSet(BaseModelViewSet):
-    queryset = Membre.objects.select_related("groupe", "user").all()
+class MembreListView(BaseAPIView):
+    """
+    GET  /api/membres/          — liste (filtrable via ?nom=&prenom=&groupe=)
+    POST /api/membres/          — création
+    """
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return MembreDetailSerializer
-        return MembreSerializer
+    permission_classes = [IsSecretaryOrAbove]
 
-    def get_permissions(self):
-        if self.action == "destroy":
-            return [IsAdmin()]
-        if self.action in ("list", "retrieve"):
-            return [IsSecretaryOrAbove()]
-        return [IsSecretaryOrAbove()]
+    def get(self, request):
+        nom = request.query_params.get("nom", "")
+        prenom = request.query_params.get("prenom", "")
+        groupe = request.query_params.get("groupe")
 
-    def list(self, request, *args, **kwargs):
-        logger.debug(f"Listing membres for user {request.user}")
-        qs = self.get_queryset()
-        logger.info(f"Retrieved {qs.count()} membres")
-        serializer = self.get_serializer(qs, many=True)
-        return Response(standardized_response(data=serializer.data))
+        qs = MembreService.search_membres(nom=nom, prenom=prenom, groupe=groupe)
+        qs = qs.select_related("groupe", "user")
+        logger.info(f"Retrieved {qs.count()} membres for user {request.user}")
+        return Response(standardized_response(data=MembreSerializer(qs, many=True).data))
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        logger.debug(f"Retrieving membre {instance.id} for user {request.user}")
-        serializer = self.get_serializer(instance)
-        return Response(standardized_response(data=serializer.data))
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request):
         logger.info(f"Creating membre by user {request.user}: {request.data}")
-        serializer = self.get_serializer(data=request.data)
+        serializer = MembreSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        membre = serializer.save()
+
+        membre = MembreService.create_membre(**serializer.validated_data)
         logger.info(f"Membre created successfully: {membre.id}")
         return Response(
-            standardized_response(data=serializer.data, message="Membre créé avec succès"),
+            standardized_response(data=MembreSerializer(membre).data, message="Membre créé avec succès"),
             status=status.HTTP_201_CREATED,
         )
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        logger.info(f"Updating membre {instance.id} by user {request.user} (partial={partial})")
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        logger.info(f"Membre {instance.id} updated successfully")
-        return Response(standardized_response(data=serializer.data, message="Membre modifié"))
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        logger.warning(f"Deleting membre {instance.id} by user {request.user}")
-        instance.delete()
-        logger.info(f"Membre {instance.id} deleted successfully")
+class MembreDetailView(BaseAPIView):
+    """
+    GET    /api/membres/<pk>/   — détail + statistiques
+    PUT    /api/membres/<pk>/   — mise à jour complète
+    PATCH  /api/membres/<pk>/   — mise à jour partielle
+    DELETE /api/membres/<pk>/   — suppression (admin uniquement)
+    """
+
+    permission_classes = [IsSecretaryOrAbove]
+
+    def _get_membre(self, pk):
+        return get_object_or_404(Membre.objects.select_related("groupe", "user"), pk=pk)
+
+    def get(self, request, pk):
+        membre = self._get_membre(pk)
+        logger.debug(f"Retrieving membre {pk} for user {request.user}")
+        stats = MembreService.get_membre_statistics(membre)
+        data = MembreDetailSerializer(membre).data
+        data["statistiques"] = stats
+        return Response(standardized_response(data=data))
+
+    def put(self, request, pk):
+        membre = self._get_membre(pk)
+        logger.info(f"Updating membre {pk} by user {request.user}")
+        serializer = MembreSerializer(membre, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        membre = MembreService.update_membre(membre, **serializer.validated_data)
+        logger.info(f"Membre {pk} updated successfully")
+        return Response(standardized_response(data=MembreSerializer(membre).data, message="Membre modifié"))
+
+    def patch(self, request, pk):
+        membre = self._get_membre(pk)
+        logger.info(f"Partial update membre {pk} by user {request.user}")
+        serializer = MembreSerializer(membre, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        membre = MembreService.update_membre(membre, **serializer.validated_data)
+        logger.info(f"Membre {pk} updated successfully")
+        return Response(standardized_response(data=MembreSerializer(membre).data, message="Membre modifié"))
+
+    def delete(self, request, pk):
+        self.check_extra_permission(request, IsAdmin())
+        membre = self._get_membre(pk)
+        logger.warning(f"Deleting membre {pk} by user {request.user}")
+        membre.delete()
+        logger.info(f"Membre {pk} deleted successfully")
         return Response(standardized_response(message="Membre supprimé"), status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["get"], permission_classes=[IsSecretaryOrAbove])
-    def sacrements(self, request, pk=None):
-        membre = self.get_object()
-        logger.debug(f"Retrieving sacrements for membre {membre.id}")
-        sacrements = membre.sacrements.all()
-        logger.info(f"Retrieved {sacrements.count()} sacrements for membre {membre.id}")
-        serializer = SacrementSerializer(sacrements, many=True)
-        return Response(standardized_response(data=serializer.data))
 
-    @action(detail=True, methods=["post"], permission_classes=[IsSecretaryOrAbove])
-    def ajouter_sacrement(self, request, pk=None):
-        membre = self.get_object()
-        logger.info(f"Adding sacrement to membre {membre.id} by user {request.user}")
+class MembreSacrementsView(BaseAPIView):
+    """
+    GET  /api/membres/<pk>/sacrements/  — liste des sacrements
+    POST /api/membres/<pk>/sacrements/  — ajout d'un sacrement
+    """
+
+    permission_classes = [IsSecretaryOrAbove]
+
+    def get(self, request, pk):
+        membre = get_object_or_404(Membre, pk=pk)
+        logger.debug(f"Retrieving sacrements for membre {pk}")
+        sacrements = membre.sacrements.all()
+        logger.info(f"Retrieved {sacrements.count()} sacrements for membre {pk}")
+        return Response(standardized_response(data=SacrementSerializer(sacrements, many=True).data))
+
+    def post(self, request, pk):
+        membre = get_object_or_404(Membre, pk=pk)
+        logger.info(f"Adding sacrement to membre {pk} by user {request.user}")
         serializer = SacrementSerializer(data={**request.data, "membre": membre.id})
         serializer.is_valid(raise_exception=True)
         sacrement = serializer.save(membre=membre)
-        logger.info(f"Sacrement {sacrement.id} added to membre {membre.id}")
+        logger.info(f"Sacrement {sacrement.id} added to membre {pk}")
         return Response(
-            standardized_response(data=serializer.data, message="Sacrement enregistré"),
+            standardized_response(data=SacrementSerializer(sacrement).data, message="Sacrement enregistré"),
             status=status.HTTP_201_CREATED,
         )
