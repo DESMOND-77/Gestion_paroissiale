@@ -55,10 +55,10 @@ class TokenManager:
 
             # Récupérer la configuration D'ABORD
             access_expiry = settings.SIMPLE_JWT.get(
-                "ACCESS_TOKEN_LIFETIME", timedelta(days=3)
+                "ACCESS_TOKEN_LIFETIME", timedelta(minutes=15)
             )
             refresh_expiry = settings.SIMPLE_JWT.get(
-                "REFRESH_TOKEN_LIFETIME", timedelta(days=14)
+                "REFRESH_TOKEN_LIFETIME", timedelta(days=7)
             )
 
             # Générer le refresh token

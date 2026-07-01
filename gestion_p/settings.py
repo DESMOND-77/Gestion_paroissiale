@@ -300,7 +300,7 @@ except (redis.ConnectionError, ImportError) as e:
 # Configuration Simple JWT optimisée pour Redis
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=1
+        minutes=15
     ),  # en production, vous pouvez réduire à 15 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(
         days=7
