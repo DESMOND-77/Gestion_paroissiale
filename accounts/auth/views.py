@@ -4,8 +4,10 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status, generics
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
@@ -276,7 +278,11 @@ class DashboardView(APIView):
         user = request.user
         user_serializer = UserSerializer(user)
         return Response(
-            {"message": "Welcome to dashboard", "user": user_serializer.data}, 200
+            standardized_response(
+                data={"user": user_serializer.data},
+                message="Bienvenue sur le tableau de bord.",
+            ),
+            status=status.HTTP_200_OK,
         )
 
 
@@ -566,35 +572,63 @@ class UserListView(BaseAPIView):
     def get_queryset(self):
         return User.objects.all().order_by("-date_joined")
 
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True)
+            paginated = paginator.get_paginated_response(serializer.data)
+            return Response(standardized_response(data=paginated.data))
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(standardized_response(data=serializer.data))
+
 
 class UserDetailView(BaseAPIView):
     serializer_class = UserSerializer
     # permission_classes = [IsAdmin]
 
     def get_object(self):
-        return User.objects.get(pk=self.kwargs["pk"])
+        return get_object_or_404(User, pk=self.kwargs["pk"])
 
     def get(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = self.get_serializer(user)
-        return Response(serializer.data)
+        serializer = self.serializer_class(user)
+        return Response(standardized_response(data=serializer.data))
 
     def put(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = self.get_serializer(user, data=request.data)
+        serializer = self.serializer_class(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def perform_destroy(self, instance):
-        # Log activity
-        UserActivity.objects.create(
-            user=self.request.user,
-            action="delete",
-            details=f"Suppression de l'utilisateur {instance.email}",
+            return Response(standardized_response(data=serializer.data))
+        return Response(
+            standardized_response(
+                success=False,
+                error=serializer.errors,
+                message="Erreur de validation des données.",
+            ),
+            status=status.HTTP_400_BAD_REQUEST,
         )
-        instance.delete()
+
+    def delete(self, request, *args, **kwargs):
+        user = self.get_object()
+        # Journalisation de l'activité
+        UserActivity.objects.create(
+            user=request.user,
+            action="delete",
+            details=f"Suppression de l'utilisateur {user.email}",
+        )
+        user.delete()
+        return Response(
+            standardized_response(
+                success=True,
+                message="Utilisateur supprimé avec succès.",
+            ),
+            status=status.HTTP_200_OK,
+        )
 
 
 class UserActivityView(generics.ListAPIView):
@@ -603,6 +637,18 @@ class UserActivityView(generics.ListAPIView):
 
     def get_queryset(self):
         return UserActivity.objects.all().order_by("-timestamp")
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated = self.get_paginated_response(serializer.data)
+            return Response(standardized_response(data=paginated.data))
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(standardized_response(data=serializer.data))
 
 
 class MeView(BaseAPIView):
@@ -623,16 +669,21 @@ class CheckPermissionView(APIView):
 
         if not permission:
             return Response(
-                {"error": "Permission non spécifiée"},
+                standardized_response(
+                    success=False,
+                    error="Permission non spécifiée",
+                ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         has_permission = request.user.has_permission(permission)
 
         return Response(
-            {
-                "has_permission": has_permission,
-                "permission": permission,
-                "user_role": request.user.role,
-            }
+            standardized_response(
+                data={
+                    "has_permission": has_permission,
+                    "permission": permission,
+                    "user_role": request.user.role,
+                }
+            )
         )
