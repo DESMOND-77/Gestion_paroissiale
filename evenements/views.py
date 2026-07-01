@@ -1,18 +1,21 @@
 import logging
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from core.base_view import BaseModelViewSet
 from core.permissions import IsAdmin, IsSecretaryOrAbove
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from .models import Evenement, Participation
 from .serializers import EvenementSerializer, ParticipationSerializer
+from .services import EvenementService
+from membres.models import Membre
 
 logger = logging.getLogger(__name__)
 
 
-class EvenementViewSet(viewsets.ModelViewSet):
+class EvenementViewSet(BaseModelViewSet):
     queryset = Evenement.objects.select_related("createur").prefetch_related("participations").all()
     serializer_class = EvenementSerializer
 
@@ -69,22 +72,35 @@ class EvenementViewSet(viewsets.ModelViewSet):
         evenement = self.get_object()
         membre_id = request.data.get("membre")
         logger.info(f"Inscribing membre {membre_id} to evenement {evenement.id} by user {request.user}")
+
         if not membre_id:
             logger.warning(f"Inscription attempt without membre ID to evenement {evenement.id}")
             return Response(
                 standardized_response(success=False, error="Champ 'membre' requis"),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer = ParticipationSerializer(
-            data={"evenement": evenement.id, "membre": membre_id}
-        )
-        serializer.is_valid(raise_exception=True)
-        participation = serializer.save()
-        logger.info(f"Membre {membre_id} successfully inscribed to evenement {evenement.id}")
-        return Response(
-            standardized_response(data=serializer.data, message="Membre inscrit"),
-            status=status.HTTP_201_CREATED,
-        )
+
+        try:
+            # Get membre and use service to register
+            membre = Membre.objects.get(id=membre_id)
+            participation = EvenementService.inscrire_membre(evenement, membre)
+            serializer = ParticipationSerializer(participation)
+            return Response(
+                standardized_response(data=serializer.data, message="Membre inscrit"),
+                status=status.HTTP_201_CREATED,
+            )
+        except Membre.DoesNotExist:
+            logger.error(f"Membre {membre_id} not found")
+            return Response(
+                standardized_response(success=False, error="Membre introuvable"),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            logger.error(f"Error inscribing membre: {e}")
+            return Response(
+                standardized_response(success=False, error=str(e)),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @action(detail=True, methods=["get"], permission_classes=[IsSecretaryOrAbove])
     def participants(self, request, pk=None):

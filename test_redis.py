@@ -54,7 +54,7 @@ def test_token_storage():
     
     from accounts.models import User 
     from etablissement.models import Etablissement
-    from accounts.core.jwt_utils import TokenManager
+    from core.jwt_utils import TokenManager
     
     try:
         # Créer un utilisateur de test

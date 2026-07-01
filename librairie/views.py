@@ -1,23 +1,24 @@
 import logging
 import datetime
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.models import User
+from core.base_view import BaseModelViewSet
 from core.permissions import IsAdmin, IsSecretaryOrAbove
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from finances.models import Transaction
 from finances.serializers import TransactionSerializer
 from membres.models import Membre
 from .models import Article, Vente
 from .serializers import ArticleSerializer, VenteSerializer
+from .services import LibrairieService
 
 logger = logging.getLogger(__name__)
 
 
-class ArticleViewSet(viewsets.ModelViewSet):
+class ArticleViewSet(BaseModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
@@ -77,13 +78,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=[IsSecretaryOrAbove])
     def alertes(self, request):
         logger.debug(f"Retrieving alert articles for user {request.user}")
-        articles_alerte = [a for a in self.get_queryset() if a.en_alerte]
-        logger.info(f"Found {len(articles_alerte)} articles in alert")
-        serializer = self.get_serializer(articles_alerte, many=True)
-        return Response(standardized_response(data=serializer.data))
+        try:
+            # Use service to get articles on alert
+            articles_alerte = LibrairieService.get_articles_alerte()
+            logger.info(f"Found {len(articles_alerte)} articles in alert")
+            return Response(standardized_response(data=articles_alerte))
+        except Exception as e:
+            logger.error(f"Error retrieving alertes: {e}")
+            return Response(
+                standardized_response(success=False, error=str(e)),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
-class VenteViewSet(viewsets.ModelViewSet):
+class VenteViewSet(BaseModelViewSet):
     queryset = Vente.objects.select_related("article", "membre", "enregistre_par").all()
     serializer_class = VenteSerializer
     transaction_model = Transaction

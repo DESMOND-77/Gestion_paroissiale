@@ -1,18 +1,20 @@
 import logging
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from core.base_view import BaseModelViewSet
 from core.permissions import IsAdmin, IsSecretaryOrAbove
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from .models import Membre, Sacrement
 from .serializers import MembreSerializer, MembreDetailSerializer, SacrementSerializer
+from .services import MembreService
 
 logger = logging.getLogger(__name__)
 
 
-class MembreViewSet(viewsets.ModelViewSet):
+class MembreViewSet(BaseModelViewSet):
     queryset = Membre.objects.select_related("groupe", "user").all()
 
     def get_serializer_class(self):

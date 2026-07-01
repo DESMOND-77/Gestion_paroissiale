@@ -7,9 +7,9 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-from accounts.core.base_view import BaseAPIView
+from core.base_view import BaseAPIView
 from accounts.verification.password_reset_service import PasswordResetService
-from ..core.response import standardized_response
+from core.response import standardized_response
 from .services import EmailVerificationService, User
 from accounts.serializers import PasswordResetSerializer, ConfirmPasswordResetSerializer
 

@@ -19,6 +19,7 @@ All Phase 1 critical security vulnerabilities have been identified and fixed. Th
 **File**: `accounts/models.py` (Line 78)
 
 **Verification**:
+
 ```python
 role = models.CharField(
     max_length=20, choices=ROLES_CHOICES, default="fidele", verbose_name="Rôle"
@@ -26,6 +27,7 @@ role = models.CharField(
 ```
 
 **REQUIRED_FIELDS Added**: `accounts/models.py` (Line 113)
+
 ```python
 REQUIRED_FIELDS = ["nom", "prenom", "role"]
 ```
@@ -40,11 +42,13 @@ REQUIRED_FIELDS = ["nom", "prenom", "role"]
 **File**: `gestion_p/settings.py` (Lines 211-225)
 
 **Before**:
+
 ```python
 CORS_ALLOW_ALL_ORIGINS = True  # ❌ Vulnerable in production
 ```
 
 **After**:
+
 ```python
 if not DEBUG:
     # Production: Explicitly define allowed origins
@@ -65,6 +69,7 @@ else:
 **Result**: CORS is now restricted to explicit domains. Production requires `CORS_ALLOWED_ORIGINS` environment variable.
 
 **Next Steps for Production**:
+
 ```bash
 # Set in .env or Render environment
 CORS_ALLOWED_ORIGINS=https://your-frontend.com,https://app.your-domain.com
@@ -78,6 +83,7 @@ CORS_ALLOWED_ORIGINS=https://your-frontend.com,https://app.your-domain.com
 **File**: `gestion_p/settings.py` (Lines 305-334)
 
 **Verification**:
+
 ```python
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # ✅ OWASP compliant
@@ -101,6 +107,7 @@ SIMPLE_JWT = {
 **Changes Made**:
 
 1. **Removed problematic code** from `gestion_p/settings.py` (Lines 293-295)
+
    ```python
    # ❌ REMOVED:
    # redis_client = redis.from_url(REDIS_URL)
@@ -109,6 +116,7 @@ SIMPLE_JWT = {
    ```
 
 2. **Created** `core/health.py` - Separate health check module
+
    ```python
    def check_redis_health():
        """Check if Redis cache is available without blocking startup"""
@@ -122,12 +130,14 @@ SIMPLE_JWT = {
    ```
 
 3. **Created** `core/views.py` - Health check endpoint
+
    ```python
    class HealthCheckView(APIView):
        """GET /api/health/ - Returns Redis and Database status"""
    ```
 
 4. **Added** health check URL
+
    ```python
    # gestion_p/urls.py
    path("api/health/", HealthCheckView.as_view(), name="health-check"),
@@ -139,6 +149,7 @@ SIMPLE_JWT = {
 - Graceful fallback to LocMemCache if Redis is down
 
 **Test**:
+
 ```bash
 $ curl http://localhost:8000/api/health/
 {
@@ -160,12 +171,14 @@ $ curl http://localhost:8000/api/health/
 **Files Modified**:
 
 1. **`accounts/auth/views.py`** (Line 99)
+
    ```python
    # ❌ REMOVED:
    # print("Request data:", request)
    ```
 
 2. **`gestion_p/settings.py`** (Line 295)
+
    ```python
    # ❌ CHANGED:
    # print(f"Redis non disponible: {e}. Utilisation du cache mémoire.")
@@ -181,6 +194,7 @@ $ curl http://localhost:8000/api/health/
 ## Testing Summary
 
 ### Health Check Endpoint
+
 ```bash
 ✅ GET /api/health/ → Returns status 200 with health data
 ✅ Works without authentication
@@ -189,6 +203,7 @@ $ curl http://localhost:8000/api/health/
 ```
 
 ### User Registration
+
 ```bash
 ✅ New users created with role="fidele"
 ✅ No debug output to stdout
@@ -196,6 +211,7 @@ $ curl http://localhost:8000/api/health/
 ```
 
 ### CORS
+
 ```bash
 ✅ Development: Allows localhost:3000, localhost:8000
 ✅ Production: Requires CORS_ALLOWED_ORIGINS environment variable
@@ -203,6 +219,7 @@ $ curl http://localhost:8000/api/health/
 ```
 
 ### JWT Tokens
+
 ```bash
 ✅ Access token: 15 minute lifetime
 ✅ Refresh token: 7 day lifetime
@@ -217,9 +234,11 @@ For production deployment on Render:
 
 - [ ] Set `DEBUG=False` in environment
 - [ ] Set `CORS_ALLOWED_ORIGINS` to your frontend domain(s)
+
   ```
   CORS_ALLOWED_ORIGINS=https://your-app.com,https://app.your-domain.com
   ```
+
 - [ ] Set `SECRET_KEY` to a strong random value (not from .env)
 - [ ] Ensure Redis is available and healthy
 - [ ] Test health check: `curl https://your-api.render.com/api/health/`

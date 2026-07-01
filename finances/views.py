@@ -1,18 +1,20 @@
 import logging
-from django.db.models import Sum, Q
-from rest_framework import viewsets, status
+from django.db.models import Sum
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from core.base_view import BaseModelViewSet, BaseViewSet
 from core.permissions import IsAdmin, IsTreasurerOrAbove
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from .models import Transaction
 from .serializers import TransactionSerializer
+from .services import FinanceService
 
 logger = logging.getLogger(__name__)
 
 
-class TransactionViewSet(viewsets.ModelViewSet):
+class TransactionViewSet(BaseModelViewSet):
     queryset = Transaction.objects.select_related("membre", "enregistre_par").all()
     serializer_class = TransactionSerializer
 
@@ -58,32 +60,34 @@ class TransactionViewSet(viewsets.ModelViewSet):
         date_fin = request.query_params.get("date_fin")
         logger.info(f"Generating financial report for user {request.user} (date_debut={date_debut}, date_fin={date_fin})")
 
-        qs = self.get_queryset()
-        if date_debut:
-            logger.debug(f"Filtering transactions from {date_debut}")
-            qs = qs.filter(date__gte=date_debut)
-        if date_fin:
-            logger.debug(f"Filtering transactions until {date_fin}")
-            qs = qs.filter(date__lte=date_fin)
+        try:
+            # Delegate to service layer for report calculation
+            rapport = FinanceService.calculate_rapport(date_debut, date_fin)
 
-        totaux = qs.aggregate(
-            total_recettes=Sum("montant", filter=Q(type="recette")),
-            total_depenses=Sum("montant", filter=Q(type="depense")),
-        )
-        solde = (totaux["total_recettes"] or 0) - (totaux["total_depenses"] or 0)
-        logger.info(f"Financial report: recettes={totaux['total_recettes']}, depenses={totaux['total_depenses']}, solde={solde}")
+            # Get transactions for detailed breakdown
+            qs = self.get_queryset()
+            if date_debut:
+                qs = qs.filter(date__gte=date_debut)
+            if date_fin:
+                qs = qs.filter(date__lte=date_fin)
 
-        data = {
-            "periode": {"debut": date_debut, "fin": date_fin},
-            "total_recettes": totaux["total_recettes"] or 0,
-            "total_depenses": totaux["total_depenses"] or 0,
-            "solde": solde,
-            "transactions": TransactionSerializer(qs, many=True).data,
-        }
-        return Response(standardized_response(data=data))
+            data = {
+                "periode": {"debut": date_debut, "fin": date_fin},
+                "total_recettes": rapport["recettes"],
+                "total_depenses": rapport["depenses"],
+                "solde": rapport["solde"],
+                "transactions": TransactionSerializer(qs, many=True).data,
+            }
+            return Response(standardized_response(data=data))
+        except Exception as e:
+            logger.error(f"Error generating rapport: {e}")
+            return Response(
+                standardized_response(success=False, error=str(e)),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
-class MembreDonsView(viewsets.ViewSet):
+class MembreDonsView(BaseViewSet):
     permission_classes = [IsTreasurerOrAbove]
 
     def retrieve(self, request, pk=None):
