@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from .health import get_health_status
 
 

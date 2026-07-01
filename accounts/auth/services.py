@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.core.jwt_utils import TokenManager
+from core.jwt_utils import TokenManager
 from accounts.models import User
 from accounts.serializers import UserSerializer
 

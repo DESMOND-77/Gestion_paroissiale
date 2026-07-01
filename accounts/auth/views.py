@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from accounts.core.base_view import BaseAPIView
-from accounts.core.response import standardized_response
+from core.base_view import BaseAPIView
+from core.response import standardized_response
 from accounts.models import User, UserActivity
 
 from accounts.serializers import (
@@ -94,6 +94,7 @@ class UserRegistrationView(BaseAPIView):
         },
         tags=["Authentication"],
     )
+
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -538,7 +539,7 @@ class ChangePasswordView(BaseAPIView):
         user.save(update_fields=["password"])
 
         # Invalider tous les tokens existants
-        from accounts.core.jwt_utils import TokenManager
+        from core.jwt_utils import TokenManager
 
         TokenManager.blacklist_all_user_tokens(user.id)
 

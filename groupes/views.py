@@ -1,18 +1,20 @@
 import logging
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from core.base_view import BaseModelViewSet
 from core.permissions import IsAdmin, IsSecretaryOrAbove
-from accounts.core.response import standardized_response
+from core.response import standardized_response
 from .models import Groupe
 from .serializers import GroupeSerializer
+from .services import GroupeService
 
 logger = logging.getLogger(__name__)
 
 
-class GroupeViewSet(viewsets.ModelViewSet):
+class GroupeViewSet(BaseModelViewSet):
     queryset = Groupe.objects.select_related("responsable").all()
     serializer_class = GroupeSerializer
 
@@ -69,7 +71,17 @@ class GroupeViewSet(viewsets.ModelViewSet):
         groupe = self.get_object()
         logger.debug(f"Retrieving membres for groupe {groupe.id}")
         from membres.serializers import MembreSerializer
-        membres = groupe.membres.all()
-        logger.info(f"Retrieved {membres.count()} membres for groupe {groupe.id}")
-        serializer = MembreSerializer(membres, many=True)
-        return Response(standardized_response(data=serializer.data))
+
+        try:
+            # Use service to get member count
+            count = GroupeService.get_groupe_membres_count(groupe)
+            membres = groupe.membres.all()
+            logger.info(f"Retrieved {count} membres for groupe {groupe.id}")
+            serializer = MembreSerializer(membres, many=True)
+            return Response(standardized_response(data=serializer.data))
+        except Exception as e:
+            logger.error(f"Error retrieving membres for groupe {groupe.id}: {e}")
+            return Response(
+                standardized_response(success=False, error=str(e)),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
