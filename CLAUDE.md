@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Gestion Paroissiale** is a Django REST API for managing parish (church) operations. The application language, comments, and API messages are **French**.
 
 Key tech stack:
+
 - **Framework**: Django 6.0 + Django REST Framework 3.17
 - **Auth**: JWT (djangorestframework-simplejwt) with Redis token tracking
 - **Database**: MySQL (default) or PostgreSQL via `DATABASE_URL`
@@ -35,7 +36,8 @@ python manage.py runserver 0.0.0.0:8000
 # Testing
 python manage.py test                    # All tests
 python manage.py test accounts           # Single app
-python manage.py test accounts.auth.views # Specific module
+python manage.py test accounts.tests.test_login  # Single test module
+python manage.py test accounts.tests.test_login.LoginViewTests.test_login_success  # Single test
 python test_logging.py                   # Logging test
 python test_redis.py                     # Redis connectivity
 
@@ -49,7 +51,7 @@ docker-compose up -d
 
 ### Request Flow
 
-```
+```flow
 HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/Model → MySQL
                                                                ↘ Redis (tokens, sessions, rate limiting)
 ```
@@ -64,19 +66,21 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 
 **Models** (`app/models.py`): Database models and custom managers.
 
-**Shared Utilities**:
-- `accounts/core/jwt_utils.py`: `TokenManager` handles JWT lifecycle (tracking in Redis, blacklisting on logout/password change).
-- `accounts/core/response.py`: `standardized_response()` wraps all responses in `{success, data, error, message}` format.
-- `accounts/core/exception_handler.py`: Converts DRF exceptions to standardized format.
-- `accounts/core/exceptions.py`: Custom exception classes.
+**Shared Utilities** — all live in the root-level `core/` app (NOT `accounts/core/`):
+
+- `core/jwt_utils.py`: `TokenManager` handles JWT lifecycle (tracking in Redis by `jti`, blacklisting on logout/password change). Falls back to `LocMemCache` semantics when Redis is unavailable.
+- `core/response.py`: `standardized_response()`. Note it **omits** keys whose value is `None` — a success response is often just `{"success": true, "data": {...}}` with no `error`/`message`.
+- `core/exception_handler.py`: `custom_exception_handler` (wired via `REST_FRAMEWORK["EXCEPTION_HANDLER"]`) converts **every** DRF error (validation, 401, 403, 404, throttling) into the standardized format.
+- `core/base_view.py`: `BaseAPIView` — base class most auth/module views extend. Centralizes exception handling (`AuthenticationFailed` → standardized 401) and adds `check_extra_permission()`.
 - `core/permissions.py`: Shared permission classes (`IsAdmin`, `IsSecretaryOrAbove`, `IsTreasurerOrAbove`).
+- `core/health.py` + `core/views.py`: `HealthCheckView` (Redis + DB status, unauthenticated).
 
 ---
 
 ## Key Modules
 
 | Module | Purpose |
-|--------|---------|
+| -------- | --------- |
 | `accounts` | User auth (register, login, logout), JWT token management, email verification, password reset, user profile |
 | `membres` | Member/parishioner profiles, sacraments, signals for profile creation on user signup |
 | `groupes` | Group/association management |
@@ -92,7 +96,7 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 - **Custom User Model**: `accounts.models.User` extends `AbstractBaseUser` with `USERNAME_FIELD = 'email'`.
 - **Roles** (hierarchical): fidèle < responsable < secrétaire < trésorier < prêtre < admin
 - **Required**: Email verification before first login. Failed login attempts (5) trigger 15-minute lockout via Redis.
-- **JWT**: Access token 3 days, refresh token 14 days. Tokens tracked in Redis by `jti` (JWT ID). Logout and password changes blacklist all user tokens.
+- **JWT** (`SIMPLE_JWT` in settings): access token 15 min, refresh token 7 days, with `ROTATE_REFRESH_TOKENS`. Tokens tracked in Redis by `jti` (JWT ID). Logout and password changes blacklist all of a user's tokens. `TokenManager.generate_token()` issues the pair; the standard `rest_framework_simplejwt.TokenRefreshView` name is overridden by the local `accounts/auth/views.TokenRefreshView`.
 
 ---
 
@@ -137,6 +141,7 @@ Use `standardized_response()` from `accounts/core/response.py` for consistency.
 ### Serializer & Field Names
 
 When working with User-related serializers, use **French field names**:
+
 - `prenom` (first name)
 - `nom` (last name)
 - `email` (email)
@@ -144,6 +149,7 @@ When working with User-related serializers, use **French field names**:
 - `role` (user role)
 
 Example from `accounts/serializers.py`:
+
 ```python
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -153,9 +159,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 ### Testing Patterns
 
-- Use Django's test framework (`python manage.py test`).
+- The `accounts` auth suite lives in the `accounts/tests/` package. `accounts/tests/base.py` provides `BaseAuthTest`, which makes tests hermetic: `LocMemCache`, in-memory email backend, Redis client neutralized (`TokenManager.get_redis_client` mocked to `None`), and helper factories (`create_user`, `auth`, `make_uid_token`).
+- **Known caveat**: creating the MySQL test DB currently fails with `OperationalError 1824: Failed to open the referenced table 'auth_group'` because several apps (`groupes/membres/evenements/finances/librairie`) ship without migration files and are created via syncdb, which MySQL rejects for cross-app FKs. Workaround: run tests on SQLite with a throwaway settings module that overrides `DATABASES` to `sqlite3 :memory:` (`python manage.py test accounts --settings=<sqlite_settings>`). Root fix: regenerate the missing migrations with `makemigrations`.
 - Test auth flows thoroughly (login, logout, token refresh, blacklisting).
-- For Redis-dependent tests, ensure Redis is running locally.
 
 ---
 
@@ -164,6 +170,7 @@ class UserSerializer(serializers.ModelSerializer):
 - **Branch naming**: Descriptive, lowercase (e.g., `feature/email-verification`, `fix/token-blacklist`).
 - **Commits**: Atomic, with clear messages (e.g., "feat: Add email verification", "fix: Correct JWT token expiration").
 - **Main branch**: Production-ready code only.
+- **Fix log**: Every bug fix / correctif must also be documented in `fixs.md` at the repo root — add a new dated entry at the TOP (newest first), in French, with **Problème / Cause / Solution / Fichiers** (and Tests when relevant). Follow the existing entry format.
 
 ---
 
