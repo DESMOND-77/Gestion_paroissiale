@@ -4,7 +4,7 @@ import traceback
 import time
 import random
 import os
-from email.mime.image import MIMEImage
+from email.message import MIMEPart
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -45,14 +45,19 @@ class EmailService:
             ext = os.path.splitext(logo_path)[1].lower().lstrip(".")
             subtype = {"jpg": "jpeg"}.get(ext, ext) or "png"
             with open(logo_path, "rb") as f:
-                image = MIMEImage(f.read(), _subtype=subtype)
-            image.add_header("Content-ID", f"<{EmailService.INLINE_LOGO_CID}>")
-            image.add_header(
-                "Content-Disposition", "inline", filename=os.path.basename(logo_path)
+                data = f.read()
+            # API moderne (Django 6 / email.message) : image inline + Content-ID,
+            # référencée dans le HTML par src="cid:logo".
+            part = MIMEPart()
+            part.set_content(
+                data,
+                maintype="image",
+                subtype=subtype,
+                disposition="inline",
+                cid=f"<{EmailService.INLINE_LOGO_CID}>",
+                filename=os.path.basename(logo_path),
             )
-            # Le sous-type "related" lie l'image au HTML qui la référence via CID.
-            # message.mixed_subtype = "related"
-            message.attach(image)
+            message.attach(part)
         except Exception as e:
             logger.warning(f"Impossible d'embarquer le logo inline: {str(e)}")
 
@@ -166,7 +171,7 @@ class EmailService:
             token = default_token_generator.make_token(user)
 
             verify_url = (
-                f"{settings.FRONTEND_URL}/auth/email-verify?uid={uid}&token={token}"
+                f"{settings.PUBLIC_BASE_URL}/verify-email/?uid={uid}&token={token}"
             )
             # compose email
             subject = f"{settings.APP_NAME} — Confirmez votre adresse e-mail"
@@ -286,7 +291,7 @@ class EmailService:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_url = f"{settings.FRONTEND_URL}/auth/password-reset-confirm?uid={uid}&token={token}"
+            reset_url = f"{settings.PUBLIC_BASE_URL}/reset-password/?uid={uid}&token={token}"
             # compose email
             subject = f"{settings.APP_NAME} — Réinitialisez votre mot de passe"
 

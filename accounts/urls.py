@@ -4,6 +4,8 @@ from rest_framework.routers import DefaultRouter
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from accounts.verification.web_views import EmailVerifyPageView, PasswordResetPageView
+
 
 from .auth.views import (
     ChangePasswordView,
@@ -37,13 +39,6 @@ urlpatterns = [
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/token/validate/", ValidateTokenView.as_view(), name="validate_token"),
     path("auth/me/", MeView.as_view(), name="me"),
-    # password reset
-    path("auth/password-reset/", PasswordResetView.as_view(), name="password_reset"),
-    path(
-        "auth/password-reset-confirm/",
-        ConfirmPasswordResetView.as_view(),
-        name="confirm_password_reset",
-    ),
     # Profile routes
     path("user/profile/", UserProfileView.as_view(), name="profile"),
     path("user/change-password/", ChangePasswordView.as_view(), name="change_password"),
@@ -55,7 +50,11 @@ urlpatterns = [
     # Permission check
     path("check-permission/", CheckPermissionView.as_view(), name="check_permission"),
     # verification routes
-    path("auth/email-verify/", VerifyEmailView.as_view(), name="verify_email"),
+    
+    # EmailVerifyPageView.as_view(), name="web_verify_email"), VerifyEmailView
+    # PasswordResetPageView.as_view(), name="web_password_reset"), PasswordResetView
+
+    path("auth/email-verify/", EmailVerifyPageView.as_view(), name="verify_email"),
     path(
         "auth/send-verification/",
         SendVerificationEmailView.as_view(),
@@ -65,5 +64,13 @@ urlpatterns = [
         "auth/verification-status/",
         CheckVerificationStatusView.as_view(),
         name="check_verification",
+    ),
+    # password reset
+    path("auth/password-reset/", PasswordResetPageView.as_view(), name="password_reset"),
+
+    path(
+        "auth/password-reset-confirm/",
+        ConfirmPasswordResetView.as_view(),
+        name="confirm_password_reset",
     ),
 ]

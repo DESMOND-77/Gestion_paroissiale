@@ -6,6 +6,34 @@ récentes en haut.
 
 ---
 
+## 2026-07-03 — Pages HTML conviviales pour la vérification d'email et la réinitialisation
+
+**Problème** : les liens des emails pointaient vers les endpoints **API**
+(`/api/auth/email-verify`, `/api/auth/password-reset-confirm`) qui renvoient du
+JSON brut / une page DRF — illisible pour l'utilisateur final.
+
+**Solution** : de vraies pages web rendues par Django, au thème liturgique
+(cohérent avec les emails).
+- Vues serveur `EmailVerifyPageView` (GET → vérifie et affiche le résultat) et
+  `PasswordResetPageView` (GET → formulaire ; POST → 2 champs mot de passe +
+  confirmation, validation, résultat), réutilisant les services existants.
+- Routes publiques `GET /verify-email/` et `GET|POST /reset-password/`.
+- Templates `templates/auth/` (`base_auth.html`, `verify_email_result.html`,
+  `password_reset_form.html`) : responsive, accessibles, afficher/masquer le mot
+  de passe, contrôle de correspondance côté client.
+- Nouveau réglage `PUBLIC_BASE_URL` (racine du site) ; les liens des emails
+  pointent désormais vers ces pages.
+- `STATICFILES_DIRS = [BASE_DIR/"static"]` ajouté pour que le logo se charge.
+- Embarquement du logo email migré vers l'API moderne `email.message.MIMEPart`
+  + `set_content(cid=...)` (Django 6 a supprimé `mixed_subtype`).
+
+**Fichiers** : `accounts/verification/web_views.py` (nouveau),
+`templates/auth/*` (nouveaux), `gestion_p/urls.py`, `gestion_p/settings.py`,
+`accounts/verification/emails.py`.
+**Tests** : `accounts/tests/test_web_pages.py` (9 tests) ; suite à 89 tests.
+
+---
+
 ## 2026-07-02 — Refonte des templates d'email (contenu, UI, style) + correctif du nom d'app
 
 **Problème** :
