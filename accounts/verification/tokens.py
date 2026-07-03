@@ -14,7 +14,7 @@ class TokenVerifier:
     TokenVerifier class for handling token verification operations.
 
     This class provides functionality to verify various types of tokens used in the
-    authentication and verification workflows of the ScholarFlow application.
+    authentication and verification workflows of the Gestion paroissial application.
     """
 
     @staticmethod

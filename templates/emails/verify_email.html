@@ -1,19 +1,29 @@
 {% extends "emails/base_email.html" %}
 
-{% block content %}
-<div class="container">
-  <h1>Verify Your Email Address</h1>
-  <div class="content">
-    <p>Hello {{ user.email }},</p>
-    <p>
-      Thank you for signing up! Please verify your email address by clicking the
-      button below:
-    </p>
-    <a href="{{ verify_url }}" class="button">Verify Email</a>
-    <p>If you didn't create this account, you can ignore this email.</p>
-    <br>
-    <p>{{verify_url}}</p>
-  </div>
+{% block title %}Confirmez votre adresse e-mail{% endblock %}
+{% block preheader %}Une dernière étape pour activer votre compte {{ app_name|default:"Gestion Paroissiale" }}.{% endblock %}
 
-</div>
+{% block content %}
+  <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:#c8a24b;font-weight:bold;">Vérification du compte</div>
+
+  <h1 class="h1" style="font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:29px;line-height:1.25;color:#1b2447;margin:12px 0 22px;">Confirmez votre adresse e-mail</h1>
+
+  <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#3a3d47;">Bonjour {{ user.prenom|default:"et bienvenue" }},</p>
+
+  <p style="margin:0 0 26px;font-size:16px;line-height:1.65;color:#3a3d47;">Votre compte a bien été créé. Il ne reste qu'une étape : confirmez votre adresse e-mail pour l'activer et accéder à {{ app_name|default:"Gestion Paroissiale" }}.</p>
+
+  <!-- Bouton -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 30px;">
+    <tr>
+      <td align="center" bgcolor="#c8a24b" style="border-radius:8px;background-color:#c8a24b;">
+        <a href="{{ verify_url }}" target="_blank" style="display:inline-block;padding:15px 36px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;line-height:1;color:#1b2447;border-radius:8px;">Confirmer mon adresse</a>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin:0 0 10px;font-size:13px;line-height:1.6;color:#8a8f9a;">Ce lien est valable {{ code_expiry }}. Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
+
+  <p style="margin:0 0 26px;font-size:13px;line-height:1.5;word-break:break-all;background-color:#f6f3ec;border:1px solid #ece6d7;border-radius:6px;padding:12px 14px;color:#1b2447;font-family:'Courier New',Courier,monospace;">{{ verify_url }}</p>
+
+  <p style="margin:0;padding-top:18px;border-top:1px solid #eeeae0;font-size:13px;line-height:1.6;color:#8a8f9a;">Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement ce message&nbsp;: aucun compte ne sera activé.</p>
 {% endblock %}

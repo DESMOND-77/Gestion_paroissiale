@@ -1,66 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ScholarFlow{% endblock %}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
-        }
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .email-header {
-            background-color: #2c3e50;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-        }
-        .email-body {
-            padding: 30px;
-        }
-        .email-footer {
-            background-color: #f4f4f4;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 20px 0;
-            background-color: #3498db;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light only">
+  <title>{% block title %}{{ app_name|default:"Gestion Paroissiale" }}{% endblock %}</title>
+  <style>
+    body { margin:0 !important; padding:0 !important; width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table { border-collapse:collapse !important; }
+    img { border:0; line-height:100%; outline:none; text-decoration:none; }
+    a { text-decoration:none; }
+    /* Signature: liturgical gold underline that grows on hover (supported clients) */
+    .link-accent { color:#1b2447; border-bottom:1px solid #c8a24b; padding-bottom:1px; }
+    @media only screen and (max-width:620px) {
+      .card { width:100% !important; border-radius:0 !important; border-left:0 !important; border-right:0 !important; }
+      .px { padding-left:24px !important; padding-right:24px !important; }
+      .h1 { font-size:25px !important; }
+    }
+  </style>
 </head>
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <h1>ScholarFlow</h1>
-        </div>
-        <div class="email-body">
-            {% block content %}
-                <!-- Email content goes here -->
-            {% endblock %}
-        </div>
-        <div class="email-footer">
-            <p>&copy; {% now "Y" %} ScholarFlow. All rights reserved.</p>
-            <p>You received this email because you're a registered user.</p>
-        </div>
-    </div>
+<body style="margin:0;padding:0;background-color:#eceae2;">
+  <!-- Texte d'aperçu (masqué) -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">{% block preheader %}{% endblock %}</div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eceae2;">
+    <tr>
+      <td align="center" style="padding:32px 12px;">
+        <table role="presentation" width="600" class="card" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e3ddce;">
+
+          <!-- Filet doré supérieur -->
+          <tr><td height="4" style="height:4px;line-height:4px;font-size:0;background-color:#c8a24b;">&nbsp;</td></tr>
+
+          <!-- En-tête : nef sombre + logo embarqué (CID) -->
+          <tr>
+            <td align="center" style="background-color:#1b2447;padding:36px 24px 30px;">
+              <img src="cid:logo" alt="{{ app_name|default:'Gestion Paroissiale' }}" width="72" height="77" style="display:block;width:72px;height:auto;max-width:72px;border:0;outline:none;margin:0 auto;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:23px;color:#ffffff;letter-spacing:0.4px;padding-top:16px;">{{ app_name|default:"Gestion Paroissiale" }}</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9aa3c4;padding-top:9px;">Communauté paroissiale</div>
+            </td>
+          </tr>
+
+          <!-- Corps -->
+          <tr>
+            <td class="px" style="padding:42px 46px;font-family:Arial,Helvetica,sans-serif;color:#2a2c34;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+
+          <!-- Pied de page -->
+          <tr>
+            <td class="px" align="center" style="padding:26px 46px 32px;background-color:#f6f3ec;border-top:1px solid #ece6d7;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#8a8f9a;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#1b2447;padding-bottom:6px;">{{ app_name|default:"Gestion Paroissiale" }}</div>
+              <div>Vous recevez cet e-mail car un compte est associé à cette adresse.</div>
+              <div style="padding-top:10px;color:#b6ac92;">&copy; {% now "Y" %} {{ app_name|default:"Gestion Paroissiale" }}. Tous droits réservés.</div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>

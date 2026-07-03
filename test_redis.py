@@ -3,7 +3,7 @@ import os
 import sys
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scholarflow_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gestion_p.settings')
 django.setup()
 
 import redis

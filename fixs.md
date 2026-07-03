@@ -6,6 +6,28 @@ récentes en haut.
 
 ---
 
+## 2026-07-02 — Refonte des templates d'email (contenu, UI, style) + correctif du nom d'app
+
+**Problème** :
+- Les emails (`verify_email.html`, `password_reset.html`) étaient en **anglais**
+  alors que le projet est en français, avec un design générique daté.
+- Bug : les templates utilisaient `{{ app_name }}` (minuscule) mais le contexte
+  passait `App_name` (majuscule) → le nom de l'application s'affichait **vide**.
+
+**Solution** :
+- Nouvelle identité visuelle « liturgique » (nef bleu nuit + accent doré, titre
+  serif Georgia, médaillon croix doré) dans `base_email.html`, compatible clients
+  mail (layout en tables, styles inline, bouton bulletproof, texte d'aperçu masqué,
+  aucun asset externe).
+- Contenu réécrit en français (sujets, corps HTML **et** repli texte brut).
+- Contexte corrigé : `App_name` → `app_name` ; `code_expiry` « 1 hour » → « 2 heures »
+  (aligné sur `PASSWORD_RESET_TIMEOUT`).
+
+**Fichiers** : `templates/emails/base_email.html`, `templates/emails/verify_email.html`,
+`templates/emails/password_reset.html`, `accounts/verification/emails.py`.
+
+---
+
 ## 2026-07-02 — Repli SMTP automatique en cas d'échec du backend email principal
 
 **Problème** : à l'inscription, Resend renvoyait `403 (validation_error)` — « You can

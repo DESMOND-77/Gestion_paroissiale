@@ -12,6 +12,8 @@ env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SECRET_KEY = env("SECRET_KEY") or os.environ.get("SECRET_KEY")
 DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")
@@ -386,7 +388,11 @@ MOBILE_VERIFICATION_REDIRECT = True  # Enable redirect after mobile verification
 REQUIRE_EMAIL_VERIFICATION = True  # Require email verification on registration
 
 APP_NAME = "Gestion Paroissiale"
-
+# Chemin (système de fichiers) du logo embarqué dans les emails via CID
+# (`src="cid:logo"`). Une image inline s'affiche toujours, contrairement à une
+# URL distante que beaucoup de clients mail bloquent par défaut.
+EMAIL_LOGO_PATH = os.path.join(BASE_DIR, "static", "logo.png")
+# print(f"EMAIL_LOGO_PATH: {EMAIL_LOGO_PATH} (exists: {os.path.exists(EMAIL_LOGO_PATH)})")
 # Email settings
 # Resend API key and email backend are configured in the .env file
 FROM_EMAIL = env("FROM_EMAIL") or os.environ.get("FROM_EMAIL")
@@ -449,5 +455,3 @@ STORAGES = {
     },
 }
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")

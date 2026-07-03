@@ -3,8 +3,9 @@ import threading
 import traceback
 import time
 import random
-import string
-from django.core.mail import send_mail, get_connection
+import os
+from email.mime.image import MIMEImage
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
@@ -24,6 +25,54 @@ class EmailService:
         bool: success status
     """
 
+    # Content-ID du logo embarqué, référencé par src="cid:logo" dans les templates.
+    INLINE_LOGO_CID = "logo"
+
+    @staticmethod
+    def _attach_inline_logo(message):
+        """Embarque le logo en image inline (CID) pour qu'il s'affiche toujours.
+
+        Sans effet si aucun logo n'est configuré/trouvé : l'email part quand même
+        (le template affiche alors le texte alternatif).
+        """
+        logo_path = getattr(settings, "EMAIL_LOGO_PATH", None)
+        if not logo_path or not os.path.exists(logo_path):
+            if logo_path:
+                logger.warning(f"Email logo introuvable: {logo_path}")
+            return
+        try:
+            # Sous-type déduit de l'extension (évite toute détection implicite).
+            ext = os.path.splitext(logo_path)[1].lower().lstrip(".")
+            subtype = {"jpg": "jpeg"}.get(ext, ext) or "png"
+            with open(logo_path, "rb") as f:
+                image = MIMEImage(f.read(), _subtype=subtype)
+            image.add_header("Content-ID", f"<{EmailService.INLINE_LOGO_CID}>")
+            image.add_header(
+                "Content-Disposition", "inline", filename=os.path.basename(logo_path)
+            )
+            # Le sous-type "related" lie l'image au HTML qui la référence via CID.
+            # message.mixed_subtype = "related"
+            message.attach(image)
+        except Exception as e:
+            logger.warning(f"Impossible d'embarquer le logo inline: {str(e)}")
+
+    @staticmethod
+    def _build_message(
+        subject, plain_message, html_message, recipient_list, from_email, connection=None
+    ):
+        """Construit un EmailMultiAlternatives (texte + HTML + logo inline)."""
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_message,
+            from_email=from_email,
+            to=recipient_list,
+            connection=connection,
+        )
+        if html_message:
+            message.attach_alternative(html_message, "text/html")
+            EmailService._attach_inline_logo(message)
+        return message
+
     @staticmethod
     def _send_with_fallback(subject, plain_message, html_message, recipient_list):
         """Envoie un email via le backend principal, avec repli SMTP.
@@ -31,6 +80,8 @@ class EmailService:
         1. Tente l'envoi via le backend par défaut (Resend/Anymail).
         2. En cas d'échec, ré-essaie via une connexion SMTP explicite
            (paramètres EMAIL_HOST/EMAIL_HOST_USER/...).
+
+        Le message est un multipart avec le logo embarqué en inline (CID).
 
         Args:
             subject (str): Sujet de l'email.
@@ -45,14 +96,10 @@ class EmailService:
 
         # 1) Backend principal (Resend/Anymail via EMAIL_BACKEND)
         try:
-            send_mail(
-                subject,
-                message=plain_message,
-                from_email=primary_from,
-                recipient_list=recipient_list,
-                html_message=html_message,
-                fail_silently=False,
+            message = EmailService._build_message(
+                subject, plain_message, html_message, recipient_list, primary_from
             )
+            message.send(fail_silently=False)
             logger.info(f"Email sent via primary backend to {recipient_list}")
             return True
         except Exception as primary_error:
@@ -93,15 +140,15 @@ class EmailService:
                 fail_silently=False,
             )
             # En SMTP (Gmail), l'expéditeur doit être l'utilisateur authentifié.
-            send_mail(
+            message = EmailService._build_message(
                 subject,
-                message=plain_message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=recipient_list,
-                html_message=html_message,
-                fail_silently=False,
+                plain_message,
+                html_message,
+                recipient_list,
+                settings.EMAIL_HOST_USER,
                 connection=connection,
             )
+            message.send(fail_silently=False)
             logger.info(f"Email sent via SMTP fallback to {recipient_list}")
             return True
         except Exception as fallback_error:
@@ -122,37 +169,33 @@ class EmailService:
                 f"{settings.FRONTEND_URL}/auth/email-verify?uid={uid}&token={token}"
             )
             # compose email
-            subject = f"{settings.APP_NAME} - Verify your email address"
+            subject = f"{settings.APP_NAME} — Confirmez votre adresse e-mail"
 
             # template context
             context = {
                 "user": user,
                 "verify_url": verify_url,
-                "App_name": settings.APP_NAME,
-                "code_expiry": "1 hour",
+                "app_name": settings.APP_NAME,
+                "code_expiry": "2 heures",
             }
 
+            # Corps texte brut (repli si le client n'affiche pas le HTML)
+            plain_message = (
+                f"Bonjour {user.prenom or user.email},\n\n"
+                f"Votre compte {settings.APP_NAME} a bien été créé. "
+                f"Confirmez votre adresse e-mail pour l'activer en ouvrant le lien ci-dessous :\n\n"
+                f"{verify_url}\n\n"
+                f"Ce lien est valable {context['code_expiry']}. "
+                f"Si vous n'êtes pas à l'origine de cette inscription, ignorez ce message.\n\n"
+                f"— L'équipe {settings.APP_NAME}"
+            )
+
             try:
-                # HTML message
+                # Version HTML
                 html_message = render_to_string("emails/verify_email.html", context)
-                # plain text fallback
-                plain_message = f"""
-                    Hello {user.email},
-                    Please verify your email address by clicking the link below:
-                    
-                    {verify_url}
-                    Thanks you,
-                    {settings.APP_NAME} Team"""
             except Exception as template_error:
                 logger.error(f"Error rendering email template: {str(template_error)}")
                 html_message = None
-                plain_message = f"""
-                    Hello {user.email},
-                    Please verify your email address by clicking the link below:
-                    
-                    {verify_url}
-                    Thanks you,
-                    {settings.APP_NAME} Team"""
             # Envoi avec repli SMTP automatique si le backend principal échoue
             sent = EmailService._send_with_fallback(
                 subject=subject,
@@ -245,43 +288,33 @@ class EmailService:
 
             reset_url = f"{settings.FRONTEND_URL}/auth/password-reset-confirm?uid={uid}&token={token}"
             # compose email
-            subject = f"{settings.APP_NAME} - Reset your password"
+            subject = f"{settings.APP_NAME} — Réinitialisez votre mot de passe"
 
             # template context
             context = {
                 "user": user,
                 "reset_url": reset_url,
-                "App_name": settings.APP_NAME,
-                "code_expiry": "1 hour",
+                "app_name": settings.APP_NAME,
+                "code_expiry": "2 heures",
             }
 
-            try:
-                # HTML message
-                html_message = render_to_string("emails/password_reset.html", context)
-                # plain text fallback
-                plain_message = f"""
-                    Hello {user.email},
-                    Your requested to reset your password for your {settings.APP_NAME} account
-                    Please the link below to reset your password:
-                    
-                    {reset_url}
+            # Corps texte brut (repli si le client n'affiche pas le HTML)
+            plain_message = (
+                f"Bonjour {user.prenom or user.email},\n\n"
+                f"Nous avons reçu une demande de réinitialisation du mot de passe de votre "
+                f"compte {settings.APP_NAME}. Ouvrez le lien ci-dessous pour en choisir un nouveau :\n\n"
+                f"{reset_url}\n\n"
+                f"Ce lien expire dans {context['code_expiry']}. "
+                f"Si vous n'avez pas fait cette demande, ignorez ce message : votre mot de passe reste inchangé.\n\n"
+                f"— L'équipe {settings.APP_NAME}"
+            )
 
-                    If you didn't request this,please ignore this email
-                    Thanks you,
-                    {settings.APP_NAME} Team"""
+            try:
+                # Version HTML
+                html_message = render_to_string("emails/password_reset.html", context)
             except Exception as template_error:
                 logger.error(f"Error rendering email template: {str(template_error)}")
                 html_message = None
-                plain_message = f"""
-                    Hello {user.email},
-                    Your requested to reset your password for your {settings.APP_NAME} account
-                    Please the link below to reset your password:
-                    
-                    {reset_url}
-
-                    If you didn't request this,please ignore this email
-                    Thanks you,
-                    {settings.APP_NAME} Team"""
             # Envoi avec repli SMTP automatique si le backend principal échoue
             sent = EmailService._send_with_fallback(
                 subject=subject,
