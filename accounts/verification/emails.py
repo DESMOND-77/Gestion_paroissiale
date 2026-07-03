@@ -4,9 +4,11 @@ import traceback
 import time
 import random
 import os
+from urllib.parse import urlencode
 from email.message import MIMEPart
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.conf import settings
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -170,8 +172,10 @@ class EmailService:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
+            # Lien vers la page HTML (reverse -> toujours aligné avec la route)
+            query = urlencode({"uid": uid, "token": token})
             verify_url = (
-                f"{settings.PUBLIC_BASE_URL}/verify-email/?uid={uid}&token={token}"
+                f"{settings.PUBLIC_BASE_URL}{reverse('web_verify_email')}?{query}"
             )
             # compose email
             subject = f"{settings.APP_NAME} — Confirmez votre adresse e-mail"
@@ -291,7 +295,11 @@ class EmailService:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_url = f"{settings.PUBLIC_BASE_URL}/reset-password/?uid={uid}&token={token}"
+            # Lien vers la page HTML (reverse -> toujours aligné avec la route)
+            query = urlencode({"uid": uid, "token": token})
+            reset_url = (
+                f"{settings.PUBLIC_BASE_URL}{reverse('web_password_reset')}?{query}"
+            )
             # compose email
             subject = f"{settings.APP_NAME} — Réinitialisez votre mot de passe"
 

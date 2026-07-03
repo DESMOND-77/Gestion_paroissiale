@@ -26,9 +26,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", HealthCheckView.as_view(), name="health-check"),
-    # Pages HTML conviviales (liens des emails)
-    path("api/verify-email/", EmailVerifyPageView.as_view(), name="web_verify_email"),
-    path("api/reset-password/", PasswordResetPageView.as_view(), name="web_password_reset"),
+
     path("api/", include("accounts.urls")),
     path("api/groupes/", include("groupes.urls")),
     path("api/membres/", include("membres.urls")),

@@ -22,11 +22,9 @@ from .auth.views import (
 )
 from .profile.views import UserProfileView
 from .verification.views import (
-    VerifyEmailView,
     SendVerificationEmailView,
     CheckVerificationStatusView,
     PasswordResetView,
-    ConfirmPasswordResetView,
 )
 
 urlpatterns = [
@@ -49,12 +47,11 @@ urlpatterns = [
     path("activities/", UserActivityView.as_view(), name="user_activities"),
     # Permission check
     path("check-permission/", CheckPermissionView.as_view(), name="check_permission"),
-    # verification routes
-    
-    # EmailVerifyPageView.as_view(), name="web_verify_email"), VerifyEmailView
-    # PasswordResetPageView.as_view(), name="web_password_reset"), PasswordResetView
-
-    path("auth/email-verify/", EmailVerifyPageView.as_view(), name="verify_email"),
+    # Vérification d'email : la vérification par lien est gérée par la page HTML
+    # `web_verify_email` .
+    # Pages HTML conviviales (liens des emails)
+    path("verify-email/", EmailVerifyPageView.as_view(), name="web_verify_email"),
+    path("reset-password/",PasswordResetPageView.as_view(),name="web_password_reset"),
     path(
         "auth/send-verification/",
         SendVerificationEmailView.as_view(),
@@ -65,12 +62,7 @@ urlpatterns = [
         CheckVerificationStatusView.as_view(),
         name="check_verification",
     ),
-    # password reset
-    path("auth/password-reset/", PasswordResetPageView.as_view(), name="password_reset"),
-
-    path(
-        "auth/password-reset-confirm/",
-        ConfirmPasswordResetView.as_view(),
-        name="confirm_password_reset",
-    ),
+    # Réinitialisation : demande d'envoi du lien ici ; la confirmation (nouveau mot
+    # de passe) est gérée par la page HTML `web_password_reset` (gestion_p/urls.py).
+    path("auth/password-reset/", PasswordResetView.as_view(), name="password_reset"),
 ]
