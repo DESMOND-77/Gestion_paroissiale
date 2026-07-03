@@ -31,7 +31,7 @@ class EmailVerifyPageView(View):
     def get(self, request):
         uid = request.GET.get("uid")
         token = request.GET.get("token")
-        ctx = {"app_name": settings.APP_NAME, "login_url": settings.FRONTEND_URL}
+        ctx = {"app_name": settings.APP_NAME, "login_url": settings.PUBLIC_BASE_URL}
 
         if not uid or not token:
             ctx.update(status="error", message=_INVALID_LINK_FR)
@@ -42,7 +42,7 @@ class EmailVerifyPageView(View):
             ctx.update(
                 status="success",
                 message="Votre adresse e-mail a été confirmée. Votre compte est "
-                "désormais actif — vous pouvez vous connecter.",
+                "désormais actif — vous pouvez fermer cette page et retourner à l'application.",
             )
             return render(request, self.template_name, ctx)
 
@@ -58,7 +58,7 @@ class PasswordResetPageView(View):
     def _ctx(self, uid, token, **extra):
         base = {
             "app_name": settings.APP_NAME,
-            "login_url": settings.FRONTEND_URL,
+            "login_url": settings.PUBLIC_BASE_URL,
             "uid": uid,
             "token": token,
         }
@@ -97,7 +97,7 @@ class PasswordResetPageView(View):
             ctx = self._ctx(
                 uid, token, state="success",
                 message="Votre mot de passe a été réinitialisé. Vous pouvez "
-                "maintenant vous connecter avec vos nouveaux identifiants.",
+                "maintenant vous connecter avec vos nouveaux identifiants. Fermez cette page et retournez à l'application.",
             )
             return render(request, self.template_name, ctx)
 
