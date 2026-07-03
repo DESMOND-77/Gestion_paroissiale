@@ -426,6 +426,14 @@ FRONTEND_URL = env(
     "FRONTEND_URL", default="http://localhost:8000/api"
 ) or os.environ.get("FRONTEND_URL", "http://localhost:8000/api")
 
+# URL publique de base du backend (racine du site), utilisée pour construire les
+# liens des emails vers les pages HTML de vérification / réinitialisation servies
+# par Django. Sans slash final.
+PUBLIC_BASE_URL = (
+    env("PUBLIC_BASE_URL", default=None)
+    or os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
+).rstrip("/")
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -439,6 +447,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Dossier source des fichiers statiques du projet (logo, etc.) — nécessaire pour
+# que {% static %} les trouve en dev et que collectstatic les récupère en prod.
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # WhiteNoise sert les fichiers statiques en production (Render n'a pas de serveur
 # web dédié). En DEBUG, runserver les sert via les finders — pas de manifeste requis.

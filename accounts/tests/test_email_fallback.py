@@ -103,16 +103,12 @@ class InlineLogoTests(SimpleTestCase):
                 message = self._build()
 
         # Le message porte bien une image inline avec le Content-ID "logo".
-        payloads = message.message().get_payload()
-        cids = [
-            p.get("Content-ID")
-            for p in _walk(message.message())
-            if p.get("Content-ID")
-        ]
-        self.assertIn("<logo>", cids)
-        # Structure "related" pour lier l'image au HTML.
-        self.assertEqual(message.mixed_subtype, "related")
-        self.assertTrue(payloads)
+        parts = list(_walk(message.message()))
+        logo_parts = [p for p in parts if p.get("Content-ID") == "<logo>"]
+        self.assertEqual(len(logo_parts), 1)
+        logo = logo_parts[0]
+        self.assertTrue(logo.get_content_type().startswith("image/"))
+        self.assertIn("inline", logo.get("Content-Disposition", ""))
 
     def test_missing_logo_does_not_break_send(self):
         with override_settings(EMAIL_LOGO_PATH="/chemin/inexistant/logo.png"):
