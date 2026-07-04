@@ -13,20 +13,21 @@ logger = logging.getLogger(__name__)
 
 class ProfileService:
     @staticmethod
-    def get_profile(user):
+    def get_profile(user, request=None):
         """Get userprofile
 
         Args:
             user (object): user object
+            request (optional): requête pour construire les URLs absolues (photo).
 
         Returns:
             dict: serialized user data
         """
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(user, context={"request": request})
         return serializer.data
 
     @staticmethod
-    def update_profile(user, data, files=None):
+    def update_profile(user, data, files=None, request=None):
         """Update user profile data
 
         Args:
@@ -66,7 +67,9 @@ class ProfileService:
             }
 
             # update through serializer
-            serializer = UserSerializer(user, data=safe_data, partial=True)
+            serializer = UserSerializer(
+                user, data=safe_data, partial=True, context={"request": request}
+            )
 
             if serializer.is_valid():
                 serializer.save()

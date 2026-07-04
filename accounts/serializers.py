@@ -91,9 +91,15 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def get_profile_picture_url(self, obj):
-        if obj.profile_picture:
-            return self.context["request"].build_absolute_uri(obj.profile_picture.url)
-        return None
+        if not obj.profile_picture:
+            return None
+        # `request` n'est pas toujours dans le contexte (services login/register/
+        # profil qui instancient le serializer sans le passer). On renvoie alors
+        # l'URL relative (MEDIA_URL) au lieu de lever KeyError.
+        request = self.context.get("request")
+        if request is not None:
+            return request.build_absolute_uri(obj.profile_picture.url)
+        return obj.profile_picture.url
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:

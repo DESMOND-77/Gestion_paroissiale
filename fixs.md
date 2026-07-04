@@ -6,6 +6,44 @@ récentes en haut.
 
 ---
 
+## 2026-07-04 — `KeyError: 'request'` sur le profil (photo de profil)
+
+**Problème** : `GET /api/user/profile/` plantait (500) dès qu'un utilisateur avait
+une photo de profil : `KeyError: 'request'` dans
+`UserSerializer.get_profile_picture_url`.
+
+**Cause** : la méthode faisait `self.context["request"]`, mais plusieurs appelants
+instancient `UserSerializer(user)` sans passer `request` dans le contexte
+(`ProfileService.get_profile`, ainsi que login/register/MeView…).
+
+**Solution** :
+- `get_profile_picture_url` rendu défensif : `self.context.get("request")` ; si
+  absent, renvoie l'URL relative (MEDIA_URL) au lieu de lever une exception.
+- `ProfileService.get_profile`/`update_profile` acceptent `request` et le passent
+  au serializer (URLs absolues) ; `UserProfileView` le transmet.
+
+**Fichiers** : `accounts/serializers.py`, `accounts/profile/services.py`,
+`accounts/profile/views.py`.
+
+---
+
+## 2026-07-04 — Suppression des vues API redondantes avec les pages HTML
+
+**Problème** : `VerifyEmailView` et `ConfirmPasswordResetView` (endpoints API qui
+consomment le token) faisaient doublon avec les pages `EmailVerifyPageView` et
+`PasswordResetPageView` désormais chargées de ce flux (et généraient de la
+confusion, ex. 405 sur un GET navigateur).
+
+**Solution** : suppression des deux vues, de leurs routes
+(`auth/email-verify/`, `auth/password-reset-confirm/`) et du helper de redirection.
+Conservés car toujours utiles : `PasswordResetView` (demande d'envoi du lien),
+`SendVerificationEmailView` (renvoi), `CheckVerificationStatusView` (statut). La
+consommation du token passe exclusivement par les pages HTML.
+
+**Fichiers** : `accounts/verification/views.py`, `accounts/urls.py`.
+
+---
+
 ## 2026-07-03 — Pages HTML conviviales pour la vérification d'email et la réinitialisation
 
 **Problème** : les liens des emails pointaient vers les endpoints **API**
