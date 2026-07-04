@@ -2,13 +2,19 @@ import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
 from .models import Membre
-from .serializers import MembreSerializer, MembreDetailSerializer, SacrementSerializer
+from .serializers import (
+    MembreSerializer,
+    MembreDetailSerializer,
+    MembreSelfSerializer,
+    SacrementSerializer,
+)
 from .services import MembreService
 
 logger = logging.getLogger(__name__)
@@ -91,6 +97,51 @@ class MembreDetailView(BaseAPIView):
         membre.delete()
         logger.info(f"Membre {pk} deleted successfully")
         return Response(standardized_response(message="Membre supprimé"), status=status.HTTP_204_NO_CONTENT)
+
+
+class MembreMeView(BaseAPIView):
+    """
+    GET   /api/membres/me/  — profil membre lié au compte connecté
+    PATCH /api/membres/me/  — auto-modification (date_naissance, sexe, quartier uniquement)
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def _get_own_membre(self, request):
+        try:
+            return request.user.membre
+        except Membre.DoesNotExist:
+            return None
+
+    def get(self, request):
+        membre = self._get_own_membre(request)
+        if membre is None:
+            return Response(
+                standardized_response(
+                    success=False, error="Aucun profil membre associé à ce compte"
+                ),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(standardized_response(data=MembreSelfSerializer(membre).data))
+
+    def patch(self, request):
+        membre = self._get_own_membre(request)
+        if membre is None:
+            return Response(
+                standardized_response(
+                    success=False, error="Aucun profil membre associé à ce compte"
+                ),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        logger.info(f"Self-update membre {membre.id} by user {request.user}")
+        serializer = MembreSelfSerializer(membre, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            standardized_response(
+                data=MembreSelfSerializer(membre).data, message="Profil mis à jour"
+            )
+        )
 
 
 class MembreSacrementsView(BaseAPIView):
