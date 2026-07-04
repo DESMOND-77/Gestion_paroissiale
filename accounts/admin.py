@@ -11,6 +11,7 @@ class UserAdmin(BaseUserAdmin):
         "role",
         "is_staff",
         "is_superuser",
+        "is_active"
     )
     list_filter = ("is_staff", "is_superuser", "role")
     fieldsets = (

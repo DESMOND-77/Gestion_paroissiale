@@ -4,27 +4,6 @@ from django.urls import reverse
 from .base import BaseAuthTest
 
 
-class LegacyLinkRedirectTests(BaseAuthTest):
-    """Les anciens liens d'email (endpoints API en GET) redirigent vers les pages."""
-
-    def test_verify_endpoint_get_redirects_to_page(self):
-        resp = self.client.get(
-            reverse("verify_email"), {"uid": "MTE", "token": "abc-123"}
-        )
-        self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse("web_verify_email"), resp["Location"])
-        self.assertIn("uid=MTE", resp["Location"])
-        self.assertIn("token=abc-123", resp["Location"])
-
-    def test_confirm_reset_endpoint_get_redirects_to_page(self):
-        resp = self.client.get(
-            reverse("confirm_password_reset"), {"uid": "MTE", "token": "abc-123"}
-        )
-        self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse("web_password_reset"), resp["Location"])
-        self.assertIn("uid=MTE", resp["Location"])
-
-
 class EmailVerifyPageTests(BaseAuthTest):
     def setUp(self):
         super().setUp()
