@@ -45,3 +45,29 @@ class MembreDetailSerializer(MembreSerializer):
 
     class Meta(MembreSerializer.Meta):
         fields = MembreSerializer.Meta.fields + ["sacrements"]
+
+
+class MembreSelfSerializer(serializers.ModelSerializer):
+    """Auto-service : un membre ne peut modifier que ses propres
+    date_naissance / sexe / quartier — tout le reste (identité, sacrements,
+    groupe) reste réservé au personnel via MembreSerializer."""
+
+    nom_complet = serializers.ReadOnlyField()
+    groupe_nom = serializers.SerializerMethodField()
+    email = serializers.CharField(source="user.email", read_only=True)
+    phone_number = serializers.CharField(source="user.phone_number", read_only=True)
+
+    class Meta:
+        model = Membre
+        fields = [
+            "id", "nom", "prenom", "nom_complet", "date_naissance",
+            "sexe", "email", "phone_number", "quartier",
+            "est_baptise", "est_confirme", "groupe", "groupe_nom",
+        ]
+        read_only_fields = [
+            "id", "nom", "prenom", "nom_complet", "email", "phone_number",
+            "est_baptise", "est_confirme", "groupe", "groupe_nom",
+        ]
+
+    def get_groupe_nom(self, obj):
+        return obj.groupe.nom if obj.groupe else None
