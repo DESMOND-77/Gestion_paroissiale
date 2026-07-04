@@ -9,36 +9,6 @@ from .base import BaseAuthTest
 PATCH_BG = "accounts.verification.services.EmailVerificationService.send_verification_email_background"
 
 
-class VerifyEmailViewTests(BaseAuthTest):
-    def setUp(self):
-        super().setUp()
-        self.url = reverse("verify_email")
-        self.user = self.create_user(email="verify@example.com", is_verified=False)
-
-    def test_verify_email_success(self):
-        uid, token = self.make_uid_token(self.user)
-        resp = self.client.post(self.url, {"uid": uid, "token": token}, format="json")
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.data["success"])
-        self.user.refresh_from_db()
-        self.assertTrue(self.user.is_verified)
-
-    def test_verify_email_invalid_token(self):
-        uid, _ = self.make_uid_token(self.user)
-        resp = self.client.post(
-            self.url, {"uid": uid, "token": "invalid-token"}, format="json"
-        )
-        self.assertEqual(resp.status_code, 400)
-        self.assertFalse(resp.data["success"])
-        self.user.refresh_from_db()
-        self.assertFalse(self.user.is_verified)
-
-    def test_verify_email_missing_fields(self):
-        resp = self.client.post(self.url, {"uid": "abc"}, format="json")
-        self.assertEqual(resp.status_code, 400)
-        self.assertFalse(resp.data["success"])
-
-
 class SendVerificationEmailViewTests(BaseAuthTest):
     def setUp(self):
         super().setUp()

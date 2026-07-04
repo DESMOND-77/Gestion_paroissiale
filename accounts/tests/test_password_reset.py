@@ -35,47 +35,5 @@ class PasswordResetRequestViewTests(BaseAuthTest):
         self.assertFalse(resp.data["success"])
 
 
-class ConfirmPasswordResetViewTests(BaseAuthTest):
-    def setUp(self):
-        super().setUp()
-        self.url = reverse("confirm_password_reset")
-        self.user = self.create_user(email="confirm@example.com")
-        self.new_password = "Brand-N3w!Pass"
-
-    def test_confirm_reset_success(self):
-        uid, token = self.make_uid_token(self.user)
-        resp = self.client.post(
-            self.url,
-            {"uid": uid, "token": token, "new_password": self.new_password},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.data["success"])
-        self.user.refresh_from_db()
-        self.assertTrue(self.user.check_password(self.new_password))
-
-    def test_confirm_reset_invalid_token(self):
-        uid, _ = self.make_uid_token(self.user)
-        resp = self.client.post(
-            self.url,
-            {"uid": uid, "token": "bad-token", "new_password": self.new_password},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, 400)
-        self.assertFalse(resp.data["success"])
-
-    def test_confirm_reset_missing_fields(self):
-        uid, token = self.make_uid_token(self.user)
-        resp = self.client.post(self.url, {"uid": uid, "token": token}, format="json")
-        self.assertEqual(resp.status_code, 400)
-        self.assertFalse(resp.data["success"])
-
-    def test_confirm_reset_weak_password(self):
-        uid, token = self.make_uid_token(self.user)
-        resp = self.client.post(
-            self.url,
-            {"uid": uid, "token": token, "new_password": "123"},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, 400)
-        self.assertFalse(resp.data["success"])
+# La confirmation du reset (token + nouveau mot de passe) est désormais assurée
+# par la page HTML : voir accounts/tests/test_web_pages.PasswordResetPageTests.
