@@ -26,7 +26,7 @@ class UserProfileView(BaseAPIView):
         """get User profile data"""
         try:
             # use service layer to get user profile data
-            user_data = ProfileService.get_profile(request.user)
+            user_data = ProfileService.get_profile(request.user, request=request)
             return Response(standardized_response(success=True, data=user_data))
         except Exception as e:
             logger.error(f"Profile fetch error: {str(e)}")
@@ -51,7 +51,7 @@ class UserProfileView(BaseAPIView):
         """Update full user profile"""
         try:
             success, response_data, status_code = ProfileService.update_profile(
-                user=request.user, data=request.data, files=request.FILES
+                user=request.user, data=request.data, files=request.FILES, request=request
             )
             if success:
                 self._log_profile_update(request)
@@ -68,7 +68,7 @@ class UserProfileView(BaseAPIView):
         """Partial user profile update"""
         try:
             success, response_data, status_code = ProfileService.update_profile(
-                user=request.user, data=request.data, files=request.FILES
+                user=request.user, data=request.data, files=request.FILES, request=request
             )
             if success:
                 self._log_profile_update(request)

@@ -63,6 +63,6 @@ urlpatterns = [
         name="check_verification",
     ),
     # Réinitialisation : demande d'envoi du lien ici ; la confirmation (nouveau mot
-    # de passe) est gérée par la page HTML `web_password_reset` (gestion_p/urls.py).
+    # de passe) est gérée par la page HTML `web_password_reset` (ci-dessus).
     path("auth/password-reset/", PasswordResetView.as_view(), name="password_reset"),
 ]
