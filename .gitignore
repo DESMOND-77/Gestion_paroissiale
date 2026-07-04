@@ -18,4 +18,5 @@ staticfiles/
 # CLAUDE.md
 logs/*
 Audit_Technique_Gestion_paroissiale.pdf
+media/profile_pics/*
 .gitignore

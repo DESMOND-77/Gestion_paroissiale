@@ -122,6 +122,7 @@ class ProfileService:
                     logger.warning(f"Could not remove old profile picture: {str(e)}")
 
             # set new profile picture
+            file.name = f"profile_{user.id}{os.path.splitext(file.name)[1]}"
             user.profile_picture = file
             user.save(update_fields=["profile_picture"])
             logger.info(f"profile picture updated for user: {user.id}")
@@ -184,6 +185,11 @@ class ProfileService:
 
         # Check file extensions
         valid_extensions = [".jpeg", ".jpg", ".png", ".gif", ".webp"]
-        _, file_ext = os.path.splitext(file.name.lower())  # name est une propriété, pas une méthode
+        _, file_ext = os.path.splitext(
+            file.name.lower()
+        )  # name est une propriété, pas une méthode
         if file_ext not in valid_extensions:
             return False
+
+        # Tous les critères sont respectés
+        return True
