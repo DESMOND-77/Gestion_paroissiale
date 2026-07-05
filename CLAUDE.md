@@ -113,13 +113,26 @@ All endpoints return:
 }
 ```
 
-Use `standardized_response()` from `accounts/core/response.py` for consistency.
+Use `standardized_response()` from `core/response.py` for consistency. It **omits** any of `data`/`error`/`message` that is `None`, so real payloads are often shorter than the shape above. `core/exception_handler.py` re-wraps every DRF error into this format.
 
 ---
 
 ## Email Configuration
 
-**CRITICAL in Production**: Email is sent via **Resend** (configured in `django-anymail`). SMTP outbound is **blocked on Render**. Never revert to SMTP backend in production settings. See `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` in `.env`.
+All sending goes through `accounts/verification/emails.py` (`EmailService`), never `send_mail` directly:
+
+- **Primary + fallback**: `_send_with_fallback()` tries the default backend (Resend via `django-anymail`), and on failure retries over an explicit SMTP connection (`EMAIL_FALLBACK_BACKEND` + `EMAIL_HOST*`). This is why a Resend 403 (unverified domain) can still deliver via Gmail SMTP. Set `EMAIL_FALLBACK_BACKEND=""` to disable.
+- **Production caveat**: SMTP outbound is **blocked on Render**, so in prod the primary Resend path is what actually delivers. Don't make SMTP the *primary* `EMAIL_BACKEND` in prod.
+- **Inline logo**: the header logo is embedded as an inline CID attachment (`EMAIL_LOGO_PATH`, referenced as `src="cid:logo"`) via `email.message.MIMEPart` — Django 6 removed `mixed_subtype`, so don't reintroduce it.
+- **Templates**: `templates/emails/` (`base_email.html` + `verify_email.html` / `password_reset.html`), French, table-based, inline styles. Context key is `app_name` (lowercase) — not `App_name`.
+
+### Email link → HTML pages (not the API)
+
+Verification and password-reset **links in emails point to server-rendered HTML pages**, not API endpoints:
+
+- Views: `accounts/verification/web_views.py` (`EmailVerifyPageView` verifies on GET and shows a result; `PasswordResetPageView` shows a two-field form on GET and confirms on POST). Templates in `templates/auth/` (extend `base_auth.html`).
+- Links are built with `settings.PUBLIC_BASE_URL` + `reverse("web_verify_email"|"web_password_reset")`, so they always match the routes wherever mounted.
+- The old token-consuming API views (`VerifyEmailView`, `ConfirmPasswordResetView`) were **removed** as duplicates. Still-active API endpoints: `PasswordResetView` (request the email), `SendVerificationEmailView` (resend), `CheckVerificationStatusView` (status).
 
 ---
 
@@ -160,7 +173,7 @@ class UserSerializer(serializers.ModelSerializer):
 ### Testing Patterns
 
 - The `accounts` auth suite lives in the `accounts/tests/` package. `accounts/tests/base.py` provides `BaseAuthTest`, which makes tests hermetic: `LocMemCache`, in-memory email backend, Redis client neutralized (`TokenManager.get_redis_client` mocked to `None`), and helper factories (`create_user`, `auth`, `make_uid_token`).
-- **Known caveat**: creating the MySQL test DB currently fails with `OperationalError 1824: Failed to open the referenced table 'auth_group'` because several apps (`groupes/membres/evenements/finances/librairie`) ship without migration files and are created via syncdb, which MySQL rejects for cross-app FKs. Workaround: run tests on SQLite with a throwaway settings module that overrides `DATABASES` to `sqlite3 :memory:` (`python manage.py test accounts --settings=<sqlite_settings>`). Root fix: regenerate the missing migrations with `makemigrations`.
+- **Known caveat**: **all local apps** (`accounts`, `core`, `groupes`, `membres`, `evenements`, `finances`, `librairie`) currently ship with **no migration files** — their `*/migrations/` dirs hold only a stale `__pycache__`. Tables are created via syncdb, so building the MySQL test DB fails with `OperationalError 1824: Failed to open the referenced table 'auth_group'` (MySQL rejects the cross-app FKs). Workaround: run tests on SQLite with a throwaway settings module that overrides `DATABASES` to `sqlite3 :memory:` (`python manage.py test accounts --settings=<sqlite_settings>`). Root fix: run `makemigrations` for every local app and commit the results.
 - Test auth flows thoroughly (login, logout, token refresh, blacklisting).
 
 ---
@@ -195,6 +208,7 @@ See `LOGGING.md` for detailed configuration.
   - `README.md` — full project overview
   - `LOGGING.md` — logging configuration
   - `ANALYSE_COHERENCE_API.md` — API coherence analysis
+  - `fixs.md` — running log of every fix (newest first, in French); add an entry when you fix a bug
 
 ---
 
