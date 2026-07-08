@@ -22,9 +22,9 @@ ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",") or os.environ.get(
 ).split(",")
 
 # Environnement Redis
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") or os.environ.get(
-    "REDIS_URL", "redis://localhost:6379/0"
-)
+REDIS_URL = env("REDIS_URL", default=None) or os.environ.get("REDIS_URL")
+if REDIS_URL is None and DEBUG:
+    REDIS_URL = "redis://localhost:6379/0"
 
 
 # Application definition
@@ -310,8 +310,7 @@ SESSION_CACHE_ALIAS = "default"
 # If WebSockets needed in future: install channels + channels-redis
 # and configure ASGI_APPLICATION + CHANNEL_LAYERS
 # Cache settings - UNE seule définition !
-try:
-    # Essayer Redis d'abord
+if REDIS_URL:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
@@ -321,6 +320,7 @@ try:
                 "SOCKET_CONNECT_TIMEOUT": 5,
                 "SOCKET_TIMEOUT": 5,
                 "RETRY_ON_TIMEOUT": True,
+                "IGNORE_EXCEPTIONS": True,
                 "MAX_CONNECTIONS": 1000,
                 "PICKLE_VERSION": 4,
             },
@@ -328,15 +328,17 @@ try:
             "TIMEOUT": 86400 * 14,  # 14 jours pour les refresh tokens
         }
     }
-except (redis.ConnectionError, ImportError) as e:
-    # Fallback sur LocMemCache si Redis échoue
-    # Note: Redis connection errors are expected during development
+else:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
             "LOCATION": "unique-snowflake",
         }
     }
+    if not DEBUG:
+        # En production sans Redis configuré, utiliser la session DB pour éviter
+        # des erreurs critiques de cache partagés sur Render.
+        SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 
 # Configuration Simple JWT optimisée pour Redis
