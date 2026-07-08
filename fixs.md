@@ -6,6 +6,18 @@ récentes en haut.
 
 ---
 
+## 2026-07-08 — Redis non configuré en production sur Render provoquant une erreur 500
+
+**Problème** : déploiement Render déclenchait `redis.exceptions.ConnectionError: Error 111 connecting to localhost:6379. Connection refused.` lors de l'accès à `/docs/`.
+
+**Cause** : `gestion_p/settings.py` utilisait `REDIS_URL` par défaut `redis://localhost:6379/0` même en production, ce qui forçait `django_redis` à tenter une connexion à Redis local inexistant.
+
+**Solution** : ne définir le cache Redis que si `REDIS_URL` est fourni. Si aucun Redis n'est configuré, basculer sur `LocMemCache` et, en production, stocker les sessions en base (`SESSION_ENGINE = 'django.contrib.sessions.backends.db'`).
+
+**Fichiers** : `gestion_p/settings.py`.
+
+---
+
 ## 2026-07-04 — `KeyError: 'request'` sur le profil (photo de profil)
 
 **Problème** : `GET /api/user/profile/` plantait (500) dès qu'un utilisateur avait

@@ -25,7 +25,24 @@ class TransactionListView(BaseAPIView):
 
     def get(self, request):
         logger.debug(f"Listing transactions for user {request.user}")
+        type_transaction = request.query_params.get("type")
+        categorie = request.query_params.get("categorie")
+        date_debut = request.query_params.get("date_debut")
+        date_fin = request.query_params.get("date_fin")
+        membre = request.query_params.get("membre")
+
         qs = Transaction.objects.select_related("membre", "enregistre_par").all()
+        if type_transaction:
+            qs = qs.filter(type=type_transaction)
+        if categorie:
+            qs = qs.filter(categorie=categorie)
+        if date_debut:
+            qs = qs.filter(date__gte=date_debut)
+        if date_fin:
+            qs = qs.filter(date__lte=date_fin)
+        if membre:
+            qs = qs.filter(membre_id=membre)
+
         logger.info(f"Retrieved {qs.count()} transactions")
         return Response(standardized_response(data=TransactionSerializer(qs, many=True).data))
 
@@ -105,8 +122,10 @@ class RapportFinancierView(BaseAPIView):
                 "periode": {"debut": date_debut, "fin": date_fin},
                 "total_recettes": rapport["recettes"],
                 "total_depenses": rapport["depenses"],
-                "solde": rapport["solde"],
-                "par_categorie": par_categorie,
+                "balance": rapport["solde"],
+                "par_categorie": {
+                    item["categorie"]: float(item["total"]) for item in par_categorie
+                },
                 "transactions": TransactionSerializer(qs, many=True).data,
             }
             return Response(standardized_response(data=data))

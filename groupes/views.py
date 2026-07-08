@@ -27,7 +27,9 @@ class GroupeListView(BaseAPIView):
         return [IsAuthenticated()]
 
     def get(self, request):
-        nom = request.query_params.get("nom", "")
+        # L'app envoie "search" (boîte de recherche unique) ; "nom" reste
+        # accepté pour compatibilité.
+        nom = request.query_params.get("search") or request.query_params.get("nom", "")
         qs = GroupeService.search_groupes(nom=nom).select_related("responsable")
         logger.info(f"Retrieved {qs.count()} groupes for user {request.user}")
         return Response(standardized_response(data=GroupeSerializer(qs, many=True).data))
