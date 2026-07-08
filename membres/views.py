@@ -31,9 +31,13 @@ class MembreListView(BaseAPIView):
     def get(self, request):
         nom = request.query_params.get("nom", "")
         prenom = request.query_params.get("prenom", "")
+        search = request.query_params.get("search")
         groupe = request.query_params.get("groupe")
+        sexe = request.query_params.get("sexe")
 
-        qs = MembreService.search_membres(nom=nom, prenom=prenom, groupe=groupe)
+        qs = MembreService.search_membres(
+            nom=nom, prenom=prenom, groupe=groupe, sexe=sexe, search=search
+        )
         qs = qs.select_related("groupe", "user")
         logger.info(f"Retrieved {qs.count()} membres for user {request.user}")
         return Response(standardized_response(data=MembreSerializer(qs, many=True).data))

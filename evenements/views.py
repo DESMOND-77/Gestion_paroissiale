@@ -30,6 +30,7 @@ class EvenementListView(BaseAPIView):
     def get(self, request):
         upcoming = request.query_params.get("upcoming", "").lower() == "true"
         type_event = request.query_params.get("type")
+        search = request.query_params.get("search")
 
         if upcoming:
             qs = EvenementService.get_upcoming_evenements(type_event=type_event)
@@ -38,6 +39,9 @@ class EvenementListView(BaseAPIView):
             qs = Evenement.objects.select_related("createur").prefetch_related("participations").all()
             if type_event:
                 qs = qs.filter(type=type_event)
+
+        if search:
+            qs = qs.filter(titre__icontains=search)
 
         logger.info(f"Retrieved {qs.count()} evenements for user {request.user}")
         return Response(standardized_response(data=EvenementSerializer(qs, many=True).data))

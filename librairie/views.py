@@ -2,6 +2,7 @@ import logging
 import datetime
 from decimal import Decimal
 
+from django.db import models
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -32,7 +33,18 @@ class ArticleListView(BaseAPIView):
 
     def get(self, request):
         logger.debug(f"Listing articles for user {request.user}")
+        search = request.query_params.get("search")
+        categorie = request.query_params.get("categorie")
+        en_alerte = request.query_params.get("en_alerte", "").lower() == "true"
+
         qs = Article.objects.all()
+        if search:
+            qs = qs.filter(nom__icontains=search)
+        if categorie:
+            qs = qs.filter(categorie=categorie)
+        if en_alerte:
+            qs = qs.filter(stock_disponible__lte=models.F("seuil_alerte"))
+
         logger.info(f"Retrieved {qs.count()} articles")
         return Response(standardized_response(data=ArticleSerializer(qs, many=True).data))
 

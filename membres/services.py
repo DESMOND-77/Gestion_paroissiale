@@ -1,5 +1,6 @@
 import logging
 from django.db import transaction
+from django.db.models import Q
 
 from .models import Membre, Sacrement
 
@@ -40,15 +41,26 @@ class MembreService:
             raise
 
     @staticmethod
-    def search_membres(nom="", prenom="", groupe=None):
-        """Search members by name and/or group"""
+    def search_membres(nom="", prenom="", groupe=None, sexe=None, search=None):
+        """Search members by name and/or group and/or sexe.
+
+        `search` matches nom OR prenom (used by the single search box in the
+        app) and takes precedence over the separate `nom`/`prenom` filters.
+        """
         queryset = Membre.objects.all()
-        if nom:
-            queryset = queryset.filter(nom__icontains=nom)
-        if prenom:
-            queryset = queryset.filter(prenom__icontains=prenom)
+        if search:
+            queryset = queryset.filter(
+                Q(nom__icontains=search) | Q(prenom__icontains=search)
+            )
+        else:
+            if nom:
+                queryset = queryset.filter(nom__icontains=nom)
+            if prenom:
+                queryset = queryset.filter(prenom__icontains=prenom)
         if groupe:
             queryset = queryset.filter(groupe=groupe)
+        if sexe:
+            queryset = queryset.filter(sexe=sexe)
         logger.debug(f"Search membres: {queryset.count()} results")
         return queryset
 
