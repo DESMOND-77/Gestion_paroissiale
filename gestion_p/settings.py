@@ -273,7 +273,7 @@ if not DEBUG:
     # CORS - Définir les origines autorisées en production
     CORS_ALLOWED_ORIGINS = env.list(
         "CORS_ALLOWED_ORIGINS",
-        default=["https://example.com"],  # À configurer via variable d'environnement
+        default=["https://gestiparr.onrender.com"],  # À configurer via variable d'environnement
     )
 
     # SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
@@ -288,7 +288,7 @@ else:
         "http://127.0.0.1:8000",
     ]
 
-    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000","https://gestiparr.onrender.com","*"]
 
 
 # REST Framework + SimpleJWT
