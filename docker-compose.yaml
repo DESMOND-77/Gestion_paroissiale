@@ -1,15 +1,26 @@
-version: '3.8'
+version: "3.9"
 
 services:
+  db:
+    image: mariadb:11
+    restart: always
+    container_name: parish_db
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gestion_paroissiale_db
+    ports:
+      - "3307:3306"
   redis:
     image: redis:7-alpine
     container_name: parish_redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - redis_data:/data
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -19,25 +30,29 @@ services:
 
   web:
     build: .
+    env_file:
+      - .env
     container_name: parish_api
     ports:
-      - "8000:8000"
+      - "8100:8000"
     depends_on:
+      db:
+        condition: service_started
       redis:
         condition: service_healthy
     environment:
       - DEBUG=False
       - SECRET_KEY=dev-secret-key-change-in-production
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,127.0.0.1:8000
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,127.0.0.1:8000,*
       - REDIS_URL=redis://redis:6379/0
       - DB_NAME=gestion_paroissiale_db
       - DB_USER=root
-      - DB_PASSWORD=36090
-      - DB_HOST=host.docker.internal
+      - DB_PASSWORD=root
+      - DB_HOST=db
       - DB_PORT=3306
       - EMAIL_BACKEND=anymail.backends.resend.EmailBackend
       - RESEND_API_KEY=re_test_key
-      - DEFAULT_FROM_EMAIL=noreply@example.com
+      - DEFAULT_FROM_EMAIL=nob692888@gmail.com
       - FRONTEND_URL=http://localhost:3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
@@ -49,3 +64,4 @@ services:
 
 volumes:
   redis_data:
+  mariadb_data:
