@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: mariadb:11
@@ -42,18 +40,12 @@ services:
         condition: service_healthy
     environment:
       - DEBUG=False
-      - SECRET_KEY=dev-secret-key-change-in-production
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,127.0.0.1:8000,*
       - REDIS_URL=redis://redis:6379/0
       - DB_NAME=gestion_paroissiale_db
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_HOST=db
       - DB_PORT=3306
-      - EMAIL_BACKEND=anymail.backends.resend.EmailBackend
-      - RESEND_API_KEY=re_test_key
-      - DEFAULT_FROM_EMAIL=nob692888@gmail.com
-      - FRONTEND_URL=http://localhost:3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
       interval: 30s
