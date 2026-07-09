@@ -266,9 +266,24 @@ SESSION_COOKIE_SECURE = True
 # et la génération de liens HTTPS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CORS_ALLOW_ALL_ORIGINS = True  # Autoriser toutes les origines pour le développement et les tests
+
+# --- Headers de sécurité HTTP (P3.8) --------------------------------------
+# Toujours actifs (aucun impact en développement) : servis par
+# SecurityMiddleware / XFrameOptionsMiddleware déjà présents dans MIDDLEWARE.
+SECURE_CONTENT_TYPE_NOSNIFF = True  # X-Content-Type-Options: nosniff
+SECURE_BROWSER_XSS_FILTER = True  # X-XSS-Protection (legacy, sans effet négatif)
+X_FRAME_OPTIONS = "DENY"  # Anti-clickjacking
+
 # CSRF — config complète selon l'environnement
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
+    # HTTPS strict + redirection : uniquement en production (derrière le proxy
+    # TLS de Render, cf. SECURE_PROXY_SSL_HEADER ci-dessus). Activer en dev
+    # casserait http://localhost.
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 an
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
     # CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
     # CORS - Définir les origines autorisées en production
     # CORS_ALLOWED_ORIGINS = env.list(

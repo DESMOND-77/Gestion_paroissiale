@@ -6,6 +6,33 @@ récentes en haut.
 
 ---
 
+## 2026-07-10 — Correctifs audit P3.8 (headers sécurité) & P3.10 (gouvernance)
+
+**Problème** : deux points de l'audit restaient ouverts :
+- P3.8 : aucun header de sécurité HTTP configuré.
+- P3.10 : absence de `CHANGELOG.md`, `CONTRIBUTING.md` et `LICENSE`.
+
+**Cause** : configuration `SECURE_*` jamais ajoutée à `settings.py` ; fichiers de
+gouvernance projet jamais créés.
+
+**Solution** :
+- P3.8 — dans `gestion_p/settings.py` : `SECURE_CONTENT_TYPE_NOSNIFF`,
+  `SECURE_BROWSER_XSS_FILTER`, `X_FRAME_OPTIONS = "DENY"` toujours actifs ;
+  `SECURE_SSL_REDIRECT` + `SECURE_HSTS_SECONDS`/`INCLUDE_SUBDOMAINS`/`PRELOAD`
+  uniquement en production (`if not DEBUG`) pour ne pas casser `http://localhost`.
+  `SecurityMiddleware` et `XFrameOptionsMiddleware` étaient déjà présents.
+- P3.10 — création de `LICENSE` (MIT), `CHANGELOG.md` (format Keep a Changelog,
+  synthèse de l'audit en v1.0.0) et `CONTRIBUTING.md` (conventions du projet).
+
+**Fichiers** : `gestion_p/settings.py`, `LICENSE`, `CHANGELOG.md`,
+`CONTRIBUTING.md`.
+
+**Tests** : `python manage.py check` OK ; `check --deploy` ne signale plus aucun
+warning de header de sécurité (reste uniquement `security.W009` sur `SECRET_KEY`,
+géré par variable d'environnement en production).
+
+---
+
 ## 2026-07-09 — Ajout du versionning de l'API (`/api/v1/`)
 
 **Problème** : l'API n'était pas versionnée (`/api/...`), ce qui empêche toute
