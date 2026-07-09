@@ -319,7 +319,7 @@ XHTML2PDF = {
 }
 
 # Cache pour les sessions (optionnel mais recommandé)
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_CACHE_ALIAS = "default"
 
 # Note: ASGI/Channels not used - API is synchronous REST only
@@ -344,6 +344,9 @@ if REDIS_URL:
             "TIMEOUT": 86400 * 14,  # 14 jours pour les refresh tokens
         }
     }
+    # Si Redis est disponible, on peut utiliser le cache pour les sessions
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 else:
     CACHES = {
         "default": {

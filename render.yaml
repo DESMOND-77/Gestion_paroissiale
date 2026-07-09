@@ -7,9 +7,6 @@
 
 databases:
   - name: gestion-paroissiale-db
-    plan: free # passer à un plan payant si "free" n'est plus disponible sur le compte
-    region: oregon
-    postgresMajorVersion: "17"
 
 services:
   - type: web
@@ -28,7 +25,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: gestion-paroissiale-api.onrender.com
+        value: gestion-paroissiale-api.onrender.com,.onrender.com
       - key: PUBLIC_BASE_URL
         value: https://gestion-paroissiale-api.onrender.com
       - key: FRONTEND_URL
@@ -40,12 +37,7 @@ services:
       - key: WEB_CONCURRENCY
         value: "4"
 
-      # --- Base de données (Postgres géré par Render, voir "databases" ci-dessus) ---
-      - key: DATABASE_URL
-        fromDatabase:
-          name: gestion-paroissiale-db
-          property: connectionString
-
+    
       # --- Redis (tokens JWT, cache, verrouillage de compte) ---
       # Render n'a pas d'offre Redis/Key Value gratuite : pointer vers une instance
       # externe (ex. Upstash) ou laisser vide — l'app bascule alors sur LocMemCache +
