@@ -303,6 +303,13 @@ REST_FRAMEWORK = {
         "anon": "100/minute",  # Limite de 100 requêtes par IP anonyme par minute
     },
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # Versionning de l'API : le numéro de version est porté par l'URL
+    # (/api/v1/...). `request.version` vaut alors "v1" ; ajouter les futures
+    # versions dans ALLOWED_VERSIONS.
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ["v1"],
+    "VERSION_PARAM": "version",
     "DEFAULT_PARSER_CLASSES": (
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
@@ -413,7 +420,6 @@ APP_NAME = "Gestion Paroissiale"
 # (`src="cid:logo"`). Une image inline s'affiche toujours, contrairement à une
 # URL distante que beaucoup de clients mail bloquent par défaut.
 EMAIL_LOGO_PATH = os.path.join(BASE_DIR, "static", "logo.png")
-# print(f"EMAIL_LOGO_PATH: {EMAIL_LOGO_PATH} (exists: {os.path.exists(EMAIL_LOGO_PATH)})")
 # Email settings
 # Resend API key and email backend are configured in the .env file
 FROM_EMAIL = env("FROM_EMAIL") or os.environ.get("FROM_EMAIL")

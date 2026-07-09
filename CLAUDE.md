@@ -142,7 +142,7 @@ Verification and password-reset **links in emails point to server-rendered HTML 
 
 - **Models**: French plurals in field names where appropriate (e.g., `prenom`, `nom` instead of `first_name`, `last_name` in new code).
 - **Serializers**: Mirror model field names for consistency.
-- **API Endpoints**: `/api/<module>/` (e.g., `/api/membres/`, `/api/finances/transactions/`).
+- **API Endpoints**: versioned under `/api/v1/<module>/` (e.g., `/api/v1/membres/`, `/api/v1/finances/transactions/`). Exception: `/api/health/` stays **unversioned** (infra endpoint referenced by the Docker `HEALTHCHECK`). Versioning is URL-path based (DRF `URLPathVersioning`, `DEFAULT_VERSION="v1"`), so `request.version` is available in views. Internal links use `reverse()` by name, so they follow the prefix automatically.
 
 ### Code Patterns
 

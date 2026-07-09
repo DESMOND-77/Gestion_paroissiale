@@ -304,11 +304,13 @@ Préfixe global : `/api/`
 
 | Module | Endpoint de base | Endpoints spécifiques |
 | --- | --- | --- |
-| Groupes | `/api/groupes/` | CRUD via ViewSet |
-| Membres | `/api/membres/` | CRUD via ViewSet |
-| Événements | `/api/evenements/` | CRUD via ViewSet |
-| Finances | `/api/finances/transactions/` | `/api/finances/rapport/` (rapport financier), `/api/finances/membre/<id>/dons/` (dons d'un membre) |
-| Librairie | `/api/librairie/articles/`, `/api/librairie/ventes/` | `/api/librairie/alertes/` (alertes de stock) |
+| Groupes | `/api/v1/groupes/` | CRUD via ViewSet |
+| Membres | `/api/v1/membres/` | CRUD via ViewSet |
+| Événements | `/api/v1/evenements/` | CRUD via ViewSet |
+| Finances | `/api/v1/finances/transactions/` | `/api/v1/finances/rapport/` (rapport financier), `/api/v1/finances/membre/<id>/dons/` (dons d'un membre) |
+| Librairie | `/api/v1/librairie/articles/`, `/api/v1/librairie/ventes/` | `/api/v1/librairie/alertes/` (alertes de stock) |
+
+> **Versionning** : toutes les routes métier sont préfixées par `/api/v1/`. Le health check `/api/health/` reste non versionné (endpoint d'infrastructure).
 
 ---
 
