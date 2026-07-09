@@ -1,0 +1,36 @@
+.git
+.gitignore
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Secrets / local env — jamais dans l'image
+.env
+.env.*
+!.env.example
+
+# Données locales / générées
+logs/
+media/
+staticfiles/
+*.sqlite3
+*.db
+
+# Docs et rapports internes (inutiles au runtime)
+*.md
+*.pdf
+!README.md
+commands.txt
+fixs.txt
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Docker lui-même
+docker-compose.yaml
+Dockerfile
+.dockerignore
