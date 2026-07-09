@@ -8,7 +8,7 @@ Comprehensive logging has been implemented across all Django modules for debuggi
 
 All logs are stored in the `logs/` directory at the project root:
 
-- **`gestion_paroisse.log`** — Main application log for all modules except specialized ones
+- **`gestionparoisse.log`** — Main application log for all modules except specialized ones
 - **`auth.log`** — Authentication, JWT tokens, user sessions, security-related events
 - **`finance.log`** — Financial transactions, reports, money movements
 
@@ -28,7 +28,7 @@ Configuration is in `gestion_p/settings.py` under the `LOGGING` dictionary.
 | Handler | Type | Output | Level |
 |---------|------|--------|-------|
 | `console` | StreamHandler | Terminal/stdout | DEBUG |
-| `file` | RotatingFileHandler | `gestion_paroisse.log` | DEBUG |
+| `file` | RotatingFileHandler | `gestionparoisse.log` | DEBUG |
 | `auth_file` | RotatingFileHandler | `auth.log` | DEBUG |
 | `finance_file` | RotatingFileHandler | `finance.log` | DEBUG |
 
@@ -127,7 +127,7 @@ All logs will appear in the console with color coding.
 ### View log files
 ```bash
 # Main log
-tail -f logs/gestion_paroisse.log
+tail -f logs/gestionparoisse.log
 
 # Auth-specific
 tail -f logs/auth.log
@@ -198,13 +198,13 @@ grep "user@email.com" logs/*.log
 
 ### Find slow operations
 ```bash
-grep -E "Retrieving|Retrieved" logs/gestion_paroisse.log | tail -20
+grep -E "Retrieving|Retrieved" logs/gestionparoisse.log | tail -20
 ```
 
 ### Monitor in real-time during testing
 In one terminal:
 ```bash
-tail -f logs/gestion_paroisse.log | grep -i "error\|warning"
+tail -f logs/gestionparoisse.log | grep -i "error\|warning"
 ```
 
 In another:
@@ -215,8 +215,8 @@ python manage.py runserver
 ## Rotating Logs
 
 Log files rotate automatically when they exceed 5MB. Old logs are kept as:
-- `gestion_paroisse.log.1`
-- `gestion_paroisse.log.2`
+- `gestionparoisse.log.1`
+- `gestionparoisse.log.2`
 - etc. (up to 5 files)
 
 To manually clear logs:
@@ -225,7 +225,7 @@ To manually clear logs:
 rm logs/*.log*
 
 # Or just the main log
-rm logs/gestion_paroisse.log
+rm logs/gestionparoisse.log
 ```
 
 ## Integration with Monitoring Tools
@@ -272,7 +272,7 @@ logger.info("Operation completed successfully")
 - Filter specific loggers to higher levels
 
 ### Logs not rotating?
-- Check file size: `ls -lh logs/gestion_paroisse.log`
+- Check file size: `ls -lh logs/gestionparoisse.log`
 - Verify maxBytes setting in RotatingFileHandler (should be > 0)
 
 ---
