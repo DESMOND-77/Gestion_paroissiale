@@ -6,6 +6,69 @@ récentes en haut.
 
 ---
 
+## 2026-07-09 — Échec du build Docker : paquet `default-libmysqlclient21` introuvable
+
+**Problème** : `docker build` échouait à l'étape runtime (`stage-1 3/8`) avec
+`E: Unable to locate package default-libmysqlclient21`.
+
+**Cause** : l'image de base `python:3.14-slim` s'appuie désormais sur Debian
+"trixie", où le paquet runtime du client MySQL a été renommé : la
+bibliothèque partagée `libmysqlclient21` (nom hérité de Debian bookworm)
+n'existe plus — le client MySQL par défaut sur trixie est fourni par
+MariaDB, sous le paquet `libmariadb3`.
+
+**Solution** : dans le `Dockerfile`, étape runtime, remplacement de
+`default-libmysqlclient21` par `libmariadb3` (compatible avec les binaires
+liés via `default-libmysqlclient-dev` utilisé au stage de build). Build
+Docker vérifié en local avec succès après correctif.
+
+**Fichiers** : `Dockerfile`.
+
+---
+
+## 2026-07-08 — Finalisation de la configuration de déploiement Docker/Render
+
+**Problème** : plusieurs bugs empêchaient un déploiement Render fiable via Docker :
+1. `DEBUG` restait "vrai" en production même avec `DEBUG=False` défini.
+2. `DATABASE_URL` (Postgres Render) n'était jamais appliqué à `DATABASES`.
+3. Le `Dockerfile` copiait tout le contexte de build (pas de `.dockerignore`) et
+   exécutait `collectstatic` **au build**, alors que Render n'injecte les
+   variables d'environnement du Dashboard qu'**au runtime** — le build échouait
+   ou embarquait des valeurs bidon.
+4. `gunicorn` écoutait en dur sur le port 8000 au lieu du `$PORT` fourni par Render.
+
+**Cause** :
+1. `DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")` — `env("DEBUG")`
+   (casté en bool via le schéma `environ.Env`) valait `False`, donc l'expression
+   retombait sur `os.environ.get(...)` qui renvoie la **chaîne** `"False"`,
+   truthy en Python.
+2. `dj_database_url` était importé mais jamais utilisé ; `DATABASES` restait
+   toujours construit depuis les variables `DB_*` (MySQL).
+3. Absence de `.dockerignore` + `RUN collectstatic` placé avant l'entrée en
+   production dans le Dockerfile.
+4. `CMD` gunicorn avec `--bind 0.0.0.0:8000` figé.
+
+**Solution** :
+- `DEBUG = env.bool("DEBUG", default=False)` (cast correct).
+- `DATABASES` construit via `dj_database_url.parse(DATABASE_URL, ssl_require=not DEBUG)`
+  quand `DATABASE_URL` est défini, sinon fallback MySQL `DB_*` inchangé.
+- `ALLOWED_HOSTS` simplifié avec `env.list(..., default=[...])`.
+- Ajout de `.dockerignore` (exclut `.env`, `.git`, `media/`, `logs/`, etc.).
+- Ajout de `entrypoint.sh` : exécute `migrate` + `collectstatic` au démarrage du
+  conteneur (variables d'environnement runtime disponibles), puis lance
+  `gunicorn --bind 0.0.0.0:${PORT:-8000}`. Le `Dockerfile` utilise désormais cet
+  entrypoint et son `HEALTHCHECK` respecte aussi `$PORT`.
+- Ajout de `render.yaml` (Blueprint Docker + base Postgres gérée, health check
+  `/api/health/`, variables d'environnement documentées) et de `.env.example`.
+- Ajout de `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` :
+  sans ce réglage, `request.is_secure()` reste toujours `False` derrière le
+  proxy TLS de Render (cookies secure, CSRF, liens HTTPS mal détectés).
+
+**Fichiers** : `gestion_p/settings.py`, `Dockerfile`, `entrypoint.sh` (nouveau),
+`.dockerignore` (nouveau), `render.yaml` (nouveau), `.env.example` (nouveau).
+
+---
+
 ## 2026-07-08 — Redis non configuré en production sur Render provoquant une erreur 500
 
 **Problème** : déploiement Render déclenchait `redis.exceptions.ConnectionError: Error 111 connecting to localhost:6379. Connection refused.` lors de l'accès à `/docs/`.
