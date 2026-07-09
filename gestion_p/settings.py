@@ -265,30 +265,30 @@ SESSION_COOKIE_SECURE = True
 # toujours False derrière le proxy, ce qui casse les cookies secure, le CSRF
 # et la génération de liens HTTPS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
+CORS_ALLOW_ALL_ORIGINS = True  # Autoriser toutes les origines pour le développement et les tests
 # CSRF — config complète selon l'environnement
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
-    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+    # CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
     # CORS - Définir les origines autorisées en production
-    CORS_ALLOWED_ORIGINS = env.list(
-        "CORS_ALLOWED_ORIGINS",
-        default=["https://gestiparr.onrender.com"],  # À configurer via variable d'environnement
-    )
+    # CORS_ALLOWED_ORIGINS = env.list(
+    #     "CORS_ALLOWED_ORIGINS",
+    #     default=["https://gestiparr.onrender.com"],  # À configurer via variable d'environnement
+    # )
 
     # SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
 else:
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     # CORS - Autoriser localhost en développement
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ]
+    # CORS_ALLOWED_ORIGINS = [
+    #     "http://localhost:3000",
+    #     "http://127.0.0.1:3000",
+    #     "http://localhost:8000",
+    #     "http://127.0.0.1:8000",
+    # ]
 
-    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000","https://gestiparr.onrender.com","*"]
+    # CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000","https://gestiparr.onrender.com","https://*.onrender.com","https://*"]
 
 
 # REST Framework + SimpleJWT
@@ -452,7 +452,7 @@ FRONTEND_URL = env(
 # par Django. Sans slash final.
 PUBLIC_BASE_URL = (
     env("PUBLIC_BASE_URL", default=None)
-    or os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
+    or os.environ.get("PUBLIC_BASE_URL", "http://gestiparr.onrender.com/api")
 ).rstrip("/")
 
 
