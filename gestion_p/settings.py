@@ -16,10 +16,11 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SECRET_KEY = env("SECRET_KEY") or os.environ.get("SECRET_KEY")
-DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",") or os.environ.get(
-    "DJANGO_ALLOWED_HOSTS"
-).split(",")
+# env.bool() cast est indispensable ici : `env("DEBUG") or os.environ.get(...)` renvoyait
+# la chaîne "False" (tronquée en bool -> True) dès que DEBUG=False était défini, ce qui
+# activait silencieusement le mode debug de Django en production.
+DEBUG = env.bool("DEBUG", default=False)
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 # Environnement Redis
 REDIS_URL = env("REDIS_URL", default=None) or os.environ.get("REDIS_URL")
@@ -83,21 +84,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "gestion_p.wsgi.application"
 
-# DB config (MySQL)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": env("DB_NAME") or os.environ.get("DB_NAME"),
-        "USER": env("DB_USER") or os.environ.get("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD") or os.environ.get("DB_PASSWORD"),
-        "HOST": env("DB_HOST") or os.environ.get("DB_HOST"),
-        "PORT": env("DB_PORT") or os.environ.get("DB_PORT"),
-        "OPTIONS": {
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+# DB config : DATABASE_URL (Postgres Render, déploiement) prioritaire sur le MySQL local
+DATABASE_URL = env("DATABASE_URL", default=None) or os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
     }
-}
-# Si DATABASE_URL est défini, il écrasera la configuration MySQL locale (utile pour le déploiement)
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": env("DB_NAME") or os.environ.get("DB_NAME"),
+            "USER": env("DB_USER") or os.environ.get("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD") or os.environ.get("DB_PASSWORD"),
+            "HOST": env("DB_HOST") or os.environ.get("DB_HOST"),
+            "PORT": env("DB_PORT") or os.environ.get("DB_PORT"),
+            "OPTIONS": {
+                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
 
 
 AUTH_USER_MODEL = "accounts.User"
@@ -249,6 +259,12 @@ LOGGING = {
 os.makedirs(os.path.join(BASE_DIR, "logs"), exist_ok=True)
 
 SESSION_COOKIE_SECURE = True
+
+# Render (comme la plupart des PaaS) termine le TLS au niveau du proxy et
+# transmet en HTTP en interne : sans ce header, request.is_secure() renvoie
+# toujours False derrière le proxy, ce qui casse les cookies secure, le CSRF
+# et la génération de liens HTTPS.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # CSRF — config complète selon l'environnement
 if not DEBUG:

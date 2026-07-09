@@ -1,5 +1,10 @@
 # Build stage
-FROM python:3.14-slim as builder
+FROM python:3.14-slim AS builder
+
+# Prevent Python from writing .pyc files to disk.
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevent Python from buffering stdout/stderr so logs appear immediately.
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
@@ -22,7 +27,7 @@ WORKDIR /app
 
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    default-libmysqlclient21 \
+    libmariadb3 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,25 +37,19 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY . .
+RUN chmod +x entrypoint.sh
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --clear
-
+# EXPOSE is documentation only — Render assigns the real port via $PORT at
+# runtime and entrypoint.sh binds gunicorn to it (falls back to 8000 locally).
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health/ || exit 1
+# Health check — uses $PORT so it still works when Render remaps it.
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+    CMD sh -c "curl -f http://localhost:${PORT:-8000}/api/health/ || exit 1"
 
-# Run Gunicorn
-CMD ["gunicorn", "gestion_p.wsgi:application", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "4", \
-     "--worker-class", "sync", \
-     "--timeout", "60", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-"]
+# Migrate + collectstatic (needs runtime env vars) then start Gunicorn.
+ENTRYPOINT ["./entrypoint.sh"]
