@@ -6,6 +6,40 @@ récentes en haut.
 
 ---
 
+## 2026-07-09 — Ajout du versionning de l'API (`/api/v1/`)
+
+**Problème** : l'API n'était pas versionnée (`/api/...`), ce qui empêche toute
+évolution future incompatible sans casser les clients existants.
+
+**Cause** : les routes métier étaient montées directement sous `/api/` dans
+`gestion_p/urls.py`, sans segment de version, et aucune classe de versionning
+DRF n'était configurée.
+
+**Solution** :
+- Préfixage de toutes les routes métier sous `/api/v1/` (`accounts`, `groupes`,
+  `membres`, `evenements`, `finances`, `librairie`) dans `gestion_p/urls.py`.
+- `/api/health/` laissé **non versionné** : c'est un endpoint d'infrastructure
+  référencé par le `HEALTHCHECK` du `Dockerfile` — le versionner casserait le
+  healthcheck Docker/Render.
+- Activation du versionning DRF dans `REST_FRAMEWORK` :
+  `URLPathVersioning` + `DEFAULT_VERSION="v1"` + `ALLOWED_VERSIONS=["v1"]`, si
+  bien que `request.version` est désormais disponible dans les vues.
+- Aucune régression sur les liens email : ils sont construits via
+  `reverse()` par nom de route, donc `web_verify_email` / `web_password_reset`
+  résolvent automatiquement vers `/api/v1/...` (vérifié).
+- Documentation mise à jour (`README.md`, `CLAUDE.md`).
+
+**Impact client** : changement cassant pour le frontend — les appels `/api/...`
+doivent devenir `/api/v1/...` (sauf `/api/health/`).
+
+**Fichiers** : `gestion_p/urls.py`, `gestion_p/settings.py`, `README.md`,
+`CLAUDE.md`.
+
+**Tests** : `python manage.py check` OK ; résolution/reverse des URLs vérifiés
+(`/api/v1/auth/login/`, `/api/health/`, liens email).
+
+---
+
 ## 2026-07-09 — Échec du build Docker : paquet `default-libmysqlclient21` introuvable
 
 **Problème** : `docker build` échouait à l'étape runtime (`stage-1 3/8`) avec

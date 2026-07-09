@@ -25,14 +25,18 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Le health check reste NON versionné : c'est un point de terminaison
+    # d'infrastructure (référencé par le HEALTHCHECK du Dockerfile et Render).
     path("api/health/", HealthCheckView.as_view(), name="health-check"),
 
-    path("api/", include("accounts.urls")),
-    path("api/groupes/", include("groupes.urls")),
-    path("api/membres/", include("membres.urls")),
-    path("api/evenements/", include("evenements.urls")),
-    path("api/finances/", include("finances.urls")),
-    path("api/librairie/", include("librairie.urls")),
+    # API versionnée sous /api/v1/. Toutes les routes métier passent par ce
+    # préfixe. Pour introduire une v2, ajouter un bloc `api/v2/` en parallèle.
+    path("api/v1/", include("accounts.urls")),
+    path("api/v1/groupes/", include("groupes.urls")),
+    path("api/v1/membres/", include("membres.urls")),
+    path("api/v1/evenements/", include("evenements.urls")),
+    path("api/v1/finances/", include("finances.urls")),
+    path("api/v1/librairie/", include("librairie.urls")),
     path("docs/", schema_view.with_ui("swagger", cache_timeout=10), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=10), name="schema-redoc-ui"),
 ]
