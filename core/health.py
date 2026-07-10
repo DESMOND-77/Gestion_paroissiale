@@ -1,4 +1,5 @@
 import logging
+
 from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ def check_database_health():
     """
     try:
         from django.db import connection
+
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
         return True

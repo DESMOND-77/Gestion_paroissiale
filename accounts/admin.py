@@ -1,18 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import  User,  UserActivity
+
+from .models import User, UserActivity
 
 
 class UserAdmin(BaseUserAdmin):
     # model = User
-    list_display = (
-        "nom",
-        "email",
-        "role",
-        "is_staff",
-        "is_superuser",
-        "is_active"
-    )
+    list_display = ("nom", "email", "role", "is_staff", "is_superuser", "is_active")
     list_filter = ("is_staff", "is_superuser", "role")
     fieldsets = (
         (None, {"fields": ("username", "password")}),
@@ -42,7 +36,9 @@ class UserAdmin(BaseUserAdmin):
         ),
         (
             "Dates importantes",
-            {"fields": ("last_login", "created_at","updated_at"), },
+            {
+                "fields": ("last_login", "created_at", "updated_at"),
+            },
         ),
     )
     add_fieldsets = (
@@ -56,7 +52,7 @@ class UserAdmin(BaseUserAdmin):
                     "email",
                     "password1",
                     "password2",
-                    'role',
+                    "role",
                     "is_active",
                     "is_staff",
                     "is_superuser",
@@ -64,16 +60,24 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-    search_fields = ('email', 'nom', 'prenom')
+    search_fields = ("email", "nom", "prenom")
     ordering = ("nom",)
-    readonly_fields = ["updated_at","created_at"]
+    readonly_fields = ["updated_at", "created_at"]
+
 
 class UserActivityAdmin(admin.ModelAdmin):
-    list_display = ('user', 'action', 'ip_address', 'timestamp')
-    list_filter = ('action', 'timestamp')
-    search_fields = ('user__email', 'user__nom', 'details')
-    readonly_fields = ('user', 'action', 'details', 'ip_address', 'user_agent', 'timestamp')
+    list_display = ("user", "action", "ip_address", "timestamp")
+    list_filter = ("action", "timestamp")
+    search_fields = ("user__email", "user__nom", "details")
+    readonly_fields = (
+        "user",
+        "action",
+        "details",
+        "ip_address",
+        "user_agent",
+        "timestamp",
+    )
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(UserActivity,UserActivityAdmin)
+admin.site.register(UserActivity, UserActivityAdmin)

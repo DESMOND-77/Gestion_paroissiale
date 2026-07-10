@@ -1,5 +1,5 @@
-import logging
 import datetime
+import logging
 from decimal import Decimal
 
 from django.db import models
@@ -12,7 +12,6 @@ from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
 from finances.models import Transaction
-from membres.models import Membre
 from .models import Article, Vente
 from .serializers import ArticleSerializer, VenteSerializer
 from .services import LibrairieService

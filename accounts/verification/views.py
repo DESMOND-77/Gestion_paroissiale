@@ -1,18 +1,18 @@
-import traceback, logging
+import logging
+import traceback
 
-from rest_framework.views import status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from rest_framework.views import status
 
-
-from core.base_view import BaseAPIView
+from accounts.serializers import PasswordResetSerializer
 from accounts.verification.password_reset_service import PasswordResetService
+from core.base_view import BaseAPIView
 from core.response import standardized_response
 from .services import EmailVerificationService
-from accounts.serializers import PasswordResetSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class CheckVerificationStatusView(BaseAPIView):
             )
             # Log the verification status
             logger.info(
-                f"Verification status check for user: {request.user.pk}: {response_data.get('data',{}).get('is_verified')}"
+                f"Verification status check for user: {request.user.pk}: {response_data.get('data', {}).get('is_verified')}"
             )
             return Response(
                 standardized_response(**response_data),

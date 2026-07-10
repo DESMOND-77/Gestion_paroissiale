@@ -9,9 +9,9 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from core.jwt_utils import TokenManager
 from accounts.models import User
 from accounts.serializers import UserSerializer
+from core.jwt_utils import TokenManager
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class AuthenticationService:
                 prenom=prenom,
                 nom=nom,
                 is_verified=False,
-                )
+            )
 
             # engage le processus de vérification par email ici si nécessaire
             if user.email and pj_settings.REQUIRE_EMAIL_VERIFICATION:
@@ -218,7 +218,7 @@ class AuthenticationService:
                         "tokens": tokens,
                         "email_verified": user.is_verified,
                         "verification_needed": not user.is_verified
-                        and settings.REQUIRE_EMAIL_VERIFICATION,
+                                               and settings.REQUIRE_EMAIL_VERIFICATION,
                     }
                 },
                 200,

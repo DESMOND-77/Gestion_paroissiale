@@ -1,12 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-
-
-from rest_framework_simplejwt.views import TokenRefreshView
+from django.urls import path
 
 from accounts.verification.web_views import EmailVerifyPageView, PasswordResetPageView
-
-
 from .auth.views import (
     ChangePasswordView,
     CheckPermissionView,
@@ -28,7 +22,6 @@ from .verification.views import (
 )
 
 urlpatterns = [
-    # path("us", include(router.urls)),
     # Auth
     path("auth/register/", UserRegistrationView.as_view(), name="register"),
     path("auth/login/", UserLoginView.as_view(), name="login"),
@@ -51,7 +44,7 @@ urlpatterns = [
     # `web_verify_email` .
     # Pages HTML conviviales (liens des emails)
     path("verify-email/", EmailVerifyPageView.as_view(), name="web_verify_email"),
-    path("reset-password/",PasswordResetPageView.as_view(),name="web_password_reset"),
+    path("reset-password/", PasswordResetPageView.as_view(), name="web_password_reset"),
     path(
         "auth/send-verification/",
         SendVerificationEmailView.as_view(),

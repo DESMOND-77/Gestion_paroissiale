@@ -1,10 +1,9 @@
 import logging
 import threading
 import traceback
-from django.core.cache import cache
+
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.cache import cache
 
 from accounts.verification.tokens import TokenVerifier
 from .emails import EmailService
@@ -22,7 +21,7 @@ class EmailVerificationService:
         return f"user_verified_status{user_id}"
 
     @staticmethod
-    def verify_email(uidb64,token):
+    def verify_email(uidb64, token):
         """
         verify email with token
         Args:
@@ -32,47 +31,63 @@ class EmailVerificationService:
             tuple : (success,response_dict,status_code)
         """
 
-        is_valid,user,error = TokenVerifier.verify_token(uidb64,token)
+        is_valid, user, error = TokenVerifier.verify_token(uidb64, token)
 
         if not is_valid:
             logger.warning(f"Invalid token verification attempt with uidb64: {uidb64}")
-            return False,{
-                "success":False,
-                "error": error or "Invalid verification link. Please request a new one"
-            },400
+            return (
+                False,
+                {
+                    "success": False,
+                    "error": error
+                             or "Invalid verification link. Please request a new one",
+                },
+                400,
+            )
         try:
             # ensure we use an atomic transaction
             from django.db import transaction
+
             with transaction.atomic():
                 # Update user verification status if not verified
                 if not user.is_verified:
                     user.is_verified = True
-                    user.is_active=True
-                    user.save(update_fields=['is_verified',"is_active"])
-                    logger.info(f"Email verified for user {user.id} {user.email} via link")
+                    user.is_active = True
+                    user.save(update_fields=["is_verified", "is_active"])
+                    logger.info(
+                        f"Email verified for user {user.id} {user.email} via link"
+                    )
                 else:
-                    logger.info(f"Email verification attempt for already verified user {user.id} {user.email}")
+                    logger.info(
+                        f"Email verification attempt for already verified user {user.id} {user.email}"
+                    )
 
             # Explicitly clear any related cache using our standardized key
-            cache_key = EmailVerificationService.get_verification_cache_key(user.id) 
+            cache_key = EmailVerificationService.get_verification_cache_key(user.id)
 
             # set the verified status to true in cache
-            cache.set(cache_key, True, timeout=86400)  # 24h — aligné avec le cycle de token
-            
+            cache.set(
+                cache_key, True, timeout=86400
+            )  # 24h — aligné avec le cycle de token
+
             logger.info(f"Updated verification cache for user {user.id} set to True")
 
-            return True,{
-                "success":True,
-                "message":"Email verification successful"
-            },200
+            return (
+                True,
+                {"success": True, "message": "Email verification successful"},
+                200,
+            )
         except Exception as e:
             logger.error(f"Error during email verification: {str(e)}")
-            return False,{
-                "success":False,
-                "error": "An error occurred during verification. Please try again"
-            },500
-              
-               
+            return (
+                False,
+                {
+                    "success": False,
+                    "error": "An error occurred during verification. Please try again",
+                },
+                500,
+            )
+
     @staticmethod
     def send_verification_email(user):
         """Envoie un email de vérification à l'utilisateur.
@@ -198,7 +213,9 @@ class EmailVerificationService:
                 is_verified = fresh_user.is_verified
 
                 # cache the result for future queries
-                cache.set(cache_key, is_verified, timeout=86400)  # 24h — aligné avec le cycle de token
+                cache.set(
+                    cache_key, is_verified, timeout=86400
+                )  # 24h — aligné avec le cycle de token
 
                 logger.info(
                     f"fetched verification status from DB for user: {user.pk}: {is_verified}"

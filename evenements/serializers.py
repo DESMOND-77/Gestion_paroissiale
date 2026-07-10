@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Evenement, Participation
 
 
@@ -22,9 +23,18 @@ class EvenementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evenement
         fields = [
-            "id", "titre", "type", "type_display", "description",
-            "date_debut", "date_fin", "lieu", "est_inscription_requise",
-            "createur", "createur_nom", "nb_participants",
+            "id",
+            "titre",
+            "type",
+            "type_display",
+            "description",
+            "date_debut",
+            "date_fin",
+            "lieu",
+            "est_inscription_requise",
+            "createur",
+            "createur_nom",
+            "nb_participants",
         ]
         read_only_fields = ["type_display", "createur_nom", "nb_participants"]
 
