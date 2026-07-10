@@ -9,12 +9,12 @@ from .views import (
 
 urlpatterns = [
     path("", EvenementListView.as_view(), name="evenement-list"),
-    path("<int:pk>/", EvenementDetailView.as_view(), name="evenement-detail"),
+    path("<uuid:pk>/", EvenementDetailView.as_view(), name="evenement-detail"),
     path(
-        "<int:pk>/inscrire/", EvenementInscrireView.as_view(), name="evenement-inscrire"
+        "<uuid:pk>/inscrire/", EvenementInscrireView.as_view(), name="evenement-inscrire"
     ),
     path(
-        "<int:pk>/participants/",
+        "<uuid:pk>/participants/",
         EvenementParticipantsView.as_view(),
         name="evenement-participants",
     ),

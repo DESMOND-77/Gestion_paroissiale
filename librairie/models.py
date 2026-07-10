@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SyncableModel
 
-class Article(models.Model):
+
+class Article(SyncableModel):
     CATEGORIE_CHOICES = [
         ("livre", "Livre"),
         ("bougie", "Bougie"),
@@ -32,7 +34,7 @@ class Article(models.Model):
         return self.stock_disponible <= self.seuil_alerte
 
 
-class Vente(models.Model):
+class Vente(SyncableModel):
     article = models.ForeignKey(Article, on_delete=models.PROTECT, related_name="ventes")
     quantite = models.PositiveIntegerField()
     prix_total = models.DecimalField(max_digits=12, decimal_places=2)
@@ -60,7 +62,11 @@ class Vente(models.Model):
         return f"{self.article} × {self.quantite} ({self.date:%d/%m/%Y})"
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        # `self._state.adding` (et non `not self.pk`) : avec une clé primaire
+        # UUID générée par défaut, `self.pk` est renseigné dès l'instanciation,
+        # donc `not self.pk` serait toujours faux et le décrément de stock ne
+        # s'exécuterait jamais.
+        if self._state.adding:
             self.prix_total = self.article.prix_unitaire * self.quantite
             self.article.stock_disponible -= self.quantite
             self.article.save()

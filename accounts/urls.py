@@ -35,7 +35,7 @@ urlpatterns = [
     path("user/change-password/", ChangePasswordView.as_view(), name="change_password"),
     # User management (admin only)
     path("users/", UserListView.as_view(), name="user_list"),
-    path("users/<int:pk>/", UserDetailView.as_view(), name="user_detail"),
+    path("users/<uuid:pk>/", UserDetailView.as_view(), name="user_detail"),
     # Activity logs (admin only)
     path("activities/", UserActivityView.as_view(), name="user_activities"),
     # Permission check

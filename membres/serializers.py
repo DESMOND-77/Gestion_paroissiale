@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from core.serializers import WritableIDModelSerializer
+
 from .models import Membre, Sacrement
 
 
-class SacrementSerializer(serializers.ModelSerializer):
+class SacrementSerializer(WritableIDModelSerializer):
     type_display = serializers.CharField(source="get_type_display", read_only=True)
     officiant_nom = serializers.SerializerMethodField()
 
@@ -21,7 +23,7 @@ class SacrementSerializer(serializers.ModelSerializer):
         return None
 
 
-class MembreSerializer(serializers.ModelSerializer):
+class MembreSerializer(WritableIDModelSerializer):
     nom_complet = serializers.ReadOnlyField()
     groupe_nom = serializers.SerializerMethodField()
     # Informations utilisateur associé

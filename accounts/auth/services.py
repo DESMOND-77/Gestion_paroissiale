@@ -292,7 +292,9 @@ class AuthenticationService:
             tuple: (success, response_dict, status_code)
         """
         is_valid, user_id, token_type = TokenManager.validate_token(token)
-        if not is_valid or int(user_id) != user.id:
+        # Comparaison en chaînes : user.id est un UUID (plus un entier), donc
+        # int(user_id) lèverait ValueError.
+        if not is_valid or str(user_id) != str(user.id):
             logger.warning(
                 f"Token validation failed: expected user {user.id}, got {user_id}"
             )

@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from core.serializers import WritableIDModelSerializer
+
 from .models import Article, Vente
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleSerializer(WritableIDModelSerializer):
     categorie_display = serializers.CharField(source="get_categorie_display", read_only=True)
     en_alerte = serializers.ReadOnlyField()
 
@@ -16,7 +18,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         read_only_fields = ["date_ajout ", "en_alerte", "categorie_display"]
 
 
-class VenteSerializer(serializers.ModelSerializer):
+class VenteSerializer(WritableIDModelSerializer):
     article_nom = serializers.CharField(source="article.nom", read_only=True)
     membre_nom = serializers.SerializerMethodField()
     enregistre_par_nom = serializers.SerializerMethodField()

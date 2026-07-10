@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from core.serializers import WritableIDModelSerializer
+
 from .models import Transaction
 
 
-class TransactionSerializer(serializers.ModelSerializer):
+class TransactionSerializer(WritableIDModelSerializer):
     type_display = serializers.CharField(source="get_type_display", read_only=True)
     categorie_display = serializers.CharField(source="get_categorie_display", read_only=True)
     enregistre_par_nom = serializers.SerializerMethodField()

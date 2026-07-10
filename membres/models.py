@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SyncableModel
 
-class Membre(models.Model):
+
+class Membre(SyncableModel):
     SEXE_CHOICES = [("M", "Masculin"), ("F", "Féminin")]
 
     user = models.OneToOneField(
@@ -52,7 +54,7 @@ class Membre(models.Model):
         return f"{self.prenom} {self.nom}"
 
 
-class Sacrement(models.Model):
+class Sacrement(SyncableModel):
     TYPE_CHOICES = [
         ("bapteme", "Baptême"),
         ("mariage", "Mariage"),

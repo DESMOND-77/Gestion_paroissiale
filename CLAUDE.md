@@ -141,7 +141,9 @@ Verification and password-reset **links in emails point to server-rendered HTML 
 ### Naming Conventions
 
 - **Models**: French plurals in field names where appropriate (e.g., `prenom`, `nom` instead of `first_name`, `last_name` in new code).
+- **Primary keys are UUID strings** (offline-first architecture). New models should inherit `core.models.SyncableModel` (UUID `id` + `created_at`/`updated_at`/`is_deleted` for offline sync) or `UUIDPrimaryKeyModel` (UUID only). `User` defines `id = UUIDField(...)` directly. Consequences: URL routes use `<uuid:pk>` (never `<int:pk>`); anything putting a user id into a JWT/JSON must `str()` it (a UUID isn't JSON-serializable); detect model creation with `self._state.adding`, not `not self.pk` (the UUID default fills `pk` before the first save); compare ids as strings, never `int(...)`.
 - **Serializers**: Mirror model field names for consistency.
+- **Offline sync**: `POST /api/v1/sync/` (`core/sync.py` + `SyncView`) is the bidirectional batch endpoint — push (upsert by UUID `id`, last-write-wins on `updated_at`, soft-delete via `is_deleted`) + pull (delta since a `server_time` cursor). Syncable serializers inherit `core.serializers.WritableIDModelSerializer` so the client-generated UUID is honored (DRF makes PKs read-only otherwise). Add new syncable collections to the registry in `core/sync.py`.
 - **API Endpoints**: versioned under `/api/v1/<module>/` (e.g., `/api/v1/membres/`, `/api/v1/finances/transactions/`). Exception: `/api/health/` stays **unversioned** (infra endpoint referenced by the Docker `HEALTHCHECK`). Versioning is URL-path based (DRF `URLPathVersioning`, `DEFAULT_VERSION="v1"`), so `request.version` is available in views. Internal links use `reverse()` by name, so they follow the prefix automatically.
 
 ### Code Patterns

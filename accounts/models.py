@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -7,6 +8,8 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import RegexValidator
 from django.db import models
+
+from core.models import UUIDPrimaryKeyModel
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +75,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("admin", "Administrateur"),
     ]
 
-    # id = models.BigAutoField(primary_key=True)
+    # Clé primaire UUID (chaîne) : cf. core.models.UUIDPrimaryKeyModel. Définie
+    # ici directement car User hérite déjà d'AbstractBaseUser/PermissionsMixin.
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=191, unique=True)
     username = models.CharField(max_length=150, unique=True, blank=True, null=True)
     nom = models.CharField(max_length=100, verbose_name="Nom")
@@ -88,8 +93,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     )  # Changé à True par défaut
     is_staff = models.BooleanField(default=False, verbose_name="Staff")
     is_verified = models.BooleanField(default=False, verbose_name="Vérifié")
+    # Soft delete (socle de synchro offline) : cf. core.models.SyncableModel.
+    is_deleted = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
     created_by = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -208,7 +215,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return can_access
 
 
-class UserActivity(models.Model):
+class UserActivity(UUIDPrimaryKeyModel):
     ACTION_CHOICES = [
         ("login", "Connexion"),
         ("logout", "Déconnexion"),

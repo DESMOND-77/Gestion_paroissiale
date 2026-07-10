@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SyncableModel
 
-class Evenement(models.Model):
+
+class Evenement(SyncableModel):
     TYPE_CHOICES = [
         ("messe", "Messe"),
         ("fete_liturgique", "Fête liturgique"),
@@ -41,7 +43,7 @@ class Evenement(models.Model):
         return self.titre
 
 
-class Participation(models.Model):
+class Participation(SyncableModel):
     evenement = models.ForeignKey(
         Evenement, on_delete=models.CASCADE, related_name="participations"
     )

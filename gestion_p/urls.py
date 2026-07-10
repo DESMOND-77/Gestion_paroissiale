@@ -6,7 +6,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from core.views import HealthCheckView
+from core.views import HealthCheckView, SyncView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -27,6 +27,8 @@ urlpatterns = [
     # API versionnée sous /api/v1/. Toutes les routes métier passent par ce
     # préfixe. Pour introduire une v2, ajouter un bloc `api/v2/` en parallèle.
     path("api/v1/", include("accounts.urls")),
+    # Synchronisation offline → serveur central (push + pull en un appel).
+    path("api/v1/sync/", SyncView.as_view(), name="sync"),
     path("api/v1/groupes/", include("groupes.urls")),
     path("api/v1/membres/", include("membres.urls")),
     path("api/v1/evenements/", include("evenements.urls")),

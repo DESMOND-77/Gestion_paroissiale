@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from core.serializers import WritableIDModelSerializer
+
 from .models import Evenement, Participation
 
 
-class ParticipationSerializer(serializers.ModelSerializer):
+class ParticipationSerializer(WritableIDModelSerializer):
     membre_nom = serializers.SerializerMethodField()
 
     class Meta:
@@ -15,7 +17,7 @@ class ParticipationSerializer(serializers.ModelSerializer):
         return str(obj.membre)
 
 
-class EvenementSerializer(serializers.ModelSerializer):
+class EvenementSerializer(WritableIDModelSerializer):
     type_display = serializers.CharField(source="get_type_display", read_only=True)
     createur_nom = serializers.SerializerMethodField()
     nb_participants = serializers.SerializerMethodField()

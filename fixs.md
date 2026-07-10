@@ -6,6 +6,93 @@ récentes en haut.
 
 ---
 
+## 2026-07-10 — Serializers `id` modifiable + endpoint de synchronisation batch
+
+**Problème** : suite du socle UUID. Deux briques manquaient pour que la synchro
+offline fonctionne de bout en bout via l'API :
+1. DRF rendait la clé primaire `id` en lecture seule → l'UUID généré par le
+   téléphone était ignoré et le serveur en régénérait un (doublons).
+2. Aucun endpoint pour pousser/tirer un lot de modifications.
+
+**Solution** :
+- `core/serializers.py` — mixin `WritableIDModelSerializer` : `id` redéclaré
+  `UUIDField(required=False)` (fourni par le client → respecté ; absent →
+  généré). `update()` interdit la réassignation de la PK. Appliqué à 8
+  serializers : `Membre`, `Sacrement`, `Groupe`, `Evenement`, `Participation`,
+  `Transaction`, `Article`, `Vente` (`MembreSelfSerializer` reste en lecture
+  seule côté auto-service).
+- `core/sync.py` — moteur de synchro : registre des collections, `push_changes`
+  (upsert par `id`, résolution *last-write-wins* sur `updated_at`, chaque
+  enregistrement isolé dans son point de sauvegarde), `pull_changes` (delta
+  depuis `since`, `is_deleted` compris), `run_sync` (push puis pull +
+  `server_time`).
+- `core/views.py` — `SyncView` (`POST /api/v1/sync/`, `IsAuthenticated`).
+- `gestion_p/urls.py` — route `api/v1/sync/` (name=`sync`).
+
+**Contrat** : requête `{ "since": <iso|null>, "changes": { collection: [rec] } }` ;
+réponse `{ server_time, results:{collection:{applied,conflicts,errors}}, changes }`.
+Le client conserve `server_time` comme prochain `since`.
+
+**Fichiers** : `core/serializers.py`, `core/sync.py`, `core/views.py`,
+`gestion_p/urls.py`, `membres/serializers.py`, `groupes/serializers.py`,
+`evenements/serializers.py`, `finances/serializers.py`,
+`librairie/serializers.py`, `core/test_sync.py`.
+
+**Tests** : `core/test_sync.py` (8 tests) couvre auth requise, UUID client
+respecté, conflit serveur-gagne, client-gagne, soft delete propagé, lot partiel
+(erreur isolée), pull par curseur, `server_time`. Suite `accounts` + `core` :
+**90 tests verts**.
+
+---
+
+## 2026-07-10 — Clés primaires UUID + socle de synchronisation offline
+
+**Problème** : préparation d'une architecture *offline-first* (le frontend stocke
+hors ligne puis synchronise vers le serveur central). Avec des clés primaires
+entières auto-incrémentées, deux téléphones créant un enregistrement hors ligne
+génèrent le même ID (1, 2, 3…) et entrent en collision à la synchro.
+
+**Cause** : tous les modèles utilisaient la clé primaire entière par défaut
+(`BigAutoField`).
+
+**Solution** :
+- Nouveau socle abstrait dans `core/models.py` :
+  - `UUIDPrimaryKeyModel` : `id = UUIDField(primary_key=True, default=uuid4)`
+    — l'identifiant peut être généré côté client (aucune collision).
+  - `SyncableModel(UUIDPrimaryKeyModel)` : ajoute `created_at`, `updated_at`
+    (base du *last-write-wins*) et `is_deleted` (soft delete).
+- Modèles migrés vers `SyncableModel` : `Membre`, `Sacrement`, `Groupe`,
+  `Evenement`, `Participation`, `Transaction`, `Article`, `Vente`. `User` reçoit
+  `id` UUID + `is_deleted` directement (hérite déjà d'`AbstractBaseUser`) ;
+  `UserActivity` passe en `UUIDPrimaryKeyModel`.
+- Routes : les 11 `path("<int:pk>/")` deviennent `<uuid:pk>`.
+- `Vente.save()` : détection de création via `self._state.adding` au lieu de
+  `not self.pk` (avec un UUID par défaut, `self.pk` est déjà rempli → le
+  décrément de stock ne se déclenchait plus).
+- `core/jwt_utils.py` : `user.id` converti en `str()` dans les claims JWT
+  (un UUID n'est pas sérialisable en JSON → le token n'était plus généré).
+- `accounts/auth/services.py` : comparaison d'ID en `str()` au lieu de
+  `int(user_id)` (levait `ValueError` sur un UUID).
+- Migrations `0001_initial` régénérées (base de dev jetable, aucune donnée à
+  préserver).
+
+**Fichiers** : `core/models.py`, `accounts/models.py`, `membres/models.py`,
+`groupes/models.py`, `evenements/models.py`, `finances/models.py`,
+`librairie/models.py`, `*/urls.py`, `core/jwt_utils.py`,
+`accounts/auth/services.py`, `*/migrations/0001_initial.py`.
+
+**Tests** : `migrate` OK sur base neuve ; suite `accounts` + `core` (82 tests)
+verte ; vérifié en shell : UUID auto-générés, ID fourni par le client honoré via
+l'ORM, FK UUID, signal de création de profil, décrément de stock `Vente`.
+
+**Reste à faire (hors lot)** pour activer la synchro de bout en bout :
+1. Rendre `id` **modifiable** (non read-only) dans les serializers syncables
+   pour accepter l'UUID généré par le client via l'API.
+2. Endpoint de synchro (upsert par lot, idempotent) avec résolution de conflits
+   basée sur `updated_at`, et prise en compte de `is_deleted`.
+
+---
+
 ## 2026-07-10 — Correctifs audit P3.8 (headers sécurité) & P3.10 (gouvernance)
 
 **Problème** : deux points de l'audit restaient ouverts :

@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SyncableModel
 
-class Groupe(models.Model):
+
+class Groupe(SyncableModel):
     nom = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     responsable = models.ForeignKey(

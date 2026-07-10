@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SyncableModel
 
-class Transaction(models.Model):
+
+class Transaction(SyncableModel):
     TYPE_CHOICES = [("recette", "Recette"), ("depense", "Dépense")]
     CATEGORIE_CHOICES = [
         ("quete", "Quête"),

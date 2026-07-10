@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from core.serializers import WritableIDModelSerializer
+
 from .models import Groupe
 
 
-class GroupeSerializer(serializers.ModelSerializer):
+class GroupeSerializer(WritableIDModelSerializer):
     responsable_nom = serializers.SerializerMethodField()
 
     class Meta:

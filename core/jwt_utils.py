@@ -70,13 +70,16 @@ class TokenManager:
             refresh["is_staff"] = user.is_staff
             refresh["is_verified"] = user.is_verified
             refresh["type"] = "refresh"
-            refresh["user_id"] = user.id
+            # str() indispensable : user.id est un UUID (non sérialisable en JSON) ;
+            # sans conversion, l'encodage du JWT lève une exception et le token
+            # n'est jamais généré.
+            refresh["user_id"] = str(user.id)
 
             # Configurer l'expiration du ACCESS token
             access_token = AccessToken()
             access_token["jti"] = str(uuid.uuid4())
             access_token["type"] = "access"
-            access_token["user_id"] = user.id
+            access_token["user_id"] = str(user.id)
 
             # Signer le token avec la clé secrète
             access_token_str = str(access_token)
@@ -92,7 +95,7 @@ class TokenManager:
                 "token_type": "Bearer",
                 "access_expires_in": int(access_expiry.total_seconds()),
                 "refresh_expires_in": int(refresh_expiry.total_seconds()),
-                "user_id": user.id,
+                "user_id": str(user.id),
                 "issued_at": int(time.time()),
             }
         except Exception as e:
