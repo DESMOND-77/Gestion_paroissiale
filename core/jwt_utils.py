@@ -1,12 +1,12 @@
 import logging
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 import jwt
+import redis
 from django.conf import settings
 from django.core.cache import cache
-import redis
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToken
 
 logger = logging.getLogger(__name__)

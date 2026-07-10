@@ -1,9 +1,9 @@
-import traceback, logging
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth import get_user_model
+import logging
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -29,16 +29,15 @@ class TokenVerifier:
         try:
             # Decode user ID
             uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk = uid)
+            user = User.objects.get(pk=uid)
 
             # Check if token is valid
-            if default_token_generator.check_token(user,token):
-                return True,user, None
+            if default_token_generator.check_token(user, token):
+                return True, user, None
             else:
                 logger.warning(f"Invalid token for user : {user.email}")
-                return False,None,"Invalid verification token"
-            
-        except (TypeError,ValueError,OverflowError,User.DoesNotExist) as e:
-            logger.error(f"Token verification error: {str(e)}")
-            return False,None,"Invalid verification link"
+                return False, None, "Invalid verification token"
 
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            logger.error(f"Token verification error: {str(e)}")
+            return False, None, "Invalid verification link"

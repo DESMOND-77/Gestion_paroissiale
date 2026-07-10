@@ -1,11 +1,9 @@
 import os
-import logging
-import logging.handlers
 from datetime import timedelta
 from pathlib import Path
-import environ
+
 import dj_database_url
-import redis
+import environ
 
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
 env = environ.Env(DEBUG=(bool, False))
@@ -26,7 +24,6 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhos
 REDIS_URL = env("REDIS_URL", default=None) or os.environ.get("REDIS_URL")
 if REDIS_URL is None and DEBUG:
     REDIS_URL = "redis://localhost:6379/0"
-
 
 # Application definition
 
@@ -109,7 +106,6 @@ else:
         }
     }
 
-
 AUTH_USER_MODEL = "accounts.User"
 
 # Password validation
@@ -128,7 +124,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 # Logging pour le suivi
 LOGGING = {
@@ -265,7 +260,9 @@ SESSION_COOKIE_SECURE = True
 # toujours False derrière le proxy, ce qui casse les cookies secure, le CSRF
 # et la génération de liens HTTPS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-CORS_ALLOW_ALL_ORIGINS = True  # Autoriser toutes les origines pour le développement et les tests
+CORS_ALLOW_ALL_ORIGINS = (
+    True  # Autoriser toutes les origines pour le développement et les tests
+)
 
 # --- Headers de sécurité HTTP (P3.8) --------------------------------------
 # Toujours actifs (aucun impact en développement) : servis par
@@ -381,7 +378,6 @@ else:
         # des erreurs critiques de cache partagés sur Render.
         SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-
 # Configuration Simple JWT optimisée pour Redis
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
@@ -463,29 +459,25 @@ EMAIL_TIMEOUT = 10  # 10 second timeout for SMTP connections
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = default = EMAIL_HOST_USER
 
-
 FRONTEND_URL = env(
-    "FRONTEND_URL", default="http://localhost:8000/api"
-) or os.environ.get("FRONTEND_URL", "http://localhost:8000/api")
+    "FRONTEND_URL", default="http://localhost:8000/api/v1"
+) or os.environ.get("FRONTEND_URL", "http://localhost:8000/api/v1")
 
 # URL publique de base du backend (racine du site), utilisée pour construire les
 # liens des emails vers les pages HTML de vérification / réinitialisation servies
 # par Django. Sans slash final.
 PUBLIC_BASE_URL = (
     env("PUBLIC_BASE_URL", default=None)
-    or os.environ.get("PUBLIC_BASE_URL", "http://gestiparr.onrender.com/api")
+    or os.environ.get("PUBLIC_BASE_URL", "http://gestiparr.onrender.com/api/v1")
 ).rstrip("/")
-
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 LANGUAGE_CODE = "fr-fr"
 TIME_ZONE = "Africa/Libreville"
 USE_I18N = True
 USE_TZ = True
-
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -507,4 +499,3 @@ STORAGES = {
         ),
     },
 }
-

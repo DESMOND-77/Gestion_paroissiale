@@ -4,10 +4,11 @@ Gestionnaire d'exceptions personnalisé pour DRF.
 Garantit que TOUTES les réponses d'erreur respectent le format Core
 (`standardized_response`) : {success, data, error, message}.
 """
-from rest_framework.views import exception_handler
+
+from rest_framework import status
 from rest_framework.exceptions import UnsupportedMediaType
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import exception_handler
 
 from .response import standardized_response
 

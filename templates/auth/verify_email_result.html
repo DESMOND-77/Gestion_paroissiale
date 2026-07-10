@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="status">
-  {% if status == "success" %}
+    {% if status == "success" %}
     <div class="status__icon status__icon--ok" aria-hidden="true">&#10003;</div>
     <div class="eyebrow">Compte vérifié</div>
     <h1>Adresse e-mail confirmée</h1>
     <p>{{ message }}</p>
     <!-- <a class="btn" href="{{ login_url }}">Se connecter</a> -->
-  {% else %}
+    {% else %}
     <div class="status__icon status__icon--err" aria-hidden="true">&#33;</div>
     <div class="eyebrow">Lien invalide</div>
     <h1>Vérification impossible</h1>
     <p>{{ message }}</p>
-  {% endif %}
+    {% endif %}
 </div>
 {% endblock %}

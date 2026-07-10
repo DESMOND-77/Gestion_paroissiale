@@ -1,6 +1,5 @@
 import logging
 
-from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
@@ -140,10 +139,9 @@ class RapportFinancierView(BaseAPIView):
 class MembreDonsView(BaseAPIView):
     """
     GET /api/finances/membre/<pk>/dons/
-        Paramètres optionnels: ?date_debut=&date_fin=
-        Retourne les dons d'un membre avec le total calculé via le service.
+    Paramètres optionnels: ?date_debut=&date_fin=
+    Retourne les dons d'un membre avec le total calculé via le service.
     """
-
     permission_classes = [IsTreasurerOrAbove]
 
     def get(self, request, pk):

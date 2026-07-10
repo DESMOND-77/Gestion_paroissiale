@@ -2,83 +2,263 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ app_name }}{% endblock %}</title>
-  <style>
-    :root{
-      --navy:#1b2447; --navy-2:#223056; --gold:#c8a24b; --paper:#eceae2;
-      --ink:#2a2c34; --muted:#8a8f9a; --line:#e3ddce;
-      --danger:#b3261e; --danger-bg:#fdecea; --danger-line:#f3c9c4;
-      --success:#1f7a4d; --success-bg:#e6f4ec;
-    }
-    *{box-sizing:border-box;}
-    body{
-      margin:0; min-height:100vh; padding:24px;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      background:var(--paper); color:var(--ink);
-      display:flex; align-items:center; justify-content:center;
-    }
-    .card{
-      width:100%; max-width:440px; background:#fff; border:1px solid var(--line);
-      border-radius:16px; overflow:hidden; box-shadow:0 12px 34px rgba(27,36,71,.10);
-    }
-    .card__accent{height:4px; background:var(--gold);}
-    .card__header{background:var(--navy); text-align:center; padding:34px 24px 26px;}
-    .card__header img{width:60px; height:auto; display:block; margin:0 auto 14px;}
-    .brand{font-family:Georgia,"Times New Roman",serif; color:#fff; font-size:21px; letter-spacing:.4px;}
-    .brand__sub{font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#9aa3c4; margin-top:8px;}
-    .card__body{padding:34px 34px 38px;}
-    .eyebrow{font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); font-weight:700;}
-    h1{font-family:Georgia,"Times New Roman",serif; font-weight:400; font-size:26px; line-height:1.25; color:var(--navy); margin:10px 0 18px;}
-    p{font-size:15px; line-height:1.62; color:#3a3d47; margin:0 0 18px;}
-    .field{margin-bottom:18px;}
-    label{display:block; font-size:13px; font-weight:600; color:var(--navy); margin-bottom:7px;}
-    .input-wrap{position:relative;}
-    input[type=password],input[type=text]{
-      width:100%; padding:13px 74px 13px 14px; font-size:15px;
-      border:1px solid #d7d2c4; border-radius:10px; background:#fbfaf6; color:var(--ink);
-      transition:border-color .15s, box-shadow .15s, background .15s;
-    }
-    input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(200,162,75,.22); background:#fff;}
-    .toggle{
-      position:absolute; right:8px; top:50%; transform:translateY(-50%);
-      background:none; border:0; cursor:pointer; color:var(--muted);
-      font-size:12px; font-weight:700; padding:6px 8px;
-    }
-    .toggle:hover{color:var(--navy);}
-    .hint{font-size:12px; color:var(--muted); margin:7px 0 0;}
-    .btn{
-      display:block; width:100%; padding:14px 20px; font-size:16px; font-weight:700;
-      color:var(--navy); background:var(--gold); border:0; border-radius:10px; cursor:pointer;
-      text-decoration:none; text-align:center; transition:filter .15s, transform .02s;
-    }
-    .btn:hover{filter:brightness(.96);}
-    .btn:active{transform:translateY(1px);}
-    .alert{border-radius:10px; padding:12px 14px; font-size:14px; line-height:1.5; margin-bottom:20px; border:1px solid;}
-    .alert--error{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger);}
-    .status{text-align:center;}
-    .status__icon{
-      width:66px; height:66px; border-radius:50%; margin:0 auto 20px;
-      display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700;
-    }
-    .status__icon--ok{background:var(--success-bg); color:var(--success);}
-    .status__icon--err{background:var(--danger-bg); color:var(--danger);}
-    @media (max-width:480px){ .card__body{padding:26px 22px 30px;} h1{font-size:23px;} }
-    @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <style>
+        :root {
+            --navy: #1b2447;
+            --navy-2: #223056;
+            --gold: #c8a24b;
+            --paper: #eceae2;
+            --ink: #2a2c34;
+            --muted: #8a8f9a;
+            --line: #e3ddce;
+            --danger: #b3261e;
+            --danger-bg: #fdecea;
+            --danger-line: #f3c9c4;
+            --success: #1f7a4d;
+            --success-bg: #e6f4ec;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 440px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 34px rgba(27, 36, 71, .10);
+        }
+
+        .card__accent {
+            height: 4px;
+            background: var(--gold);
+        }
+
+        .card__header {
+            background: var(--navy);
+            text-align: center;
+            padding: 34px 24px 26px;
+        }
+
+        .card__header img {
+            width: 60px;
+            height: auto;
+            display: block;
+            margin: 0 auto 14px;
+        }
+
+        .brand {
+            font-family: Georgia, "Times New Roman", serif;
+            color: #fff;
+            font-size: 21px;
+            letter-spacing: .4px;
+        }
+
+        .brand__sub {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #9aa3c4;
+            margin-top: 8px;
+        }
+
+        .card__body {
+            padding: 34px 34px 38px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        h1 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 400;
+            font-size: 26px;
+            line-height: 1.25;
+            color: var(--navy);
+            margin: 10px 0 18px;
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 1.62;
+            color: #3a3d47;
+            margin: 0 0 18px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input[type=password], input[type=text] {
+            width: 100%;
+            padding: 13px 74px 13px 14px;
+            font-size: 15px;
+            border: 1px solid #d7d2c4;
+            border-radius: 10px;
+            background: #fbfaf6;
+            color: var(--ink);
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(200, 162, 75, .22);
+            background: #fff;
+        }
+
+        .toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 8px;
+        }
+
+        .toggle:hover {
+            color: var(--navy);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 7px 0 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            background: var(--gold);
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: filter .15s, transform .02s;
+        }
+
+        .btn:hover {
+            filter: brightness(.96);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .alert {
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            border: 1px solid;
+        }
+
+        .alert--error {
+            background: var(--danger-bg);
+            border-color: var(--danger-line);
+            color: var(--danger);
+        }
+
+        .status {
+            text-align: center;
+        }
+
+        .status__icon {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .status__icon--ok {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .status__icon--err {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        @media (max-width: 480px) {
+            .card__body {
+                padding: 26px 22px 30px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main class="card" role="main">
+<main class="card" role="main">
     <div class="card__accent"></div>
     <div class="card__header">
-      <img src="{% static 'logo.png' %}" alt="{{ app_name }}">
-      <div class="brand">{{ app_name }}</div>
-      <div class="brand__sub">Communauté paroissiale</div>
+        <img src="{% static 'logo.png' %}" alt="{{ app_name }}">
+        <div class="brand">{{ app_name }}</div>
+        <div class="brand__sub">Communauté paroissiale</div>
     </div>
     <div class="card__body">
-      {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
     </div>
-  </main>
+</main>
 </body>
 </html>

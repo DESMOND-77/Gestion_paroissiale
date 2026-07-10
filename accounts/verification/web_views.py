@@ -4,14 +4,15 @@ vérification d'adresse e-mail et réinitialisation du mot de passe.
 Ces vues servent de vraies pages web (pas des réponses JSON de l'API). Elles
 réutilisent la logique métier des services existants.
 """
+
 import logging
 
 from django.conf import settings
 from django.shortcuts import render
 from django.views import View
 
-from accounts.verification.services import EmailVerificationService
 from accounts.verification.password_reset_service import PasswordResetService
+from accounts.verification.services import EmailVerificationService
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class EmailVerifyPageView(View):
             ctx.update(
                 status="success",
                 message="Votre adresse e-mail a été confirmée. Votre compte est "
-                "désormais actif — vous pouvez fermer cette page et retourner à l'application.",
+                        "désormais actif — vous pouvez fermer cette page et retourner à l'application.",
             )
             return render(request, self.template_name, ctx)
 
@@ -85,7 +86,9 @@ class PasswordResetPageView(View):
 
         if new_password != confirm_password:
             ctx = self._ctx(
-                uid, token, state="form",
+                uid,
+                token,
+                state="form",
                 error="Les deux mots de passe ne correspondent pas.",
             )
             return render(request, self.template_name, ctx, status=400)
@@ -95,9 +98,11 @@ class PasswordResetPageView(View):
         )
         if success:
             ctx = self._ctx(
-                uid, token, state="success",
+                uid,
+                token,
+                state="success",
                 message="Votre mot de passe a été réinitialisé. Vous pouvez "
-                "maintenant vous connecter avec vos nouveaux identifiants. Fermez cette page et retournez à l'application.",
+                        "maintenant vous connecter avec vos nouveaux identifiants. Fermez cette page et retournez à l'application.",
             )
             return render(request, self.template_name, ctx)
 

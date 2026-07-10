@@ -1,14 +1,14 @@
 import logging
 import threading
-import traceback
-from django.core.cache import cache
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 
 from accounts.verification.tokens import TokenVerifier
-from .emails import EmailService
 from core.jwt_utils import TokenManager
+from .emails import EmailService
 
 User = get_user_model()
 logger = logging.getLogger(__name__)

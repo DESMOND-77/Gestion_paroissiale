@@ -7,10 +7,10 @@ from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import status
 
-from core.base_view import BaseAPIView
 from accounts.models import UserActivity
-from .services import ProfileService
+from core.base_view import BaseAPIView
 from core.response import standardized_response
+from .services import ProfileService
 
 logger = logging.getLogger(__name__)
 

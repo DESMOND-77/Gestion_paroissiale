@@ -12,7 +12,10 @@ class Evenement(models.Model):
     ]
 
     titre = models.CharField(max_length=255)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, )
+    type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+    )
     description = models.TextField(blank=True)
     date_debut = models.DateTimeField()
     date_fin = models.DateTimeField(null=True, blank=True)
@@ -30,8 +33,8 @@ class Evenement(models.Model):
         verbose_name_plural = "Événements"
         ordering = ["-date_debut"]
         indexes = [
-            models.Index(fields=["type"],name="evenement_type_idx"),
-            models.Index(fields=["date_debut"],name="evenement_date_debut_idx"),
+            models.Index(fields=["type"], name="evenement_type_idx"),
+            models.Index(fields=["date_debut"], name="evenement_date_debut_idx"),
         ]
 
     def __str__(self):
@@ -39,7 +42,9 @@ class Evenement(models.Model):
 
 
 class Participation(models.Model):
-    evenement = models.ForeignKey(Evenement, on_delete=models.CASCADE, related_name="participations")
+    evenement = models.ForeignKey(
+        Evenement, on_delete=models.CASCADE, related_name="participations"
+    )
     membre = models.ForeignKey(
         "membres.Membre", on_delete=models.CASCADE, related_name="participations"
     )

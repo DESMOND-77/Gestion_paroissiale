@@ -1,7 +1,8 @@
 import logging
+
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 
 from .models import Membre
 
@@ -19,7 +20,7 @@ def create_membre_for_user(sender, instance, created, **kwargs):
             membre = instance.membre
         except Membre.DoesNotExist:
             membre = None
-        
+
         if membre is None:
             try:
                 Membre.objects.create(
