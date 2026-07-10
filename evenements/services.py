@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from .models import Evenement, Participation
-from membres.models import Membre
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ class EvenementService:
                 type=type_event,
                 date_debut=date_debut,
                 createur=createur,
-                **kwargs
+                **kwargs,
             )
             logger.info(f"Evenement created: {evenement.id} ({titre})")
             return evenement
@@ -32,13 +31,16 @@ class EvenementService:
         """Register a member for an event"""
         try:
             participation, created = Participation.objects.get_or_create(
-                evenement=evenement,
-                membre=membre
+                evenement=evenement, membre=membre
             )
             if created:
-                logger.info(f"Membre {membre.id} registered for evenement {evenement.id}")
+                logger.info(
+                    f"Membre {membre.id} registered for evenement {evenement.id}"
+                )
             else:
-                logger.debug(f"Membre {membre.id} already registered for evenement {evenement.id}")
+                logger.debug(
+                    f"Membre {membre.id} already registered for evenement {evenement.id}"
+                )
             return participation
         except Exception as e:
             logger.error(f"Error registering membre: {e}")
@@ -48,11 +50,10 @@ class EvenementService:
     def desinscrire_membre(evenement, membre):
         """Unregister a member from an event"""
         try:
-            Participation.objects.filter(
-                evenement=evenement,
-                membre=membre
-            ).delete()
-            logger.info(f"Membre {membre.id} unregistered from evenement {evenement.id}")
+            Participation.objects.filter(evenement=evenement, membre=membre).delete()
+            logger.info(
+                f"Membre {membre.id} unregistered from evenement {evenement.id}"
+            )
         except Exception as e:
             logger.error(f"Error unregistering membre: {e}")
             raise

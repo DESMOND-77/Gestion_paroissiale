@@ -28,11 +28,10 @@ services:
         value: https://gestiparr.onrender.com/api
       - key: FRONTEND_URL
         sync: false
-        sync: false
       - key: WEB_CONCURRENCY
         value: "4"
 
-    
+
       # --- Redis (tokens JWT, cache, verrouillage de compte) ---
       # Render n'a pas d'offre Redis/Key Value gratuite : pointer vers une instance
       # externe (ex. Upstash) ou laisser vide — l'app bascule alors sur LocMemCache +

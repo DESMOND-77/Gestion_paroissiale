@@ -12,8 +12,8 @@ class Membre(models.Model):
         null=True,
         blank=True,
     )
-    nom = models.CharField(max_length=100,verbose_name="Nom")
-    prenom = models.CharField(max_length=100,verbose_name="Prénom")
+    nom = models.CharField(max_length=100, verbose_name="Nom")
+    prenom = models.CharField(max_length=100, verbose_name="Prénom")
     date_naissance = models.DateField(null=True, blank=True)
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICES, blank=True)
     sacrement = models.ForeignKey(
@@ -23,8 +23,8 @@ class Membre(models.Model):
         blank=True,
         related_name="membres",
     )
-    quartier = models.CharField(max_length=200, null=True,blank=True)
-    
+    quartier = models.CharField(max_length=200, null=True, blank=True)
+
     est_baptise = models.BooleanField(default=False)
     est_confirme = models.BooleanField(default=False)
     groupe = models.ForeignKey(

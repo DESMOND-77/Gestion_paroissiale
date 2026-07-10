@@ -6,31 +6,27 @@ from django.conf import settings
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
-from core.base_view import BaseAPIView
-from core.response import standardized_response
 from accounts.models import User, UserActivity
-
 from accounts.serializers import (
     ChangePasswordSerializer,
     UserActivitySerializer,
     UserSerializer,
     UserRegistrationSerializer,
     UserLoginSerializer,
-    PasswordResetSerializer,
-    ConfirmPasswordResetSerializer,
     TokenRefreshSerializer,
     LogoutSerializer,
 )
-
+from core.base_view import BaseAPIView
+from core.response import standardized_response
 from .services import AuthenticationService
 
 logger = logging.getLogger(__name__)
@@ -96,7 +92,6 @@ class UserRegistrationView(BaseAPIView):
         },
         tags=["Authentication"],
     )
-
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -122,9 +117,9 @@ class UserRegistrationView(BaseAPIView):
             )
             # set refresh token cookie of registration was successful and cookie security is enable
             if (
-                success
-                and status_code in (200, 201)
-                and settings.JWT_AUTH_COOKIE_SECURE
+                    success
+                    and status_code in (200, 201)
+                    and settings.JWT_AUTH_COOKIE_SECURE
             ):
                 tokens = response_data.get("data", {}).get("tokens", {})
                 if "refresh_token" in tokens and "refresh_expires_in" in tokens:
@@ -237,7 +232,7 @@ class UserLoginView(APIView):
                         key=settings.JWT_COOKIE_NAME,
                         value=tokens["refresh_token"],
                         expires=timezone.now()
-                        + timedelta(seconds=tokens["refresh_expires_in"]),
+                                + timedelta(seconds=tokens["refresh_expires_in"]),
                         secure=True,
                         httponly=True,
                         path="/",
@@ -350,7 +345,7 @@ class TokenRefreshView(BaseAPIView):
                         key=settings.JWT_COOKIE_NAME,
                         value=tokens["refresh"],
                         expires=timezone.now()
-                        + timedelta(seconds=tokens["refresh_expires_in"]),
+                                + timedelta(seconds=tokens["refresh_expires_in"]),
                         samesite="Strict",
                         secure=True,
                         httponly=True,
@@ -567,6 +562,7 @@ class ChangePasswordView(BaseAPIView):
 
 class UserListView(BaseAPIView):
     serializer_class = UserSerializer
+
     # permission_classes = [IsAdmin]
 
     def get_queryset(self):
@@ -588,6 +584,7 @@ class UserListView(BaseAPIView):
 
 class UserDetailView(BaseAPIView):
     serializer_class = UserSerializer
+
     # permission_classes = [IsAdmin]
 
     def get_object(self):
@@ -633,6 +630,7 @@ class UserDetailView(BaseAPIView):
 
 class UserActivityView(generics.ListAPIView):
     serializer_class = UserActivitySerializer
+
     # permission_classes = [IsAdmin]
 
     def get_queryset(self):

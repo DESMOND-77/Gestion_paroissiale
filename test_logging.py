@@ -4,10 +4,11 @@ Test script to verify logging is working across all modules.
 Run this from the Django shell or as a standalone test.
 """
 
+import logging
 import os
 import sys
+
 import django
-import logging
 
 # Setup Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gestion_p.settings')
@@ -16,12 +17,13 @@ django.setup()
 # Import all modules to trigger logging initialization
 from django.conf import settings
 
+
 # Get all configured loggers
 def test_logging():
     """Test logging functionality across all modules"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("LOGGING CONFIGURATION TEST")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     # Get logging configuration
     logging_config = settings.LOGGING
@@ -93,9 +95,9 @@ def test_logging():
         print(f"  ✗ Log directory does not exist: {log_dir}")
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
     passed = sum(1 for _, result in results if "✓" in result)
     total = len(results)
     print(f"Passed: {passed}/{total}")
@@ -106,6 +108,7 @@ def test_logging():
     else:
         print(f"\n⚠️  Some tests failed")
         return False
+
 
 if __name__ == '__main__':
     success = test_logging()

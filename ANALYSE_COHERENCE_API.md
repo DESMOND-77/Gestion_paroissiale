@@ -26,11 +26,14 @@
 ## RÉSUMÉ EXÉCUTIF
 
 ### État Global
-✅ **ARCHITECTURE SOLIDE** — L'API possède une architecture bien structurée avec séparation nette des préoccupations et patterns cohérents.
+
+✅ **ARCHITECTURE SOLIDE** — L'API possède une architecture bien structurée avec séparation nette des préoccupations et
+patterns cohérents.
 
 **Score de Cohérence:** **78/100**
 
 ### Points Forts
+
 - ✅ Architecture en couches bien définie (Views → Services → Models)
 - ✅ Sécurité robuste avec rate limiting, verrouillage, blacklist de tokens
 - ✅ Implémentation JWT complète avec rotation de tokens
@@ -39,10 +42,11 @@
 - ✅ Audit trail via UserActivity
 
 ### Points Faibles (À Corriger)
+
 - ❌ **10 bugs critiques** trouvés (syntaxe, typos, logic errors)
 - ❌ Logging d'activité incomplet
-- ⚠️  Gestion incohérente du cache TTL
-- ⚠️  Configuration CSRF non finalisée pour production
+- ⚠️ Gestion incohérente du cache TTL
+- ⚠️ Configuration CSRF non finalisée pour production
 
 ---
 
@@ -53,6 +57,7 @@
 **Fichier:** [accounts/core/jwt_utils.py](accounts/core/jwt_utils.py)
 
 #### Cycle de Vie des Tokens
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CYCLE DE VIE JWT                         │
@@ -89,24 +94,44 @@
 ```
 
 #### Paramètres Clés
-| Paramètre | Valeur | Cohérence |
-|-----------|--------|-----------|
-| Access Token TTL | 3 jours | ✅ Standard court terme |
-| Refresh Token TTL | 14 jours | ✅ Cohérent (5x access) |
-| JTI Claim | Unique UUID | ✅ Permet tracking unitaire |
-| Algorithm | HS256 | ⚠️ HMAC (acceptable dev, RSA recommandé prod) |
-| Token Rotation | ROTATE_REFRESH_TOKENS=True | ✅ Meilleure pratique |
+
+| Paramètre         | Valeur                     | Cohérence                                     |
+|-------------------|----------------------------|-----------------------------------------------|
+| Access Token TTL  | 3 jours                    | ✅ Standard court terme                        |
+| Refresh Token TTL | 14 jours                   | ✅ Cohérent (5x access)                        |
+| JTI Claim         | Unique UUID                | ✅ Permet tracking unitaire                    |
+| Algorithm         | HS256                      | ⚠️ HMAC (acceptable dev, RSA recommandé prod) |
+| Token Rotation    | ROTATE_REFRESH_TOKENS=True | ✅ Meilleure pratique                          |
 
 #### Méthodologie de Création
+
 ```python
 TokenManager.generate_token(user):
-    1. user_id, email, role → JWT claim
-    2. jti = uuid.uuid4() → unique token ID
-    3. Encode avec SECRET_KEY
-    4. Store metadata en Redis:
-       - user_tokens:{user_id} ← Set de JTIs
-       - token_info:{jti} ← Hash de metadata
-    5. Return (access_token, refresh_token) tuple
+1.
+user_id, email, role → JWT
+claim
+2.
+jti = uuid.uuid4() → unique
+token
+ID
+3.
+Encode
+avec
+SECRET_KEY
+4.
+Store
+metadata
+en
+Redis:
+- user_tokens: {user_id} ← Set
+de
+JTIs
+- token_info: {jti} ← Hash
+de
+metadata
+5.
+Return(access_token, refresh_token)
+tuple
 ```
 
 **Cohérence:** ✅ **Excellente** — Implémentation JWT complète et sécurisée
@@ -116,6 +141,7 @@ TokenManager.generate_token(user):
 ### 1.2 Flux d'Authentification
 
 #### Étape 1: Enregistrement
+
 ```
 POST /api/auth/register/
 ├─ Payload: email, password, username?, role?, phone?
@@ -141,6 +167,7 @@ POST /api/auth/register/
 **Incohérence Détectée:** ⚠️ Tokens retournés avant vérification email — utilisateur non "fidèle" complètement.
 
 #### Étape 2: Connexion
+
 ```
 POST /api/auth/login/
 ├─ Payload: email, password
@@ -166,6 +193,7 @@ POST /api/auth/login/
 **Cohérence:** ✅ **Bonne** — Pattern sécurisé avec lockout
 
 #### Étape 3: Rafraîchissement Token
+
 ```
 POST /api/auth/token/refresh/
 ├─ Payload: refresh_token (body) ou cookie HTTP-only
@@ -187,6 +215,7 @@ POST /api/auth/token/refresh/
 **Cohérence:** ✅ **Excellente** — Rotation sécurisée
 
 #### Étape 4: Déconnexion
+
 ```
 POST /api/auth/logout/
 ├─ Payload: refresh_token
@@ -241,12 +270,12 @@ HIÉRARCHIE DES RÔLES:
 
 ```python
 ROLES_CHOICES = [
-    ("fidele",       "Fidèle"),           # 1. Base parishioner
-    ("responsable",  "Responsable"),      # 2. Group leader  
-    ("secretaire",   "Secrétaire"),       # 3. Secretary
-    ("tresorier",    "Trésorier"),        # 4. Treasurer
-    ("pretre",       "Prêtre"),           # 5. Priest
-    ("admin",        "Administrateur"),   # 6. Admin
+    ("fidele", "Fidèle"),  # 1. Base parishioner
+    ("responsable", "Responsable"),  # 2. Group leader  
+    ("secretaire", "Secrétaire"),  # 3. Secretary
+    ("tresorier", "Trésorier"),  # 4. Treasurer
+    ("pretre", "Prêtre"),  # 5. Priest
+    ("admin", "Administrateur"),  # 6. Admin
 ]
 ```
 
@@ -256,7 +285,9 @@ ROLES_CHOICES = [
 
 ```python
 ┌──────────────────────────────────────────┐
-│  PERMISSION CLASSES IMPLÉMENTÉES         │
+│  PERMISSION
+CLASSES
+IMPLÉMENTÉES         │
 ├──────────────────────────────────────────┤
 │                                          │
 │ IsAdmin:                                 │
@@ -270,29 +301,33 @@ ROLES_CHOICES = [
 │ └─ role in [admin, pretre, tresorier]    │
 │                                          │
 │ IsAdmin | IsAuthenticated:               │
-│ └─ role == admin OR logged-in            │
+│ └─ role == admin
+OR
+logged - in            │
 │                                          │
 └──────────────────────────────────────────┘
 ```
 
 #### Implémentation Pattern
+
 ```python
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user 
-                   and request.user.is_authenticated 
-                   and request.user.role in ADMIN_ROLES)
-    
+        return bool(request.user
+                    and request.user.is_authenticated
+                    and request.user.role in ADMIN_ROLES)
+
     def has_object_permission(self, request, view, obj):
         # Optionnel: vérification au niveau objet
         return obj.user == request.user or request.user.role == 'admin'
 ```
 
 #### Utilisation dans les Vues
+
 ```python
 class AdminUsersView(BaseAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
-    
+
     def get(self, request):
         # Exécuté seulement si permission passe
         users = User.objects.all()
@@ -319,14 +354,14 @@ Rôle Assign:
 
 ### 2.5 Cohérence RBAC
 
-| Aspect | État | Notes |
-|--------|------|-------|
-| Hiérarchie claire | ✅ | 6 rôles ordonnés logiquement |
-| Séparation des préoccupations | ✅ | Chaque rôle = responsabilités spécifiques |
-| Absence de surpermissions | ✅ | Pas d'élévation automatique |
-| Permissions appliquées uniformément | ⚠️ | Voir bug #7 ci-dessous |
-| Assignation contrôlée | ✅ | Seulement admin peut changer rôles |
-| Documentation | ⚠️ | Pas de docstring sur les permissions |
+| Aspect                              | État | Notes                                     |
+|-------------------------------------|------|-------------------------------------------|
+| Hiérarchie claire                   | ✅    | 6 rôles ordonnés logiquement              |
+| Séparation des préoccupations       | ✅    | Chaque rôle = responsabilités spécifiques |
+| Absence de surpermissions           | ✅    | Pas d'élévation automatique               |
+| Permissions appliquées uniformément | ⚠️   | Voir bug #7 ci-dessous                    |
+| Assignation contrôlée               | ✅    | Seulement admin peut changer rôles        |
+| Documentation                       | ⚠️   | Pas de docstring sur les permissions      |
 
 **Cohérence RBAC:** ✅ **Bonne** — 85/100
 
@@ -426,18 +461,18 @@ Rôle Assign:
 ```python
 urlpatterns = [
     # Authentication routes
-    path('api/', include('accounts.urls')),      # /api/auth/*, /api/user/*
-    
+    path('api/', include('accounts.urls')),  # /api/auth/*, /api/user/*
+
     # Feature routes
-    path('api/groupes/', include('groupes.urls')),      # /api/groupes/*
-    path('api/membres/', include('membres.urls')),      # /api/membres/*
-    path('api/evenements/', include('evenements.urls')),# /api/evenements/*
-    path('api/finances/', include('finances.urls')),    # /api/finances/*
+    path('api/groupes/', include('groupes.urls')),  # /api/groupes/*
+    path('api/membres/', include('membres.urls')),  # /api/membres/*
+    path('api/evenements/', include('evenements.urls')),  # /api/evenements/*
+    path('api/finances/', include('finances.urls')),  # /api/finances/*
     path('api/librairie/', include('librairie.urls')),  # /api/librairie/*
-    
+
     # Documentation
-    path('docs/', schema_view.with_ui('swagger')),      # Swagger UI
-    path('redoc/', schema_view.with_ui('redoc')),       # ReDoc
+    path('docs/', schema_view.with_ui('swagger')),  # Swagger UI
+    path('redoc/', schema_view.with_ui('redoc')),  # ReDoc
 ]
 ```
 
@@ -549,7 +584,7 @@ class BaseAPIView(APIView):
     - Logging structuré
     - Response standardisée
     """
-    
+
     def handle_exception(self, exc):
         """
         Intercept les exceptions et retourne HTTP response standardisée
@@ -577,13 +612,13 @@ class RegisterView(BaseAPIView):
     Créer nouvel utilisateur
     """
     permission_classes = [AllowAny]
-    
+
     def post(self, request):
         try:
             # 1. Extract & validate payload
             email = request.data.get('email')
             password = request.data.get('password')
-            
+
             # 2. Call service layer
             service = AuthenticationService()
             success, response_dict, status_code = service.register(
@@ -591,13 +626,13 @@ class RegisterView(BaseAPIView):
                 password=password,
                 **request.data
             )
-            
+
             # 3. Return standardized response
             return Response(
                 standardized_response(success=success, **response_dict),
                 status=status_code
             )
-        
+
         except Exception as e:
             logger.error(f"Registration error: {str(e)}")
             return Response(
@@ -619,7 +654,7 @@ class AuthenticationService:
     Toute la logique métier d'authentification
     Retourne toujours: (success: bool, data: dict, status: int)
     """
-    
+
     def register(self, email, password, **kwargs):
         """
         1. Validation des données
@@ -631,10 +666,10 @@ class AuthenticationService:
         try:
             # Validation
             if User.objects.filter(email=email).exists():
-                return (False, 
+                return (False,
                         {'error': 'Email already registered'},
                         status.HTTP_400_BAD_REQUEST)
-            
+
             # Create user
             user = User.objects.create_user(
                 email=email,
@@ -642,7 +677,7 @@ class AuthenticationService:
                 is_verified=False,
                 is_active=False
             )
-            
+
             # Queue background email
             thread = threading.Thread(
                 target=EmailVerificationService.send_email_background,
@@ -650,22 +685,22 @@ class AuthenticationService:
             )
             thread.daemon = True
             thread.start()
-            
+
             # Generate tokens
             token_manager = TokenManager()
             tokens = token_manager.generate_token(user)
-            
+
             # Return success
             return (True,
                     {'tokens': tokens, 'verification_needed': True},
                     status.HTTP_201_CREATED)
-        
+
         except Exception as e:
             logger.error(f"Registration error: {e}")
             return (False,
                     {'error': str(e)},
                     status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def login(self, email, password):
         """
         1. Check account lockout
@@ -687,25 +722,25 @@ class User(AbstractBaseUser):
     """
     Custom User Model pour Gestion Paroissiale
     """
-    
+
     # Core authentication
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
-    
+
     # Status
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    
+
     # Role & permissions
     role = models.CharField(
         max_length=20,
         choices=ROLES_CHOICES,
         default='fidele'
     )
-    
+
     # Additional info
     phone_number = models.CharField(
         max_length=20,
@@ -717,7 +752,7 @@ class User(AbstractBaseUser):
         blank=True, null=True
     )
     sacrement = models.CharField(max_length=100, blank=True)
-    
+
     # Audit trail
     created_by = models.ForeignKey(
         'self',
@@ -727,17 +762,18 @@ class User(AbstractBaseUser):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     # Manager & config
     objects = UserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    
+
     def __str__(self):
         return f"{self.email} ({self.role})"
 ```
 
 #### Validations Appliquées
+
 - Email: EmailField validator (RFC 5322 compatible)
 - Phone: Regex `^[+]?[0-9\s\-()]{9,15}$`
 - Password: Django auth password validators (8+ chars, not common)
@@ -752,7 +788,7 @@ class UserActivity(models.Model):
     """
     Audit trail - Track ALL significant user actions
     """
-    
+
     ACTION_CHOICES = [
         ('login', 'Login'),
         ('logout', 'Logout'),
@@ -761,9 +797,9 @@ class UserActivity(models.Model):
         ('delete', 'Delete'),
         ('view', 'View'),
     ]
-    
+
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                            related_name='activities')
+                             related_name='activities')
     action = models.CharField(max_length=50, choices=ACTION_CHOICES)
     object_id = models.IntegerField(null=True, blank=True)
     object_type = models.CharField(max_length=100, blank=True)
@@ -771,7 +807,7 @@ class UserActivity(models.Model):
     user_agent = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     details = models.JSONField(default=dict, blank=True)
-    
+
     class Meta:
         ordering = ['-timestamp']
         indexes = [
@@ -790,8 +826,8 @@ class Membre(models.Model):
     Profil extended pour membre de la paroisse
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE,
-                               related_name='membre_profil')
-    
+                                related_name='membre_profil')
+
     # Demographics
     full_name = models.CharField(max_length=200)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -799,45 +835,46 @@ class Membre(models.Model):
     phone = models.CharField(max_length=20)
     email = models.EmailField()
     quarter = models.CharField(max_length=100)
-    
+
     # Spiritual status
     is_baptized = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
-    
+
     # Relations
     groupe = models.ForeignKey('groupes.Groupe',
-                              on_delete=models.SET_NULL,
-                              null=True, blank=True,
-                              related_name='membres')
+                               on_delete=models.SET_NULL,
+                               null=True, blank=True,
+                               related_name='membres')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class Sacrement(models.Model):
     """
     Track spiritual sacraments for members
     """
     membre = models.ForeignKey(Membre, on_delete=models.CASCADE,
-                              related_name='sacrements')
-    
+                               related_name='sacrements')
+
     TYPES = [('bapteme', 'Baptême'), ('mariage', 'Mariage'), ...]
-    
+
     type = models.CharField(max_length=50, choices=TYPES)
     date = models.DateField()
     officiant = models.ForeignKey(User, on_delete=models.SET_NULL,
-                                 null=True, blank=True)
+                                  null=True, blank=True)
     notes = models.TextField(blank=True)
 ```
 
 ### 4.7 Cohérence Views/Services/Models
 
-| Critère | État | Notes |
-|---------|------|-------|
-| Séparation concerns | ✅ | Views = HTTP, Services = Logic, Models = Data |
-| Pattern cohérent | ✅ | Service retourne toujours (bool, dict, status) |
-| Exception handling | ✅ | Centralisé dans BaseAPIView |
-| Validation | ✅ | Modèles + Serializers |
-| Logging | ⚠️ | Pas complet (voir section 10) |
-| Reusability | ✅ | Services indépendants de Django |
+| Critère             | État | Notes                                          |
+|---------------------|------|------------------------------------------------|
+| Séparation concerns | ✅    | Views = HTTP, Services = Logic, Models = Data  |
+| Pattern cohérent    | ✅    | Service retourne toujours (bool, dict, status) |
+| Exception handling  | ✅    | Centralisé dans BaseAPIView                    |
+| Validation          | ✅    | Modèles + Serializers                          |
+| Logging             | ⚠️   | Pas complet (voir section 10)                  |
+| Reusability         | ✅    | Services indépendants de Django                |
 
 **Cohérence V/S/M:** ✅ **Très Bonne** — 88/100
 
@@ -851,11 +888,11 @@ class Sacrement(models.Model):
 
 ```python
 def standardized_response(
-    success=True,
-    data=None,
-    error=None,
-    message=None,
-    **kwargs
+        success=True,
+        data=None,
+        error=None,
+        message=None,
+        **kwargs
 ) -> dict:
     """
     Format de réponse unique pour TOUTES les endpoints
@@ -921,8 +958,12 @@ def standardized_response(
 {
   "success": true,
   "data": {
-    "user": {...},
-    "tokens": {...}
+    "user": {
+      ...
+    },
+    "tokens": {
+      ...
+    }
   },
   "message": "Please verify your email before full access"
 }
@@ -933,26 +974,34 @@ def standardized_response(
 **Fichier:** [accounts/core/exceptions.py](accounts/core/exceptions.py)
 
 ```python
-┌─ EXCEPTION HIERARCHY ──────────────────────────────────┐
+┌─ EXCEPTION
+HIERARCHY ──────────────────────────────────┐
 │                                                        │
-│ Exception (Python built-in)                          │
-│ └─ APIException (DRF)                                │
-│    ├─ AccountLockedException(HTTP 403)              │
+│ Exception(Python
+built - in)                          │
+│ └─ APIException(DRF)                                │
+│    ├─ AccountLockedException(HTTP
+403)              │
 │    │  └─ "Account locked after 5 failed attempts"   │
 │    │                                                  │
-│    ├─ EmailNotVerifiedException(HTTP 401)           │
+│    ├─ EmailNotVerifiedException(HTTP
+401)           │
 │    │  └─ "Email not verified. Check inbox."         │
 │    │                                                  │
-│    ├─ InvalidTokenException(HTTP 400)               │
+│    ├─ InvalidTokenException(HTTP
+400)               │
 │    │  └─ "Invalid or expired token"                 │
 │    │                                                  │
-│    ├─ PermissionDeniedException(HTTP 403)           │
+│    ├─ PermissionDeniedException(HTTP
+403)           │
 │    │  └─ "You don't have permission for this action"│
 │    │                                                  │
-│    ├─ RateLimitExceededException(HTTP 429)          │
+│    ├─ RateLimitExceededException(HTTP
+429)          │
 │    │  └─ "Rate limit exceeded. Try again later."    │
 │    │                                                  │
-│    └─ UserNotfoundException(HTTP 404)               │
+│    └─ UserNotfoundException(HTTP
+404)               │
 │       └─ "User not found"                           │
 │                                                      │
 └────────────────────────────────────────────────────────┘
@@ -1030,14 +1079,14 @@ LOGGING = {
 
 ### 5.5 Cohérence Erreurs
 
-| Aspect | État | Notes |
-|--------|------|-------|
-| Format unifié | ✅ | standardized_response() utilisé partout |
-| HTTP status codes | ✅ | Appropriés (400, 401, 403, 429, 500) |
-| Messages utilisateur | ✅ | Clairs et informatifs |
-| Messages sécurité | ✅ | Pas d'exposition de détails internes |
-| Logging des erreurs | ✅ | Traceback enregistré |
-| Documentation erreurs | ⚠️ | Pas de liste erreurs API documentée |
+| Aspect                | État | Notes                                   |
+|-----------------------|------|-----------------------------------------|
+| Format unifié         | ✅    | standardized_response() utilisé partout |
+| HTTP status codes     | ✅    | Appropriés (400, 401, 403, 429, 500)    |
+| Messages utilisateur  | ✅    | Clairs et informatifs                   |
+| Messages sécurité     | ✅    | Pas d'exposition de détails internes    |
+| Logging des erreurs   | ✅    | Traceback enregistré                    |
+| Documentation erreurs | ⚠️   | Pas de liste erreurs API documentée     |
 
 **Cohérence Erreurs:** ✅ **Excellente** — 89/100
 
@@ -1089,24 +1138,25 @@ ACCOUNT LOCKOUT MECHANISM:
 ```
 
 **Code Implementation:**
+
 ```python
 def login(self, email, password):
     # Check account lockout first
     cache_key_lockout = f"account_lockout_{email}"
     if cache.get(cache_key_lockout):
         raise AccountLockedException()
-    
+
     # Check failed login count
     cache_key_failed = f"failed_login_{email}"
     failed_count = cache.get(cache_key_failed) or 0
-    
+
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         # Increment failed count
         cache.set(cache_key_failed, failed_count + 1, 1800)  # 30 min
         raise AuthenticationFailed("Invalid credentials")
-    
+
     # Validate password
     if not user.check_password(password):
         # Increment failed count
@@ -1119,18 +1169,19 @@ def login(self, email, password):
         else:
             cache.set(cache_key_failed, failed_count, 1800)
             raise AuthenticationFailed("Invalid credentials")
-    
+
     # Success - clear failed count
     cache.delete(cache_key_failed)
-    
+
     # ... rest of authentication
 ```
 
 **Paramètres de Sécurité:**
+
 ```python
-ACCOUNT_LOCKOUT_THRESHOLD = 5        # Failed attempts before lockout
-ACCOUNT_LOCKOUT_DURATION = 900       # 15 minutes
-FAILED_LOGIN_CACHE_TTL = 1800        # 30 minutes
+ACCOUNT_LOCKOUT_THRESHOLD = 5  # Failed attempts before lockout
+ACCOUNT_LOCKOUT_DURATION = 900  # 15 minutes
+FAILED_LOGIN_CACHE_TTL = 1800  # 30 minutes
 ```
 
 **Cohérence:** ✅ **Excellente** — Implémentation standard et sécurisée
@@ -1186,6 +1237,7 @@ EMAIL VERIFICATION FLOW:
 ```
 
 **Token Generator Configuration:**
+
 ```python
 # Django default: 
 # - Token valid 1 day (configurable)
@@ -1263,6 +1315,7 @@ PASSWORD RESET FLOW:
 ```
 
 **Protections Appliquées:**
+
 - ✅ Rate limiting: 1 reset/email/5 min
 - ✅ Double-blind: Pas d'énumération users
 - ✅ Token expiration: Tokens invalides après 1 jour
@@ -1387,8 +1440,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',      # Anonymous users
-        'user': '1000/hour',     # Authenticated users
+        'anon': '100/hour',  # Anonymous users
+        'user': '1000/hour',  # Authenticated users
     }
 }
 ```
@@ -1432,6 +1485,7 @@ SESSION_COOKIE_SECURE = False  # True en production
 ```
 
 **CSRF Flow:**
+
 ```
 1. Registration/Login success
    └─ get_token(request) in DRF
@@ -1456,19 +1510,19 @@ SESSION_COOKIE_SECURE = False  # True en production
 
 ### 6.8 Résumé Mesures de Sécurité
 
-| Mesure | Implémentée | Score |
-|--------|-------------|-------|
-| Account Lockout | ✅ | 5 attempts → 15 min |
-| Email Verification | ✅ | Required + token-based |
-| Password Reset | ✅ | Rate limited + secure |
-| Password Change | ✅ | Verify old + token blacklist |
-| Token Blacklist | ✅ | Redis + TTL auto-cleanup |
-| Rate Limiting | ✅ | Multi-layer (auth, email, reset) |
-| CSRF Protection | ✅ | Token-based (incomplet config) |
-| Input Validation | ✅ | Serializers + models |
-| SQL Injection | ✅ | ORM + parameterized queries |
-| XSS Protection | ✅ | Response serialization |
-| JWT Rotation | ✅ | Refresh token rotation |
+| Mesure             | Implémentée | Score                            |
+|--------------------|-------------|----------------------------------|
+| Account Lockout    | ✅           | 5 attempts → 15 min              |
+| Email Verification | ✅           | Required + token-based           |
+| Password Reset     | ✅           | Rate limited + secure            |
+| Password Change    | ✅           | Verify old + token blacklist     |
+| Token Blacklist    | ✅           | Redis + TTL auto-cleanup         |
+| Rate Limiting      | ✅           | Multi-layer (auth, email, reset) |
+| CSRF Protection    | ✅           | Token-based (incomplet config)   |
+| Input Validation   | ✅           | Serializers + models             |
+| SQL Injection      | ✅           | ORM + parameterized queries      |
+| XSS Protection     | ✅           | Response serialization           |
+| JWT Rotation       | ✅           | Refresh token rotation           |
 
 **Cohérence Sécurité:** ✅ **Excellente** — 92/100
 
@@ -1551,7 +1605,7 @@ SESSION_COOKIE_SECURE = False  # True en production
 
 ```python
 # User Self-Reference
-created_by = ForeignKey('self', 
+created_by = ForeignKey('self',
                         on_delete=models.SET_NULL,
                         null=True, blank=True,
                         related_name='created_users')
@@ -1594,49 +1648,50 @@ membre = ForeignKey(Membre, on_delete=models.CASCADE)
 class Meta:
     indexes = [
         models.Index(fields=['user', '-timestamp']),  # Queries par user
-        models.Index(fields=['action', '-timestamp']), # Queries par action
+        models.Index(fields=['action', '-timestamp']),  # Queries par action
     ]
     ordering = ['-timestamp']
 
+
 # Auto-fields
 created_at = DateTimeField(auto_now_add=True)  # Immutable once created
-updated_at = DateTimeField(auto_now=True)      # Auto-update on save
+updated_at = DateTimeField(auto_now=True)  # Auto-update on save
 ```
 
 ### 7.4 Constraints & Validations
 
 ```python
 # Model-level
-email = EmailField(unique=True)                # DB unique constraint
+email = EmailField(unique=True)  # DB unique constraint
 username = CharField(unique=True, max_length=150)
 phone_number = CharField(
-    validators=[phone_regex],                  # Regex validator
+    validators=[phone_regex],  # Regex validator
     max_length=20
 )
 
 # Choices (Enum simulation)
 role = CharField(
     max_length=20,
-    choices=ROLES_CHOICES,                     # Limited values
+    choices=ROLES_CHOICES,  # Limited values
 )
 
 # Boolean defaults
-is_verified = BooleanField(default=False)      # DB default
+is_verified = BooleanField(default=False)  # DB default
 is_active = BooleanField(default=True)
 ```
 
 ### 7.5 Cohérence Modèles DB
 
-| Aspect | État | Notes |
-|--------|------|-------|
-| Normalisation | ✅ | 3NF appliquée |
-| Clés étrangères | ✅ | Correctement définies |
-| Indexes | ✅ | Sur champs requête fréquents |
-| Constraints | ✅ | Uniques + defaults |
-| Relation OneToOne | ✅ | Membre↔User optionnel |
-| Cascade delete | ✅ | Configuré approprié |
-| Audit fields | ✅ | created_at, updated_at |
-| Typage | ✅ | Choices pour enums |
+| Aspect            | État | Notes                        |
+|-------------------|------|------------------------------|
+| Normalisation     | ✅    | 3NF appliquée                |
+| Clés étrangères   | ✅    | Correctement définies        |
+| Indexes           | ✅    | Sur champs requête fréquents |
+| Constraints       | ✅    | Uniques + defaults           |
+| Relation OneToOne | ✅    | Membre↔User optionnel        |
+| Cascade delete    | ✅    | Configuré approprié          |
+| Audit fields      | ✅    | created_at, updated_at       |
+| Typage            | ✅    | Choices pour enums           |
 
 **Cohérence DB:** ✅ **Excellente** — 91/100
 
@@ -1866,21 +1921,22 @@ is_active = BooleanField(default=True)
 #   └─ Returns True/False
 ```
 
-**⚠️ Important:** Si user change password AVANT cliquer lien reset, le token devient invalide (parce que password_hash dans token ne correspond plus).
+**⚠️ Important:** Si user change password AVANT cliquer lien reset, le token devient invalide (parce que password_hash
+dans token ne correspond plus).
 
 ### 8.4 Cohérence Email/Reset Flow
 
-| Aspect | État | Notes |
-|--------|------|-------|
-| Token generation | ✅ | Django built-in, sécurisé |
-| Token expiry | ✅ | 24 heures (reasonable) |
-| Rate limiting | ✅ | 5 min entre emails |
-| Email queueing | ✅ | Background threads |
-| Retry logic | ✅ | 3 tentatives max |
-| User enumeration | ✅ | Preventé (silent fail) |
-| Token blacklist | ✅ | Appliqué après reset |
-| Caching verification | ✅ | 1h TTL pour status |
-| Email templates | ✅ | HTML well-formed |
+| Aspect               | État | Notes                     |
+|----------------------|------|---------------------------|
+| Token generation     | ✅    | Django built-in, sécurisé |
+| Token expiry         | ✅    | 24 heures (reasonable)    |
+| Rate limiting        | ✅    | 5 min entre emails        |
+| Email queueing       | ✅    | Background threads        |
+| Retry logic          | ✅    | 3 tentatives max          |
+| User enumeration     | ✅    | Preventé (silent fail)    |
+| Token blacklist      | ✅    | Appliqué après reset      |
+| Caching verification | ✅    | 1h TTL pour status        |
+| Email templates      | ✅    | HTML well-formed          |
 
 **Cohérence Email/Reset:** ✅ **Excellente** — 90/100
 
@@ -1901,14 +1957,14 @@ CACHES = {
         "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "SOCKET_CONNECT_TIMEOUT": 5,      # Connection timeout
-            "SOCKET_TIMEOUT": 5,               # Operation timeout
-            "RETRY_ON_TIMEOUT": True,          # Auto-retry on timeout
-            "MAX_CONNECTIONS": 1000,           # Connection pool size
+            "SOCKET_CONNECT_TIMEOUT": 5,  # Connection timeout
+            "SOCKET_TIMEOUT": 5,  # Operation timeout
+            "RETRY_ON_TIMEOUT": True,  # Auto-retry on timeout
+            "MAX_CONNECTIONS": 1000,  # Connection pool size
             "PARSER_CLASS": "redis.connection.HiredisParser",  # C parser
         },
-        "KEY_PREFIX": "gestion_paroisse",     # All keys prefixed
-        "TIMEOUT": 86400 * 14,                # 14 days default TTL
+        "KEY_PREFIX": "gestion_paroisse",  # All keys prefixed
+        "TIMEOUT": 86400 * 14,  # 14 days default TTL
     }
 }
 
@@ -2007,20 +2063,20 @@ class TokenManager:
     """
     Gère le cycle de vie complet des JWT
     """
-    
+
     def __init__(self):
         self.cache = cache  # Django cache (Redis backend)
         self.redis_client = redis.from_url(settings.REDIS_URL)
-    
+
     def generate_token(self, user):
         """
         Créer nouvelle paire access + refresh token
         """
         jti = str(uuid.uuid4())
         now = timezone.now()
-        access_exp = now + timedelta(days=3)    # 3 days
+        access_exp = now + timedelta(days=3)  # 3 days
         refresh_exp = now + timedelta(days=14)  # 14 days
-        
+
         payload = {
             'user_id': user.id,
             'email': user.email,
@@ -2030,9 +2086,9 @@ class TokenManager:
             'iat': int(now.timestamp()),
             'exp': int(access_exp.timestamp()),
         }
-        
+
         access_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-        
+
         # Generate refresh token separately
         refresh_jti = str(uuid.uuid4())
         refresh_payload = {
@@ -2043,18 +2099,18 @@ class TokenManager:
             'exp': int(refresh_exp.timestamp()),
         }
         refresh_token = jwt.encode(refresh_payload, settings.SECRET_KEY, algorithm='HS256')
-        
+
         # Store metadata in Redis
         self._store_token_metadata(user.id, jti, 'access', 3 * 86400)
         self._store_token_metadata(user.id, refresh_jti, 'refresh', 14 * 86400)
-        
+
         return {
             'access': access_token,
             'refresh': refresh_token,
             'access_expires_in': int(access_exp.timestamp()),
             'refresh_expires_in': int(refresh_exp.timestamp()),
         }
-    
+
     def _store_token_metadata(self, user_id, jti, token_type, ttl):
         """
         Store token metadata in Redis
@@ -2062,7 +2118,7 @@ class TokenManager:
         # Add JTI to user's token set
         self.redis_client.sadd(f'user_tokens:{user_id}', jti)
         self.redis_client.expire(f'user_tokens:{user_id}', ttl)
-        
+
         # Store token info hash
         token_info = {
             'user_id': user_id,
@@ -2072,7 +2128,7 @@ class TokenManager:
         }
         self.redis_client.hset(f'token_info:{jti}', mapping=token_info)
         self.redis_client.expire(f'token_info:{jti}', ttl)
-    
+
     def validate_token(self, token_str):
         """
         Validar token: signature, expiry, blacklist, user status
@@ -2085,26 +2141,26 @@ class TokenManager:
             raise InvalidTokenException("Token expired")
         except jwt.DecodeError:
             raise InvalidTokenException("Invalid token format")
-        
+
         jti = payload.get('jti')
         user_id = payload.get('user_id')
-        
+
         # Check blacklist
         if self.is_token_blacklisted(jti):
             raise InvalidTokenException("Token has been revoked")
-        
+
         # Check user still exists & active
         try:
             user = User.objects.get(id=user_id, is_active=True)
         except User.DoesNotExist:
             raise InvalidTokenException("User not found or inactive")
-        
+
         # Check email verified
         if not user.is_verified:
             raise EmailNotVerifiedException("Email not verified")
-        
+
         return user
-    
+
     def is_token_blacklisted(self, jti):
         """
         Check if token in blacklist
@@ -2113,24 +2169,24 @@ class TokenManager:
         cached = cache.get(f'blacklisted_tokens:{jti}')
         if cached:
             return True
-        
+
         # Check Redis directly for safety
         exists = self.redis_client.exists(f'blacklisted_tokens:{jti}')
         return bool(exists)
-    
+
     def blacklist_token(self, jti):
         """
         Blacklist single token (logout)
         """
         cache.set(f'blacklisted_tokens:{jti}', '1', 86400 * 14)  # 14 days
-    
+
     def blacklist_all_user_tokens(self, user_id):
         """
         Blacklist ALL tokens for user (password change / security)
         """
         # Get all JTIs for user
         jtis = self.redis_client.smembers(f'user_tokens:{user_id}')
-        
+
         # Blacklist each token
         pipe = self.redis_client.pipeline()
         for jti in jtis:
@@ -2154,16 +2210,16 @@ class TokenManager:
 
 ### 9.5 Cohérence Redis
 
-| Aspect | État | Notes |
-|--------|------|-------|
-| Connection pooling | ✅ | MAX_CONNECTIONS=1000 |
-| Retry on timeout | ✅ | RETRY_ON_TIMEOUT=True |
-| Key prefixing | ✅ | "gestion_paroisse:" |
-| TTL management | ✅ | Auto-expire keys |
-| Fallback LocMemCache | ✅ | En cas Redis unavailable |
-| Atomicity | ✅ | Redis pipelines |
-| Version compatibility | ✅ | Détecte version 4.0+ |
-| Data structure choice | ✅ | SET, HASH, STRING appropriés |
+| Aspect                | État | Notes                        |
+|-----------------------|------|------------------------------|
+| Connection pooling    | ✅    | MAX_CONNECTIONS=1000         |
+| Retry on timeout      | ✅    | RETRY_ON_TIMEOUT=True        |
+| Key prefixing         | ✅    | "gestion_paroisse:"          |
+| TTL management        | ✅    | Auto-expire keys             |
+| Fallback LocMemCache  | ✅    | En cas Redis unavailable     |
+| Atomicity             | ✅    | Redis pipelines              |
+| Version compatibility | ✅    | Détecte version 4.0+         |
+| Data structure choice | ✅    | SET, HASH, STRING appropriés |
 
 **Cohérence Redis:** ✅ **Excellente** — 91/100
 
@@ -2182,10 +2238,10 @@ class TokenManager:
 # Code actuel (BROKEN)
 class CheckPermissionView(BaseAPIView):
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
         permission = request.query_params.get('permission')
-        
+
         # ❌ PROBLEM: User model doesn't have has_permission() method!
         if request.user.has_permission(permission):
             return Response(...)
@@ -2194,6 +2250,7 @@ class CheckPermissionView(BaseAPIView):
 **Impact:** `AttributeError: 'User' object has no attribute 'has_permission'`
 
 **Solution:**
+
 ```python
 # Option 1: Implement on User model
 class User(AbstractBaseUser):
@@ -2201,14 +2258,15 @@ class User(AbstractBaseUser):
         """Check if user has permission by name"""
         admin_perms = ['admin_access', 'manage_users', 'manage_finances']
         secretary_perms = admin_perms + ['manage_events', 'manage_groups']
-        
+
         permission_map = {
             'admin': admin_perms,
             'secretaire': secretary_perms,
             # ...
         }
-        
+
         return permission_name in permission_map.get(self.role, [])
+
 
 # Option 2: Use DRF permission classes
 permission_classes = [IsAuthenticated, IsAdmin]  # Depending on permission
@@ -2260,20 +2318,21 @@ if isinstance(file, (InMemoryUploadedFile, UploadedFile)):  # ✅ Tuple needed
 
 #### ❌ BUG #4: String .join() Logic Error
 
-**Fichier:** [accounts/verification/password_reset_service.py#L133](accounts/verification/password_reset_service.py#L133)  
+**Fichier:
+** [accounts/verification/password_reset_service.py#L133](accounts/verification/password_reset_service.py#L133)  
 **Problème:** Misuse of `.join()` method
 
 ```python
 # Code actuel (BROKEN)
 except Exception as e:
-    message = "Password has been reset successfully...".join(e.message)
-    # ❌ .join() concatenates string items from iterable
-    # This tries to join the error message into the string letter-by-letter
+message = "Password has been reset successfully...".join(e.message)
+# ❌ .join() concatenates string items from iterable
+# This tries to join the error message into the string letter-by-letter
 
 # Correct:
 except Exception as e:
-    message = f"Password has been reset successfully. {str(e)}"
-    # ✅ Use f-string or format()
+message = f"Password has been reset successfully. {str(e)}"
+# ✅ Use f-string or format()
 ```
 
 **Impact:** Réponse d'erreur malformée
@@ -2289,6 +2348,7 @@ except Exception as e:
 # Code actuel (BROKEN)
 class SomeView(BaseAPIView):
     permissions_classes = [IsAuthenticated]  # ❌ Wrong attribute name
+
 
 # Correct:
 class SomeView(BaseAPIView):
@@ -2309,12 +2369,13 @@ class SomeView(BaseAPIView):
 class ProfileView(BaseAPIView):
     @property  # ❌ This doesn't work as expected with APIView
     def update(self):
-        # ...
+# ...
+
 
 # Correct pattern:
 class ProfileView(BaseAPIView):
     permission_classes = [IsAuthenticated]
-    
+
     def put(self, request):  # ✅ Standard HTTP method
         # ...
         return Response(...)
@@ -2330,7 +2391,8 @@ class ProfileView(BaseAPIView):
 
 ```python
 # Token lifetime
-token_exp = 14 days  # Refresh token max
+token_exp = 14
+days  # Refresh token max
 
 # Cache verification status
 cache.set(f"user_verified_status_{user_id}", True, TTL=3600)  # 1 hour ONLY
@@ -2376,14 +2438,22 @@ service.register(...)
 # Loggées:
 - login
 - logout
-- email verification
+- email
+verification
 
 # NON loggées (PROBLÈME):
-- token refresh
-- password change
-- profile update
-- permission check attempts
-- invalid access attempts (401/403)
+- token
+refresh
+- password
+change
+- profile
+update
+- permission
+check
+attempts
+- invalid
+access
+attempts(401 / 403)
 
 # Recommendation: Log toutes les actions sensibles:
 UserActivity.objects.create(
@@ -2411,7 +2481,7 @@ if not DEBUG:  # Production
     # SSL/TLS requis
     CSRF_COOKIE_SECURE = True  # HTTPS only
     SESSION_COOKIE_SECURE = True
-    
+
     # Domain configuration
     SESSION_COOKIE_DOMAIN = '.paroisse.example.com'
     CSRF_TRUSTED_ORIGINS = [
@@ -2446,8 +2516,8 @@ token_generator.make_token(user)  # Valid 24 hours (Django default)
 
 ```python
 # Current:
-'anon': '100/hour',      # ⚠️ 1.67 req/min (OK)
-'user': '1000/hour',     # ⚠️ 16.67 req/min (Peut être agressif)
+'anon': '100/hour',  # ⚠️ 1.67 req/min (OK)
+'user': '1000/hour',  # ⚠️ 16.67 req/min (Peut être agressif)
 
 # Recommendation:
 # Ajouter rate limits spécifiques par endpoint:
@@ -2532,6 +2602,7 @@ token_generator.make_token(user)  # Valid 24 hours (Django default)
 ### 11.2 Priority Fix List
 
 **CRITICAL (Fix Immediately):**
+
 1. ❌ BUG #1: CheckPermissionView - Implement has_permission() method
 2. ❌ BUG #2: threading.thread → threading.Thread typo
 3. ❌ BUG #3: isinstance() tuple syntax correction
@@ -2539,17 +2610,20 @@ token_generator.make_token(user)  # Valid 24 hours (Django default)
 5. ❌ BUG #5: permission_classes typo
 
 **HIGH (Fix Before Production):**
+
 6. ⚠️ ISSUE #10: Complete CSRF config for production
 7. ⚠️ ISSUE #8: Review tokens-before-verification policy
 8. ⚠️ SECURITY #11: Reduce password reset token timeout (24h → 2h)
 
 **MEDIUM (Improve Code Quality):**
+
 9. ⚠️ ISSUE #9: Add comprehensive UserActivity logging
 10. ⚠️ ISSUE #7: Align cache TTLs (token vs verification)
 11. ⚠️ Add type hints throughout codebase
 12. ⚠️ Expand docstrings for all services
 
 **LOW (Nice to Have):**
+
 13. ✅ Add email-to-password-reset token generation consistency
 14. ✅ Implement automatic access token rotation on API calls
 15. ✅ Add endpoint-level rate limiting configurations
@@ -2563,10 +2637,12 @@ token_generator.make_token(user)  # Valid 24 hours (Django default)
 def register(self, email, password, **kwargs):
     ...
 
+
 # Better:
 from typing import Tuple, Dict, Any
 
-def register(self, email: str, password: str, **kwargs: Any) 
+
+def register(self, email: str, password: str, **kwargs: Any)
     -> Tuple[bool, Dict[str, Any], int]:
     ...
 ```
@@ -2602,19 +2678,20 @@ logger.info(
 
 ### État Global de l'API
 
-✅ **ARCHITECTURALEMENT SOLIDE** — L'API Gestion Paroissiale possède une architecture bien structurée avec séparation nette des préoccupations, sécurité robuste, et patterns cohérents.
+✅ **ARCHITECTURALEMENT SOLIDE** — L'API Gestion Paroissiale possède une architecture bien structurée avec séparation
+nette des préoccupations, sécurité robuste, et patterns cohérents.
 
 ### Synthèse
 
-| Aspect | Score | Verdict |
-|--------|-------|---------|
-| **Architecture** | 88/100 | ✅ Excellent |
-| **Sécurité** | 90/100 | ✅ Excellent |
-| **RBAC** | 85/100 | ✅ Bon |
-| **Code Quality** | 78/100 | ⚠️ Bon (6 bugs) |
-| **Database** | 91/100 | ✅ Excellent |
-| **Documentation** | 65/100 | ⚠️ À améliorer |
-| **Overall** | **86/100** | ✅ **TRÈS BON** |
+| Aspect            | Score      | Verdict         |
+|-------------------|------------|-----------------|
+| **Architecture**  | 88/100     | ✅ Excellent     |
+| **Sécurité**      | 90/100     | ✅ Excellent     |
+| **RBAC**          | 85/100     | ✅ Bon           |
+| **Code Quality**  | 78/100     | ⚠️ Bon (6 bugs) |
+| **Database**      | 91/100     | ✅ Excellent     |
+| **Documentation** | 65/100     | ⚠️ À améliorer  |
+| **Overall**       | **86/100** | ✅ **TRÈS BON**  |
 
 ### Prochaines Étapes
 

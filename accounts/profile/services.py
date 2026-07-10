@@ -5,8 +5,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
-from core.jwt_utils import TokenManager
 from accounts.serializers import UserSerializer
+from core.jwt_utils import TokenManager
 
 logger = logging.getLogger(__name__)
 

@@ -10,7 +10,9 @@ class AccountLockedException(APIException):
 
 class EmailNotVerifiedException(APIException):
     status_code = 401
-    default_detail = _("Email address not verified. Please verify your email to proceed.")
+    default_detail = _(
+        "Email address not verified. Please verify your email to proceed."
+    )
     default_code = "email_not_verified"
 
 

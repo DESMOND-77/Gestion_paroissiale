@@ -64,3 +64,5 @@ webencodings==0.5.1
 whitenoise==6.12.0
 wrapt==2.2.2
 xhtml2pdf==0.2.17
+
+dj-config-url

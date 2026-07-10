@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Article, Vente
 
 
@@ -12,7 +13,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             "id", "nom", "description", "categorie", "categorie_display",
             "prix_unitaire", "stock_disponible", "seuil_alerte", "en_alerte", "date_ajout",
         ]
-        read_only_fields = ["date_ajout", "en_alerte", "categorie_display"]
+        read_only_fields = ["date_ajout ", "en_alerte", "categorie_display"]
 
 
 class VenteSerializer(serializers.ModelSerializer):

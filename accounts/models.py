@@ -1,13 +1,12 @@
 import logging
-from django.conf import settings
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
-from django.db import models
-
 from django.core.validators import RegexValidator
+from django.db import models
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,9 @@ class UserManager(BaseUserManager):
             logger.error(f"Superuser creation failed for {email}: is_staff not True")
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
-            logger.error(f"Superuser creation failed for {email}: is_superuser not True")
+            logger.error(
+                f"Superuser creation failed for {email}: is_superuser not True"
+            )
             raise ValueError("Superuser must have is_superuser=True.")
 
         logger.info(f"Creating superuser: {email}")
@@ -49,11 +50,15 @@ class UserManager(BaseUserManager):
             extra_fields["username"] = email.split("@")[0]
 
         email = self.normalize_email(email)
-        logger.debug(f"Creating user with email: {email}, username: {extra_fields.get('username')}")
+        logger.debug(
+            f"Creating user with email: {email}, username: {extra_fields.get('username')}"
+        )
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        logger.info(f"User created successfully: {email} (role: {extra_fields.get('role', 'not set')})")
+        logger.info(
+            f"User created successfully: {email} (role: {extra_fields.get('role', 'not set')})"
+        )
         return user
 
 
@@ -113,7 +118,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["nom", "prenom", "role"]
 
     class Meta:
-
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
         indexes = [
@@ -143,7 +147,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.nom
 
     def get_short_name(self):
-        return self.prenom 
+        return self.prenom
 
     def get_role_display_name(self):
         return dict(self.ROLES_CHOICES).get(self.role, self.role)
@@ -151,16 +155,28 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Permissions métier basées sur le rôle
     ROLE_PERMISSIONS = {
         "admin": {
-            "admin_access", "manage_users", "manage_finances", "manage_events",
-            "manage_groups", "manage_membres", "view_activities", "manage_librairie",
+            "admin_access",
+            "manage_users",
+            "manage_finances",
+            "manage_events",
+            "manage_groups",
+            "manage_membres",
+            "view_activities",
+            "manage_librairie",
         },
         "pretre": {
-            "manage_finances", "manage_events", "manage_groups",
-            "manage_membres", "manage_librairie",
+            "manage_finances",
+            "manage_events",
+            "manage_groups",
+            "manage_membres",
+            "manage_librairie",
         },
         "tresorier": {"manage_finances", "manage_membres", "view_activities"},
         "secretaire": {
-            "manage_events", "manage_groups", "manage_membres", "manage_librairie",
+            "manage_events",
+            "manage_groups",
+            "manage_membres",
+            "manage_librairie",
         },
         "responsable": {"manage_membres", "manage_groups"},
         "fidele": set(),
@@ -169,22 +185,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_permission(self, permission_name: str) -> bool:
         """
         Vérifie si l'utilisateur possède une permission métier par son nom.
-        
+
         Args:
             permission_name: Nom de la permission à vérifier
-            
+
         Returns:
             True si l'utilisateur a la permission, False sinon
         """
         has_perm = permission_name in self.ROLE_PERMISSIONS.get(self.role, set())
-        logger.debug(f"User {self.email} permission check for '{permission_name}': {has_perm}")
+        logger.debug(
+            f"User {self.email} permission check for '{permission_name}': {has_perm}"
+        )
         return has_perm
 
     # Méthode importante pour l'admin Django
     def has_module_perms(self, app_label):
         """Retourne True si l'utilisateur a les permissions pour l'app donnée."""
         can_access = self.is_staff or self.is_superuser
-        logger.debug(f"User {self.email} module access check for '{app_label}': {can_access}")
+        logger.debug(
+            f"User {self.email} module access check for '{app_label}': {can_access}"
+        )
         return can_access
 
 
@@ -203,7 +223,9 @@ class UserActivity(models.Model):
     details = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     user_agent = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True,)
+    timestamp = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     class Meta:
         verbose_name = "Activité utilisateur"
