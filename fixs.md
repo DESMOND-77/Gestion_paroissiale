@@ -14,6 +14,7 @@ les événements où il est convié ; désactiver la modification d'un événeme
 passé.
 
 **Solution** :
+
 - `evenements/models.py` — `Evenement` gagne `invite_tous` (bool),
   `roles_invites` (JSONField, codes de rôle), `groupes_invites` (M2M Groupe),
   `membres_invites` (M2M Membre), plus une propriété `est_passe` (date_fin, ou
@@ -66,11 +67,13 @@ User→Membre) sans `RecursionError` ; suite `membres`/`accounts` : 82 tests OK.
 
 **Problème** : suite du socle UUID. Deux briques manquaient pour que la synchro
 offline fonctionne de bout en bout via l'API :
+
 1. DRF rendait la clé primaire `id` en lecture seule → l'UUID généré par le
    téléphone était ignoré et le serveur en régénérait un (doublons).
 2. Aucun endpoint pour pousser/tirer un lot de modifications.
 
 **Solution** :
+
 - `core/serializers.py` — mixin `WritableIDModelSerializer` : `id` redéclaré
   `UUIDField(required=False)` (fourni par le client → respecté ; absent →
   généré). `update()` interdit la réassignation de la PK. Appliqué à 8
@@ -112,6 +115,7 @@ génèrent le même ID (1, 2, 3…) et entrent en collision à la synchro.
 (`BigAutoField`).
 
 **Solution** :
+
 - Nouveau socle abstrait dans `core/models.py` :
   - `UUIDPrimaryKeyModel` : `id = UUIDField(primary_key=True, default=uuid4)`
     — l'identifiant peut être généré côté client (aucune collision).
@@ -142,6 +146,7 @@ verte ; vérifié en shell : UUID auto-générés, ID fourni par le client honor
 l'ORM, FK UUID, signal de création de profil, décrément de stock `Vente`.
 
 **Reste à faire (hors lot)** pour activer la synchro de bout en bout :
+
 1. Rendre `id` **modifiable** (non read-only) dans les serializers syncables
    pour accepter l'UUID généré par le client via l'API.
 2. Endpoint de synchro (upsert par lot, idempotent) avec résolution de conflits
@@ -152,6 +157,7 @@ l'ORM, FK UUID, signal de création de profil, décrément de stock `Vente`.
 ## 2026-07-10 — Correctifs audit P3.8 (headers sécurité) & P3.10 (gouvernance)
 
 **Problème** : deux points de l'audit restaient ouverts :
+
 - P3.8 : aucun header de sécurité HTTP configuré.
 - P3.10 : absence de `CHANGELOG.md`, `CONTRIBUTING.md` et `LICENSE`.
 
@@ -159,6 +165,7 @@ l'ORM, FK UUID, signal de création de profil, décrément de stock `Vente`.
 gouvernance projet jamais créés.
 
 **Solution** :
+
 - P3.8 — dans `gestion_p/settings.py` : `SECURE_CONTENT_TYPE_NOSNIFF`,
   `SECURE_BROWSER_XSS_FILTER`, `X_FRAME_OPTIONS = "DENY"` toujours actifs ;
   `SECURE_SSL_REDIRECT` + `SECURE_HSTS_SECONDS`/`INCLUDE_SUBDOMAINS`/`PRELOAD`
@@ -186,6 +193,7 @@ géré par variable d'environnement en production).
 DRF n'était configurée.
 
 **Solution** :
+
 - Préfixage de toutes les routes métier sous `/api/v1/` (`accounts`, `groupes`,
   `membres`, `evenements`, `finances`, `librairie`) dans `gestion_p/urls.py`.
 - `/api/health/` laissé **non versionné** : c'est un endpoint d'infrastructure
@@ -233,6 +241,7 @@ Docker vérifié en local avec succès après correctif.
 ## 2026-07-08 — Finalisation de la configuration de déploiement Docker/Render
 
 **Problème** : plusieurs bugs empêchaient un déploiement Render fiable via Docker :
+
 1. `DEBUG` restait "vrai" en production même avec `DEBUG=False` défini.
 2. `DATABASE_URL` (Postgres Render) n'était jamais appliqué à `DATABASES`.
 3. Le `Dockerfile` copiait tout le contexte de build (pas de `.dockerignore`) et
@@ -242,6 +251,7 @@ Docker vérifié en local avec succès après correctif.
 4. `gunicorn` écoutait en dur sur le port 8000 au lieu du `$PORT` fourni par Render.
 
 **Cause** :
+
 1. `DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")` — `env("DEBUG")`
    (casté en bool via le schéma `environ.Env`) valait `False`, donc l'expression
    retombait sur `os.environ.get(...)` qui renvoie la **chaîne** `"False"`,
@@ -253,6 +263,7 @@ Docker vérifié en local avec succès après correctif.
 4. `CMD` gunicorn avec `--bind 0.0.0.0:8000` figé.
 
 **Solution** :
+
 - `DEBUG = env.bool("DEBUG", default=False)` (cast correct).
 - `DATABASES` construit via `dj_database_url.parse(DATABASE_URL, ssl_require=not DEBUG)`
   quand `DATABASE_URL` est défini, sinon fallback MySQL `DB_*` inchangé.
@@ -296,6 +307,7 @@ instancient `UserSerializer(user)` sans passer `request` dans le contexte
 (`ProfileService.get_profile`, ainsi que login/register/MeView…).
 
 **Solution** :
+
 - `get_profile_picture_url` rendu défensif : `self.context.get("request")` ; si
   absent, renvoie l'URL relative (MEDIA_URL) au lieu de lever une exception.
 - `ProfileService.get_profile`/`update_profile` acceptent `request` et le passent
@@ -331,6 +343,7 @@ JSON brut / une page DRF — illisible pour l'utilisateur final.
 
 **Solution** : de vraies pages web rendues par Django, au thème liturgique
 (cohérent avec les emails).
+
 - Vues serveur `EmailVerifyPageView` (GET → vérifie et affiche le résultat) et
   `PasswordResetPageView` (GET → formulaire ; POST → 2 champs mot de passe +
   confirmation, validation, résultat), réutilisant les services existants.
@@ -341,8 +354,7 @@ JSON brut / une page DRF — illisible pour l'utilisateur final.
 - Nouveau réglage `PUBLIC_BASE_URL` (racine du site) ; les liens des emails
   pointent désormais vers ces pages.
 - `STATICFILES_DIRS = [BASE_DIR/"static"]` ajouté pour que le logo se charge.
-- Embarquement du logo email migré vers l'API moderne `email.message.MIMEPart`
-  + `set_content(cid=...)` (Django 6 a supprimé `mixed_subtype`).
+- Embarquement du logo email migré vers l'API moderne `email.message.MIMEPart` + `set_content(cid=...)` (Django 6 a supprimé `mixed_subtype`).
 
 **Fichiers** : `accounts/verification/web_views.py` (nouveau),
 `templates/auth/*` (nouveaux), `gestion_p/urls.py`, `gestion_p/settings.py`,
@@ -354,12 +366,14 @@ JSON brut / une page DRF — illisible pour l'utilisateur final.
 ## 2026-07-02 — Refonte des templates d'email (contenu, UI, style) + correctif du nom d'app
 
 **Problème** :
+
 - Les emails (`verify_email.html`, `password_reset.html`) étaient en **anglais**
   alors que le projet est en français, avec un design générique daté.
 - Bug : les templates utilisaient `{{ app_name }}` (minuscule) mais le contexte
   passait `App_name` (majuscule) → le nom de l'application s'affichait **vide**.
 
 **Solution** :
+
 - Nouvelle identité visuelle « liturgique » (nef bleu nuit + accent doré, titre
   serif Georgia, médaillon croix doré) dans `base_email.html`, compatible clients
   mail (layout en tables, styles inline, bouton bulletproof, texte d'aperçu masqué,

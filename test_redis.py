@@ -59,11 +59,9 @@ def test_token_storage():
 
     try:
         # Créer un utilisateur de test
-        etab = Etablissement.objects.get_or_create(id="epm70")
-
+        
         user, created = User.objects.get_or_create(
             username='test_user_redis',
-            etablissement=etab[0],
             defaults={'email': 'test@redis.com', 'password': 'test123'}
         )
         # Générer un token

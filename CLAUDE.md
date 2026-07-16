@@ -60,7 +60,7 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 
 **Views** (`app/views.py`): HTTP handling via DRF ViewSets, validation, business logic, standardized responses.
 
-**Services** (in `accounts` subdirectories: `auth/`, `profile/`, `verification/`): Complex business logic. Other apps embed service logic in views or use a `service.py` file (e.g., `membres/service.py`).
+**Services** (in `accounts` subdirectories: `auth/`, `profile/`, `verification/`): Complex business logic. Other apps embed service logic in views or use a `services.py` file (e.g., `membres/services.py` — `MembreService`).
 
 **Serializers** (`app/serializers.py`): Data validation and transformation.
 
@@ -72,7 +72,8 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 - `core/response.py`: `standardized_response()`. Note it **omits** keys whose value is `None` — a success response is often just `{"success": true, "data": {...}}` with no `error`/`message`.
 - `core/exception_handler.py`: `custom_exception_handler` (wired via `REST_FRAMEWORK["EXCEPTION_HANDLER"]`) converts **every** DRF error (validation, 401, 403, 404, throttling) into the standardized format.
 - `core/base_view.py`: `BaseAPIView` — base class most auth/module views extend. Centralizes exception handling (`AuthenticationFailed` → standardized 401) and adds `check_extra_permission()`.
-- `core/permissions.py`: Shared permission classes (`IsAdmin`, `IsSecretaryOrAbove`, `IsTreasurerOrAbove`).
+- `core/rbac.py`: **Single source of truth** for business permissions — `PERMISSIONS_CATALOGUE` (the exhaustive permission catalogue, keyed by string id) + `ROLE_PERMISSIONS` (role→permission-set map) + helpers (`has_permission`, `has_any_permission`, `roles_with_permission`, …). Validates at import that every role only references catalogued permissions. `accounts.models.User.has_permission()` and the DRF permission classes both delegate here — never redefine these tables elsewhere.
+- `core/permissions.py`: DRF permission classes. Role-hierarchy style (`IsAdmin`, `IsSecretaryOrAbove`, `IsTreasurerOrAbove`) **and** granular factories adossed to `core/rbac.py` (`HasPermission("manage_membres")`, `HasAnyPermission(...)`, `HasAllPermissions(...)` — validate permission names, raise `ValueError` on typos). Prefer the granular factories in new code.
 - `core/health.py` + `core/views.py`: `HealthCheckView` (Redis + DB status, unauthenticated).
 
 ---
@@ -130,6 +131,7 @@ email/phone/photo — those are derived read-only from the linked user in
 
 - **Custom User Model**: `accounts.models.User` extends `AbstractBaseUser` with `USERNAME_FIELD = 'email'`.
 - **Roles** (hierarchical): fidèle < responsable < secrétaire < trésorier < prêtre < admin
+- **Business permissions (RBAC)**: string-id permissions (e.g. `manage_membres`, `view_finances`) live in `core/rbac.py`, mapped per role in `ROLE_PERMISSIONS`. Check them via `user.has_permission("…")` / `user.get_permissions()`, or enforce at the endpoint with `HasPermission(...)` from `core/permissions.py`. **Views currently gate mostly by role-hierarchy classes** (`IsSecretaryOrAbove`, etc.), not yet the granular permissions — the two can diverge (e.g. `IsSecretaryOrAbove` lets a trésorier list membres, but the catalogue withholds `view_membres` from trésorier), so pick deliberately when adding endpoints. `POST /api/v1/auth/check-permission/` returns `has_permission` + the caller's full permission list.
 - **Required**: Email verification before first login. Failed login attempts (5) trigger 15-minute lockout via Redis.
 - **JWT** (`SIMPLE_JWT` in settings): access token 15 min, refresh token 7 days, with `ROTATE_REFRESH_TOKENS`. Tokens tracked in Redis by `jti` (JWT ID). Logout and password changes blacklist all of a user's tokens. `TokenManager.generate_token()` issues the pair; the standard `rest_framework_simplejwt.TokenRefreshView` name is overridden by the local `accounts/auth/views.TokenRefreshView`.
 
