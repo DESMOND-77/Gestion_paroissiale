@@ -136,7 +136,7 @@ class AuthenticationService:
         if not email or not password:
             return (
                 False,
-                {"success": False, "error": "Email and password are required."},
+                {"success": False, "error": "Email et mot de passe requis."},
                 400,
             )
 
@@ -159,7 +159,7 @@ class AuthenticationService:
                     False,
                     {
                         "success": False,
-                        "error": "Account temporarily locked due to multiple failed login attempts.",
+                        "error": "Compte temporairement verrouillé après plusieurs échecs de connexion. Réessayez plus tard.",
                         "lockout": True,
                     },
                     403,
@@ -180,7 +180,7 @@ class AuthenticationService:
                         False,
                         {
                             "success": False,
-                            "error": "Account locked due to repeated failed login attempts.",
+                            "error": "Compte verrouillé après plusieurs tentatives échouées. Réessayez dans 15 minutes.",
                             "lockout": True,
                         },
                         403,
@@ -189,14 +189,30 @@ class AuthenticationService:
                 logger.warning(f"Failed login {failed_attempts} for {email}")
                 return (
                     False,
-                    {"success": False, "error": "Invalid email or password."},
+                    {"success": False, "error": "Email ou mot de passe incorrect."},
                     401,
                 )
 
             if not user.is_active:
                 return (
                     False,
-                    {"success": False, "error": "Account disabled."},
+                    {"success": False, "error": "Ce compte est désactivé."},
+                    403,
+                )
+
+            # Le compte doit être vérifié avant toute connexion.
+            if settings.REQUIRE_EMAIL_VERIFICATION and not user.is_verified:
+                logger.warning(f"Login blocked (email not verified): {email}")
+                return (
+                    False,
+                    {
+                        "success": False,
+                        "error": (
+                            "Votre compte n'est pas encore vérifié. "
+                            "Consultez l'email de vérification envoyé à votre adresse."
+                        ),
+                        "verification_needed": True,
+                    },
                     403,
                 )
 
