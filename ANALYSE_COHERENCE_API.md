@@ -27,7 +27,7 @@
 
 ### État Global
 
-✅ **ARCHITECTURE SOLIDE** — L'API possède une architecture bien structurée avec séparation nette des préoccupations et
+✅ **ARCHITECTURE SOLIDE** - L'API possède une architecture bien structurée avec séparation nette des préoccupations et
 patterns cohérents.
 
 **Score de Cohérence:** **78/100**
@@ -97,11 +97,11 @@ patterns cohérents.
 
 | Paramètre         | Valeur                     | Cohérence                                     |
 |-------------------|----------------------------|-----------------------------------------------|
-| Access Token TTL  | 3 jours                    | ✅ Standard court terme                        |
-| Refresh Token TTL | 14 jours                   | ✅ Cohérent (5x access)                        |
-| JTI Claim         | Unique UUID                | ✅ Permet tracking unitaire                    |
+| Access Token TTL  | 3 jours                    | ✅ Standard court terme                       |
+| Refresh Token TTL | 14 jours                   | ✅ Cohérent (5x access)                       |
+| JTI Claim         | Unique UUID                | ✅ Permet tracking unitaire                   |
 | Algorithm         | HS256                      | ⚠️ HMAC (acceptable dev, RSA recommandé prod) |
-| Token Rotation    | ROTATE_REFRESH_TOKENS=True | ✅ Meilleure pratique                          |
+| Token Rotation    | ROTATE_REFRESH_TOKENS=True | ✅ Meilleure pratique                         |
 
 #### Méthodologie de Création
 
@@ -134,7 +134,7 @@ Return(access_token, refresh_token)
 tuple
 ```
 
-**Cohérence:** ✅ **Excellente** — Implémentation JWT complète et sécurisée
+**Cohérence:** ✅ **Excellente** - Implémentation JWT complète et sécurisée
 
 ---
 
@@ -142,7 +142,7 @@ tuple
 
 #### Étape 1: Enregistrement
 
-```
+```python
 POST /api/auth/register/
 ├─ Payload: email, password, username?, role?, phone?
 ├─ Validation:
@@ -164,11 +164,11 @@ POST /api/auth/register/
    └─ verification_needed=True flag
 ```
 
-**Incohérence Détectée:** ⚠️ Tokens retournés avant vérification email — utilisateur non "fidèle" complètement.
+**Incohérence Détectée:** ⚠️ Tokens retournés avant vérification email - utilisateur non "fidèle" complètement.
 
 #### Étape 2: Connexion
 
-```
+```python
 POST /api/auth/login/
 ├─ Payload: email, password
 ├─ Recherche: User.objects.get(email=email)
@@ -190,11 +190,11 @@ POST /api/auth/login/
 └─ Response: HTTP 200 OK
 ```
 
-**Cohérence:** ✅ **Bonne** — Pattern sécurisé avec lockout
+**Cohérence:** ✅ **Bonne** - Pattern sécurisé avec lockout
 
 #### Étape 3: Rafraîchissement Token
 
-```
+```python
 POST /api/auth/token/refresh/
 ├─ Payload: refresh_token (body) ou cookie HTTP-only
 ├─ Validation:
@@ -212,11 +212,11 @@ POST /api/auth/token/refresh/
 └─ Response: HTTP 200 + new access + new refresh
 ```
 
-**Cohérence:** ✅ **Excellente** — Rotation sécurisée
+**Cohérence:** ✅ **Excellente** - Rotation sécurisée
 
 #### Étape 4: Déconnexion
 
-```
+```python
 POST /api/auth/logout/
 ├─ Payload: refresh_token
 ├─ Validation:
@@ -229,7 +229,7 @@ POST /api/auth/logout/
 └─ Response: HTTP 200 + success message
 ```
 
-**Cohérence:** ✅ **Bonne** — Complète avec logging
+**Cohérence:** ✅ **Bonne** - Complète avec logging
 
 ---
 
@@ -239,7 +239,7 @@ POST /api/auth/logout/
 
 **Fichier:** [accounts/models.py#L50-L57](accounts/models.py#L50-L57)
 
-```
+```chart
 HIÉRARCHIE DES RÔLES:
 =====================================
 
@@ -338,7 +338,7 @@ class AdminUsersView(BaseAPIView):
 
 **Fichier:** [accounts/models.py](accounts/models.py)
 
-```
+```python
 Rôle Assign:
 ├─ À l'enregistrement:
 │  ├─ Default = "fidele"
@@ -356,14 +356,14 @@ Rôle Assign:
 
 | Aspect                              | État | Notes                                     |
 |-------------------------------------|------|-------------------------------------------|
-| Hiérarchie claire                   | ✅    | 6 rôles ordonnés logiquement              |
-| Séparation des préoccupations       | ✅    | Chaque rôle = responsabilités spécifiques |
-| Absence de surpermissions           | ✅    | Pas d'élévation automatique               |
+| Hiérarchie claire                   | ✅   | 6 rôles ordonnés logiquement              |
+| Séparation des préoccupations       | ✅   | Chaque rôle = responsabilités spécifiques |
+| Absence de surpermissions           | ✅   | Pas d'élévation automatique               |
 | Permissions appliquées uniformément | ⚠️   | Voir bug #7 ci-dessous                    |
-| Assignation contrôlée               | ✅    | Seulement admin peut changer rôles        |
+| Assignation contrôlée               | ✅   | Seulement admin peut changer rôles        |
 | Documentation                       | ⚠️   | Pas de docstring sur les permissions      |
 
-**Cohérence RBAC:** ✅ **Bonne** — 85/100
+**Cohérence RBAC:** ✅ **Bonne** - 85/100
 
 ---
 
@@ -565,7 +565,7 @@ urlpatterns = [
 └────────────────────────────────────────────────────────────┘
 ```
 
-**Cohérence Architecture:** ✅ **Excellente** — 90/100
+**Cohérence Architecture:** ✅ **Excellente** - 90/100
 
 ---
 
@@ -876,7 +876,7 @@ class Sacrement(models.Model):
 | Logging             | ⚠️   | Pas complet (voir section 10)                  |
 | Reusability         | ✅    | Services indépendants de Django                |
 
-**Cohérence V/S/M:** ✅ **Très Bonne** — 88/100
+**Cohérence V/S/M:** ✅ **Très Bonne** - 88/100
 
 ---
 
@@ -1088,7 +1088,7 @@ LOGGING = {
 | Logging des erreurs   | ✅    | Traceback enregistré                    |
 | Documentation erreurs | ⚠️   | Pas de liste erreurs API documentée     |
 
-**Cohérence Erreurs:** ✅ **Excellente** — 89/100
+**Cohérence Erreurs:** ✅ **Excellente** - 89/100
 
 ---
 
@@ -1184,7 +1184,7 @@ ACCOUNT_LOCKOUT_DURATION = 900  # 15 minutes
 FAILED_LOGIN_CACHE_TTL = 1800  # 30 minutes
 ```
 
-**Cohérence:** ✅ **Excellente** — Implémentation standard et sécurisée
+**Cohérence:** ✅ **Excellente** - Implémentation standard et sécurisée
 
 ---
 
@@ -1253,7 +1253,7 @@ token = default_token_generator.make_token(user)
 is_valid = default_token_generator.check_token(user, token)
 ```
 
-**Cohérence:** ✅ **Bonne** — Utilise Django built-in sécurisé
+**Cohérence:** ✅ **Bonne** - Utilise Django built-in sécurisé
 
 **Problème Détecté:** ⚠️ Utilisateur peut login SANS vérification email (si `REQUIRE_EMAIL_VERIFICATION=False`)
 
@@ -1323,7 +1323,7 @@ PASSWORD RESET FLOW:
 - ✅ Automatic token blacklist: Sécurité compte compromis
 - ✅ Complexité password: Django validators
 
-**Cohérence:** ✅ **Excellente** — Implémentation sécurisée standard
+**Cohérence:** ✅ **Excellente** - Implémentation sécurisée standard
 
 ---
 
@@ -1369,7 +1369,7 @@ Body: {old_password, new_password, confirm_password}
 └─ Return: {success: true, message: "Password changed. Login again."}
 ```
 
-**Cohérence:** ✅ **Excellente** — Complète et sécurisée
+**Cohérence:** ✅ **Excellente** - Complète et sécurisée
 
 ---
 
@@ -1425,7 +1425,7 @@ TOKEN BLACKLIST MECHANISM:
    └─ Lookup: O(1) via cache.get()
 ```
 
-**Cohérence:** ✅ **Excellente** — Efficace et complète
+**Cohérence:** ✅ **Excellente** - Efficace et complète
 
 ---
 
@@ -1465,7 +1465,7 @@ Account Lockout:
 └─ Prevents password brute force
 ```
 
-**Cohérence:** ✅ **Excellente** — Multi-layer rate limiting
+**Cohérence:** ✅ **Excellente** - Multi-layer rate limiting
 
 ---
 
@@ -1502,9 +1502,9 @@ SESSION_COOKIE_SECURE = False  # True en production
    └─ Rotates on each successful authentication
 ```
 
-**⚠️ Issue Found:** `SESSION_COOKIE_DOMAIN` commented out — configuré pour production
+**⚠️ Issue Found:** `SESSION_COOKIE_DOMAIN` commented out - configuré pour production
 
-**Cohérence:** ⚠️ **Bonne mais incomplète** — 70/100
+**Cohérence:** ⚠️ **Bonne mais incomplète** - 70/100
 
 ---
 
@@ -1524,7 +1524,7 @@ SESSION_COOKIE_SECURE = False  # True en production
 | XSS Protection     | ✅           | Response serialization           |
 | JWT Rotation       | ✅           | Refresh token rotation           |
 
-**Cohérence Sécurité:** ✅ **Excellente** — 92/100
+**Cohérence Sécurité:** ✅ **Excellente** - 92/100
 
 ---
 
@@ -1693,7 +1693,7 @@ is_active = BooleanField(default=True)
 | Audit fields      | ✅    | created_at, updated_at       |
 | Typage            | ✅    | Choices pour enums           |
 
-**Cohérence DB:** ✅ **Excellente** — 91/100
+**Cohérence DB:** ✅ **Excellente** - 91/100
 
 ---
 
@@ -1938,7 +1938,7 @@ dans token ne correspond plus).
 | Caching verification | ✅    | 1h TTL pour status        |
 | Email templates      | ✅    | HTML well-formed          |
 
-**Cohérence Email/Reset:** ✅ **Excellente** — 90/100
+**Cohérence Email/Reset:** ✅ **Excellente** - 90/100
 
 ---
 
@@ -2221,7 +2221,7 @@ class TokenManager:
 | Version compatibility | ✅    | Détecte version 4.0+         |
 | Data structure choice | ✅    | SET, HASH, STRING appropriés |
 
-**Cohérence Redis:** ✅ **Excellente** — 91/100
+**Cohérence Redis:** ✅ **Excellente** - 91/100
 
 ---
 
@@ -2496,7 +2496,7 @@ if not DEBUG:  # Production
 
 #### ⚠️ SECURITY #11: Password Reset Timeout Unique
 
-**Problème:** Token reset password valide 24h — long pour sécurité
+**Problème:** Token reset password valide 24h - long pour sécurité
 
 ```python
 # Current:
@@ -2678,7 +2678,7 @@ logger.info(
 
 ### État Global de l'API
 
-✅ **ARCHITECTURALEMENT SOLIDE** — L'API Gestion Paroissiale possède une architecture bien structurée avec séparation
+✅ **ARCHITECTURALEMENT SOLIDE** - L'API Gestion Paroissiale possède une architecture bien structurée avec séparation
 nette des préoccupations, sécurité robuste, et patterns cohérents.
 
 ### Synthèse

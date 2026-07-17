@@ -10,7 +10,7 @@ Guide d'installation pas à pas pour un environnement de développement.
 | MySQL / MariaDB (ou PostgreSQL)    | MariaDB 11 / MySQL 8 | ✅ (SQLite possible via `DATABASE_URL`) |
 | Redis                              | 7                    | Recommandé (repli `LocMemCache` sinon)  |
 | Docker + Docker Compose            | récent               | Optionnel (fournit MariaDB + Redis)     |
-| Compte Resend ou identifiants SMTP | —                    | Pour l'envoi d'e-mails                  |
+| Compte Resend ou identifiants SMTP | -                    | Pour l'envoi d'e-mails                  |
 
 Sous Debian/Ubuntu, `mysqlclient` nécessite des paquets système :
 
@@ -41,7 +41,7 @@ commentée dans [`.env.example`](../.env.example).
 
 ## 3. Base de données et Redis
 
-### Option A — Docker (recommandé)
+### Option A - Docker (recommandé)
 
 ```bash
 docker-compose up -d db redis
@@ -53,7 +53,7 @@ docker-compose up -d db redis
 
 Les valeurs par défaut de `.env.example` pointent déjà vers ces ports.
 
-### Option B — services locaux
+### Option B - services locaux
 
 Installer MySQL/MariaDB et Redis nativement, créer la base :
 
@@ -63,7 +63,7 @@ CREATE DATABASE gestion_paroissiale_db CHARACTER SET utf8mb4;
 
 puis adapter `DB_HOST`/`DB_PORT` (3306) et `REDIS_URL` (6379) dans `.env`.
 
-### Option C — SQLite (tests rapides uniquement)
+### Option C - SQLite (tests rapides uniquement)
 
 ```bash
 DATABASE_URL=sqlite:///db.sqlite3 python manage.py migrate
@@ -114,4 +114,4 @@ docker-compose up
 | `ImproperlyConfigured: SECRET_KEY` | Le fichier `.env` est manquant ou incomplet                                         |
 | Les e-mails ne partent pas         | Vérifier `RESEND_API_KEY` / identifiants SMTP ; voir la FAQ du README               |
 | Redis indisponible                 | L'app démarre en mode dégradé ; vérifier `REDIS_URL` et `docker-compose ps`         |
-| Erreur MySQL 1824 (FK)             | Exécuter `python manage.py migrate` — toutes les apps ont des migrations committées |
+| Erreur MySQL 1824 (FK)             | Exécuter `python manage.py migrate` - toutes les apps ont des migrations committées |

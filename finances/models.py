@@ -50,4 +50,4 @@ class Transaction(SyncableModel):
         ]
 
     def __str__(self):
-        return f"{self.get_type_display()} — {self.montant} FCFA ({self.date})"
+        return f"{self.get_type_display()} - {self.montant} FCFA ({self.date})"

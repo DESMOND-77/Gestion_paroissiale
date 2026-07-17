@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 class MembreListView(BaseAPIView):
     """
-    GET  /api/membres/          — liste (filtrable via ?nom=&prenom=&groupe=)
-    POST /api/membres/          — création
+    GET  /api/membres/          - liste (filtrable via ?nom=&prenom=&groupe=)
+    POST /api/membres/          - création
     """
 
     permission_classes = [IsSecretaryOrAbove]
@@ -64,10 +64,10 @@ class MembreListView(BaseAPIView):
 
 class MembreDetailView(BaseAPIView):
     """
-    GET    /api/membres/<pk>/   — détail + statistiques
-    PUT    /api/membres/<pk>/   — mise à jour complète
-    PATCH  /api/membres/<pk>/   — mise à jour partielle
-    DELETE /api/membres/<pk>/   — suppression (admin uniquement)
+    GET    /api/membres/<pk>/   - détail + statistiques
+    PUT    /api/membres/<pk>/   - mise à jour complète
+    PATCH  /api/membres/<pk>/   - mise à jour partielle
+    DELETE /api/membres/<pk>/   - suppression (admin uniquement)
     """
 
     permission_classes = [IsSecretaryOrAbove]
@@ -123,8 +123,8 @@ class MembreDetailView(BaseAPIView):
 
 class MembreMeView(BaseAPIView):
     """
-    GET   /api/membres/me/  — profil membre lié au compte connecté
-    PATCH /api/membres/me/  — auto-modification (date_naissance, sexe, quartier uniquement)
+    GET   /api/membres/me/  - profil membre lié au compte connecté
+    PATCH /api/membres/me/  - auto-modification (date_naissance, sexe, quartier uniquement)
     """
 
     permission_classes = [IsAuthenticated]
@@ -168,8 +168,8 @@ class MembreMeView(BaseAPIView):
 
 class MembreSacrementsView(BaseAPIView):
     """
-    GET  /api/membres/<pk>/sacrements/  — liste des sacrements
-    POST /api/membres/<pk>/sacrements/  — ajout d'un sacrement
+    GET  /api/membres/<pk>/sacrements/  - liste des sacrements
+    POST /api/membres/<pk>/sacrements/  - ajout d'un sacrement
     """
 
     permission_classes = [IsSecretaryOrAbove]

@@ -87,4 +87,4 @@ class Sacrement(SyncableModel):
         ]
 
     def __str__(self):
-        return f"{self.get_type_display()} — {self.membre}"
+        return f"{self.get_type_display()} - {self.membre}"

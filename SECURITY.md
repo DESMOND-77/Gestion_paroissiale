@@ -25,7 +25,7 @@ Canaux de signalement privés, par ordre de préférence :
 1. **GitHub Private Vulnerability Reporting** :
    [Security → Report a vulnerability](https://github.com/DESMOND-77/Gestion_paroissiale/security/advisories/new)
 2. **E-mail** : `guimapidesmond@outlook.com` avec l'objet
-   `[SECURITY] Gestion Paroissiale — <résumé court>`
+   `[SECURITY] Gestion Paroissiale - <résumé court>`
 
 Merci d'inclure dans le signalement :
 

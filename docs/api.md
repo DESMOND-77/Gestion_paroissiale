@@ -26,23 +26,23 @@ La documentation interactive fait foi : **Swagger** (`/docs/`) et **ReDoc**
 
 | Méthode | Endpoint       | Auth | Description      |
 | ------- | -------------- | ---- | ---------------- |
-| GET     | `/api/health/` | —    | État BDD + Redis |
+| GET     | `/api/health/` | -    | État BDD + Redis |
 
 ## Authentification & comptes
 
 | Méthode  | Endpoint                            | Auth  | Description                                                        |
 | -------- | ----------------------------------- | ----- | ------------------------------------------------------------------ |
-| POST     | `/api/v1/auth/register/`            | —     | Inscription (rôle `fidele` par défaut)                             |
-| POST     | `/api/v1/auth/login/`               | —     | Connexion (e-mail vérifié requis ; 5 échecs → verrouillage 15 min) |
+| POST     | `/api/v1/auth/register/`            | -     | Inscription (rôle `fidele` par défaut)                             |
+| POST     | `/api/v1/auth/login/`               | -     | Connexion (e-mail vérifié requis ; 5 échecs → verrouillage 15 min) |
 | POST     | `/api/v1/auth/logout/`              | ✅    | Déconnexion (liste noire des jetons)                               |
-| POST     | `/api/v1/auth/token/refresh/`       | —     | Rafraîchir le jeton (rotation)                                     |
-| POST     | `/api/v1/auth/token/validate/`      | —     | Valider un jeton                                                   |
+| POST     | `/api/v1/auth/token/refresh/`       | -     | Rafraîchir le jeton (rotation)                                     |
+| POST     | `/api/v1/auth/token/validate/`      | -     | Valider un jeton                                                   |
 | GET      | `/api/v1/auth/me/`                  | ✅    | Utilisateur courant                                                |
-| POST     | `/api/v1/auth/password-reset/`      | —     | Demander l'e-mail de réinitialisation                              |
-| POST     | `/api/v1/auth/send-verification/`   | —     | Renvoyer l'e-mail de vérification                                  |
-| GET      | `/api/v1/auth/verification-status/` | —     | Statut de vérification                                             |
-| GET      | `/api/v1/verify-email/`             | —     | **Page HTML** : vérifie l'e-mail (lien reçu)                       |
-| GET/POST | `/api/v1/reset-password/`           | —     | **Page HTML** : formulaire de réinitialisation                     |
+| POST     | `/api/v1/auth/password-reset/`      | -     | Demander l'e-mail de réinitialisation                              |
+| POST     | `/api/v1/auth/send-verification/`   | -     | Renvoyer l'e-mail de vérification                                  |
+| GET      | `/api/v1/auth/verification-status/` | -     | Statut de vérification                                             |
+| GET      | `/api/v1/verify-email/`             | -     | **Page HTML** : vérifie l'e-mail (lien reçu)                       |
+| GET/POST | `/api/v1/reset-password/`           | -     | **Page HTML** : formulaire de réinitialisation                     |
 | GET/PUT  | `/api/v1/user/profile/`             | ✅    | Lire / modifier son profil                                         |
 | POST     | `/api/v1/user/change-password/`     | ✅    | Changer le mot de passe (invalide tous les jetons)                 |
 | GET      | `/api/v1/users/`                    | admin | Liste des utilisateurs                                             |

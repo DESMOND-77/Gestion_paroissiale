@@ -1,4 +1,4 @@
-# Guide de contribution — Gestion Paroissiale API
+# Guide de contribution - Gestion Paroissiale API
 
 Merci de contribuer ! Ce document décrit les règles et conventions du projet.
 La langue du projet (code métier, commentaires, messages d'API, documentation)
@@ -6,7 +6,7 @@ est le **français**.
 
 ## Sommaire
 
-- [Guide de contribution — Gestion Paroissiale API](#guide-de-contribution--gestion-paroissiale-api)
+- [Guide de contribution - Gestion Paroissiale API](#guide-de-contribution--gestion-paroissiale-api)
   - [Sommaire](#sommaire)
   - [Prérequis \& installation](#prérequis--installation)
   - [Workflow Git (GitHub Flow)](#workflow-git-github-flow)
@@ -49,7 +49,7 @@ Règles :
 
 - **`main` = code prêt pour la production uniquement.** Ne jamais committer
   directement dessus.
-- **Branches** : descriptives, en minuscules, préfixées par le type —
+- **Branches** : descriptives, en minuscules, préfixées par le type -
   `feature/verification-email`, `fix/token-blacklist`, `docs/guide-deploiement`.
 - **Migrations** : committer les fichiers de migration **séparément** du code.
 - Garder les branches courtes ; rebaser sur `main` avant d'ouvrir la PR si besoin.
@@ -119,7 +119,7 @@ python manage.py test accounts.tests.test_login  # un module
 - La suite auth vit dans `accounts/tests/` ; `BaseAuthTest`
   (`accounts/tests/base.py`) rend les tests hermétiques (LocMemCache, e-mail en
   mémoire, Redis neutralisé) et fournit des fabriques (`create_user`, `auth`, …).
-- La CI exécute la suite sur **SQLite** via `DATABASE_URL=sqlite:///ci.sqlite3` —
+- La CI exécute la suite sur **SQLite** via `DATABASE_URL=sqlite:///ci.sqlite3` -
   aucun service MySQL/Redis n'est requis pour tester.
 - Couvrir par des tests toute nouvelle logique (auth, permissions, calculs métier)
   et les flux complets (login, logout, refresh, liste noire).
@@ -172,7 +172,7 @@ Checklist avant d'ouvrir la PR :
 - Toute PR est relue avant merge (voir [`CODEOWNERS`](.github/CODEOWNERS)).
 - Le relecteur vérifie : correction, sécurité (permissions, validation des
   entrées), cohérence avec les conventions ci-dessus, couverture de tests.
-- Les remarques se veulent constructives et bienveillantes — voir le
+- Les remarques se veulent constructives et bienveillantes - voir le
   [code de conduite](CODE_OF_CONDUCT.md).
 - Merge en **squash** ou **rebase** de préférence, avec un message conforme aux
   Conventional Commits.

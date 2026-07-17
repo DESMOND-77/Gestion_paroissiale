@@ -43,7 +43,7 @@ class EmailVerifyPageView(View):
             ctx.update(
                 status="success",
                 message="Votre adresse e-mail a été confirmée. Votre compte est "
-                "désormais actif — vous pouvez fermer cette page et retourner à l'application.",
+                "désormais actif - vous pouvez fermer cette page et retourner à l'application.",
             )
             return render(request, self.template_name, ctx)
 

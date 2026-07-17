@@ -30,7 +30,7 @@ Issues = "https://github.com/DESMOND-77/Gestion_paroissiale/issues"
 dev = ["ruff>=0.15"]
 
 # ---------------------------------------------------------------------------
-# Ruff — linter + formateur (exécuté en CI : ruff check . && ruff format --check .)
+# Ruff - linter + formateur (exécuté en CI : ruff check . && ruff format --check .)
 # ---------------------------------------------------------------------------
 [tool.ruff]
 target-version = "py314"
@@ -38,15 +38,15 @@ line-length = 88
 extend-exclude = ["*/migrations/*", ".venv", "media", "logs", "static"]
 
 [tool.ruff.lint]
-# E/W : pycodestyle — F : pyflakes — I : tri des imports (isort)
-# DJ : règles Django — B : bugbear (pièges courants) — UP : modernisation syntaxe
+# E/W : pycodestyle - F : pyflakes - I : tri des imports (isort)
+# DJ : règles Django - B : bugbear (pièges courants) - UP : modernisation syntaxe
 select = ["E", "W", "F", "I", "DJ", "B", "UP"]
 ignore = [
     # Lignes longues : héritées du code existant (messages français, URLs) ;
     # le formateur gère la longueur des lignes de code.
     "E501",
     # `null=True` sur des CharField existants (accounts.User.phone_number,
-    # membres.Membre.quartier) : la correction exige des migrations de données —
+    # membres.Membre.quartier) : la correction exige des migrations de données -
     # à traiter séparément, ne pas introduire de nouveaux cas.
     "DJ001",
 ]

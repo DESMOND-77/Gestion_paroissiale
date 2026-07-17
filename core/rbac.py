@@ -1,12 +1,12 @@
 """
-Système centralisé de gestion des permissions (RBAC) — Gestion Paroissiale.
+Système centralisé de gestion des permissions (RBAC) - Gestion Paroissiale.
 
 Source de vérité UNIQUE pour :
   - le catalogue exhaustif des permissions métier (`PERMISSIONS_CATALOGUE`) ;
   - l'attribution des permissions à chaque rôle (`ROLE_PERMISSIONS`).
 
 Le modèle `accounts.User` et les classes de permission DRF de
-`core/permissions.py` délèguent à ce module — ne dupliquez pas ces tables
+`core/permissions.py` délèguent à ce module - ne dupliquez pas ces tables
 ailleurs.
 
 Rôles (hiérarchie) : fidele < responsable < secretaire < tresorier < pretre < admin

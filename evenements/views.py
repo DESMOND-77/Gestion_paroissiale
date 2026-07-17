@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 class EvenementListView(BaseAPIView):
     """
-    GET  /api/evenements/           — liste (filtres: ?upcoming=true, ?type=)
-    POST /api/evenements/           — création
+    GET  /api/evenements/           - liste (filtres: ?upcoming=true, ?type=)
+    POST /api/evenements/           - création
     """
 
     def get_permissions(self):
@@ -80,10 +80,10 @@ class EvenementListView(BaseAPIView):
 
 class EvenementDetailView(BaseAPIView):
     """
-    GET    /api/evenements/<pk>/    — détail
-    PUT    /api/evenements/<pk>/    — mise à jour complète
-    PATCH  /api/evenements/<pk>/    — mise à jour partielle
-    DELETE /api/evenements/<pk>/    — suppression (admin)
+    GET    /api/evenements/<pk>/    - détail
+    PUT    /api/evenements/<pk>/    - mise à jour complète
+    PATCH  /api/evenements/<pk>/    - mise à jour partielle
+    DELETE /api/evenements/<pk>/    - suppression (admin)
     """
 
     def get_permissions(self):
@@ -151,8 +151,8 @@ class EvenementDetailView(BaseAPIView):
 
 class EvenementInscrireView(BaseAPIView):
     """
-    POST   /api/evenements/<pk>/inscrire/   — inscription d'un membre (?membre=<id>)
-    DELETE /api/evenements/<pk>/inscrire/   — désinscription d'un membre (?membre=<id>)
+    POST   /api/evenements/<pk>/inscrire/   - inscription d'un membre (?membre=<id>)
+    DELETE /api/evenements/<pk>/inscrire/   - désinscription d'un membre (?membre=<id>)
     """
 
     permission_classes = [IsSecretaryOrAbove]
@@ -227,7 +227,7 @@ class EvenementInscrireView(BaseAPIView):
 
 class EvenementParticipantsView(BaseAPIView):
     """
-    GET /api/evenements/<pk>/participants/  — liste des participants
+    GET /api/evenements/<pk>/participants/  - liste des participants
     """
 
     permission_classes = [IsSecretaryOrAbove]

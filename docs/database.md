@@ -6,9 +6,9 @@ Base : **MySQL/MariaDB** par défaut, **PostgreSQL** via `DATABASE_URL`
 
 ## Modèles de base (`core/models.py`)
 
-- **`UUIDPrimaryKeyModel`** (abstrait) — `id = UUIDField(primary_key=True,
+- **`UUIDPrimaryKeyModel`** (abstrait) - `id = UUIDField(primary_key=True,
 default=uuid4)`.
-- **`SyncableModel`** (abstrait, hérite du précédent) — ajoute `created_at`,
+- **`SyncableModel`** (abstrait, hérite du précédent) - ajoute `created_at`,
   `updated_at`, `is_deleted` (suppression logique) pour la synchronisation
   hors ligne. Tous les modèles métier en héritent.
 
@@ -52,7 +52,7 @@ erDiagram
 
 ### `UserActivity`
 
-Journal d'activités (`UUIDPrimaryKeyModel`) : utilisateur, action, horodatage —
+Journal d'activités (`UUIDPrimaryKeyModel`) : utilisateur, action, horodatage -
 indexé pour la consultation admin.
 
 ## `membres`
@@ -76,20 +76,20 @@ dérivés du `User` lié dans le serializer.
 
 | Champ          | Type                                                 |
 | -------------- | ---------------------------------------------------- |
-| `type`         | CharField choices (baptême, confirmation…) — indexé  |
+| `type`         | CharField choices (baptême, confirmation…) - indexé  |
 | `membre`       | FK → `Membre` (CASCADE, `related_name="sacrements"`) |
-| `date`         | DateField — indexé                                   |
+| `date`         | DateField - indexé                                   |
 | `officiant`    | FK → `User` (SET_NULL)                               |
 | `observations` | TextField                                            |
 
-## `groupes` — `Groupe`
+## `groupes` - `Groupe`
 
 | Champ           | Type                                           |
 | --------------- | ---------------------------------------------- |
-| `nom`           | CharField — indexé                             |
+| `nom`           | CharField - indexé                             |
 | `description`   | TextField                                      |
-| `responsable`   | FK → `User` (SET_NULL) — responsable principal |
-| `responsables`  | M2M → `User` — co-responsables                 |
+| `responsable`   | FK → `User` (SET_NULL) - responsable principal |
+| `responsables`  | M2M → `User` - co-responsables                 |
 | `date_creation` | DateTimeField auto                             |
 
 ## `evenements`
@@ -99,7 +99,7 @@ dérivés du `User` lié dans le serializer.
 | Champ                             | Type                       |
 | --------------------------------- | -------------------------- |
 | `titre`, `description`, `lieu`    | CharField / TextField      |
-| `type`                            | CharField choices — indexé |
+| `type`                            | CharField choices - indexé |
 | `date_debut` (indexé), `date_fin` | DateTimeField              |
 | `est_inscription_requise`         | BooleanField               |
 | `createur`                        | FK → `User` (SET_NULL)     |
@@ -113,15 +113,15 @@ dérivés du `User` lié dans le serializer.
 `evenement` (FK CASCADE) + `membre` (FK CASCADE) + `date_inscription`
 (unicité couple événement/membre).
 
-## `finances` — `Transaction`
+## `finances` - `Transaction`
 
 | Champ            | Type                                                     |
 | ---------------- | -------------------------------------------------------- |
-| `type`           | CharField choices (entrée / sortie) — indexé avec `date` |
-| `categorie`      | CharField choices (don, quête, dépense…) — indexé        |
+| `type`           | CharField choices (entrée / sortie) - indexé avec `date` |
+| `categorie`      | CharField choices (don, quête, dépense…) - indexé        |
 | `montant`        | DecimalField(12, 2)                                      |
-| `date`           | DateField — indexé                                       |
-| `membre`         | FK → `Membre` (SET_NULL) — donateur éventuel             |
+| `date`           | DateField - indexé                                       |
+| `membre`         | FK → `Membre` (SET_NULL) - donateur éventuel             |
 | `enregistre_par` | FK → `User` (SET_NULL)                                   |
 
 ## `librairie`
@@ -133,7 +133,7 @@ dérivés du `User` lié dans le serializer.
 
 ### `Vente`
 
-`article` (FK **PROTECT** — pas de suppression d'article vendu), `quantite`,
+`article` (FK **PROTECT** - pas de suppression d'article vendu), `quantite`,
 `prix_total` Decimal(12,2), `date`, `membre` (SET_NULL), `enregistre_par`
 (FK → `User`, SET_NULL).
 

@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class TransactionListView(BaseAPIView):
     """
-    GET  /api/finances/transactions/    — liste
-    POST /api/finances/transactions/    — création
+    GET  /api/finances/transactions/    - liste
+    POST /api/finances/transactions/    - création
     """
 
     permission_classes = [IsTreasurerOrAbove]
@@ -79,8 +79,8 @@ class TransactionListView(BaseAPIView):
 
 class TransactionDetailView(BaseAPIView):
     """
-    GET    /api/finances/transactions/<pk>/     — détail
-    DELETE /api/finances/transactions/<pk>/     — suppression (admin)
+    GET    /api/finances/transactions/<pk>/     - détail
+    DELETE /api/finances/transactions/<pk>/     - suppression (admin)
     """
 
     permission_classes = [IsTreasurerOrAbove]

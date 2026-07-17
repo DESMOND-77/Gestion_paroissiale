@@ -6,7 +6,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Secrets / local env — jamais dans l'image
+# Secrets / local env - jamais dans l'image
 .env
 .env.*
 !.env.example

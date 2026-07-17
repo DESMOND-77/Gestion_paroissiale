@@ -34,7 +34,7 @@ Conséquences pratiques :
 
 ### Réponses et erreurs
 
-- Toujours `standardized_response()` (`core/response.py`) — les clés à `None`
+- Toujours `standardized_response()` (`core/response.py`) - les clés à `None`
   sont omises.
 - Ne pas attraper les exceptions DRF pour les reformater :
   `core/exception_handler.py` le fait globalement.
@@ -45,13 +45,13 @@ Conséquences pratiques :
 ### Permissions
 
 - Le catalogue RBAC vit **uniquement** dans `core/rbac.py`
-  (`PERMISSIONS_CATALOGUE`, `ROLE_PERMISSIONS`) — ne jamais le redéfinir ailleurs.
+  (`PERMISSIONS_CATALOGUE`, `ROLE_PERMISSIONS`) - ne jamais le redéfinir ailleurs.
 - Nouveau code : préférer les fabriques granulaires
   (`HasPermission("manage_membres")`, `HasAnyPermission(...)`,
   `HasAllPermissions(...)`) aux classes de hiérarchie de rôles. Attention : les
   deux mécanismes peuvent diverger (ex. `IsSecretaryOrAbove` autorise un
   trésorier à lister les membres alors que le catalogue ne lui donne pas
-  `view_membres`) — choisir délibérément.
+  `view_membres`) - choisir délibérément.
 
 ### E-mails
 
@@ -104,7 +104,7 @@ Fichiers** (+ **Tests** si pertinent).
 
 ## Outils de qualité
 
-- **ruff** — linter + formateur, configuré dans
+- **ruff** - linter + formateur, configuré dans
   [`pyproject.toml`](../pyproject.toml) et exécuté en CI :
 
   ```bash
@@ -115,8 +115,8 @@ Fichiers** (+ **Tests** si pertinent).
 
   Exclusions : migrations, `static/`, `media/`, `logs/`. Règles ignorées
   documentées dans `pyproject.toml` (`E501` géré par le formateur, `DJ001`
-  hérité — ne pas introduire de nouveaux `null=True` sur des champs texte).
+  hérité - ne pas introduire de nouveaux `null=True` sur des champs texte).
 
-- `python manage.py check` — vérifications Django (exécuté en CI) ;
-- CodeQL — analyse de sécurité automatique sur GitHub ;
-- Dependabot — mises à jour hebdomadaires des dépendances.
+- `python manage.py check` - vérifications Django (exécuté en CI) ;
+- CodeQL - analyse de sécurité automatique sur GitHub ;
+- Dependabot - mises à jour hebdomadaires des dépendances.

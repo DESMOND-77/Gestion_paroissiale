@@ -1,4 +1,4 @@
-# Phase 1 Security Fixes — Completed ✅
+# Phase 1 Security Fixes - Completed ✅
 
 **Date Completed**: 2026-06-27  
 **Status**: All 5 critical security issues FIXED
@@ -92,7 +92,8 @@ SIMPLE_JWT = {
 }
 ```
 
-**Result**: 
+**Result**:
+
 - Access tokens now expire in 15 minutes (security best practice)
 - Refresh tokens rotate every 7 days
 - Compliant with OWASP security standards
@@ -144,6 +145,7 @@ SIMPLE_JWT = {
    ```
 
 **Result**:
+
 - Application starts without crashing if Redis is unavailable
 - Health status can be checked via `GET /api/health/`
 - Graceful fallback to LocMemCache if Redis is down
@@ -250,7 +252,7 @@ For production deployment on Render:
 ## Files Modified
 
 | File | Change | Lines |
-|------|--------|-------|
+| ------ | -------- | ------- |
 | `accounts/models.py` | Verified `role` default | 78, 113 |
 | `gestion_p/settings.py` | Fixed CORS, removed print() | 211-225, 295 |
 | `accounts/auth/views.py` | Removed debug print | 99 |
@@ -262,7 +264,8 @@ For production deployment on Render:
 
 ## Next Steps
 
-Ready to proceed with **Phase 2 — Performance & Architecture** (1-4 weeks):
+Ready to proceed with **Phase 2 - Performance & Architecture** (1-4 weeks):
+
 - [ ] P2.1: Pagination (already done ✅)
 - [ ] P2.2: Database indexes
 - [ ] P2.3: select_related/prefetch_related optimization

@@ -24,17 +24,19 @@
 ## RÉSUMÉ EXÉCUTIF
 
 ### Score Global
+
 | Métrique | Avant (30 avril) | Après (1 mai) | Δ | % |
 |----------|------------------|---------------|---|----|
 | **Score Global** | 78/100 | **83/100** | +5 | +6.4% |
 | **Bugs Critiques** | 5 | **1** | -4 | -80% ✅ |
 | **Incohérences** | 10 | **4** | -6 | -60% ✅ |
 | **Code Quality** | 60/100 | **75/100** | +15 | +25% ✅ |
-| **Production Ready** | ⚠️ No | ⚠️ Presque | — | — |
+| **Production Ready** | ⚠️ No | ⚠️ Presque | - | - |
 
 ### Verdict
-✅ **Progrès significatif** — 4/5 bugs corrigés, mais 1 nouveau bug découvert (LogOutView)  
-⚠️ **API quasi prête** — Il reste 1 bug critique + 4 incohérences de conception  
+
+✅ **Progrès significatif** - 4/5 bugs corrigés, mais 1 nouveau bug découvert (LogOutView)  
+⚠️ **API quasi prête** - Il reste 1 bug critique + 4 incohérences de conception  
 🟡 **Production:** Possible avec les 2 corrections ci-dessous
 
 ---
@@ -44,6 +46,7 @@
 ### ✅ BUG #1: CheckPermissionView - has_permission() Method [RÉSOLU]
 
 **Problème Identifié (30 avril):**
+
 ```python
 # ❌ BROKEN - User model n'avait pas cette méthode
 class CheckPermissionView(BaseAPIView):
@@ -53,6 +56,7 @@ class CheckPermissionView(BaseAPIView):
 ```
 
 **Solution Implémentée (1 mai):**
+
 ```python
 # ✅ FIXED - Implémenté dans accounts/models.py (lignes 86-88)
 
@@ -120,6 +124,7 @@ class CheckPermissionView(APIView):
 ### ✅ BUG #2: Threading Typo [RÉSOLU]
 
 **Problème Identifié (30 avril):**
+
 ```python
 # ❌ BROKEN - Typo: lowercase 'thread' au lieu de 'Thread'
 # File: accounts/verification/services.py
@@ -135,6 +140,7 @@ def send_verification_email_background(user_id):
 **Solution Implémentée (1 mai):**
 
 **Fichier 1: accounts/verification/services.py (ligne 104)**
+
 ```python
 # ✅ FIXED - Uppercase 'Thread'
 thread = threading.Thread(
@@ -146,6 +152,7 @@ thread.start()
 ```
 
 **Fichier 2: accounts/auth/services.py (registration background)**
+
 ```python
 # ✅ FIXED - Également corrigé dans registration
 def register(self, email, password, **kwargs):
@@ -168,6 +175,7 @@ def register(self, email, password, **kwargs):
 ```
 
 **Verificatifs:**
+
 - ✅ `threading.Thread` utilisé correctement (uppercase)
 - ✅ `daemon=True` pour background processing
 - ✅ Emails de vérification maintenant envoyés correctement
@@ -180,6 +188,7 @@ def register(self, email, password, **kwargs):
 ### ✅ BUG #3: isinstance() Tuple Syntax [RÉSOLU]
 
 **Problème Identifié (30 avril):**
+
 ```python
 # ❌ BROKEN - isinstance() reçoit 3 arguments au lieu de 2
 # File: accounts/profile/services.py
@@ -193,6 +202,7 @@ def validate_profile_picture(file):
 **Solution Implémentée (1 mai):**
 
 **Fichier: accounts/profile/services.py (ligne 113)**
+
 ```python
 # ✅ FIXED - Tuple correcte pour multiple types
 
@@ -218,6 +228,7 @@ def validate_profile_picture(file):
 ```
 
 **Verificatifs:**
+
 - ✅ Tuple `(InMemoryUploadedFile, UploadedFile)` syntactiquement correct
 - ✅ Extension validation fonctionne
 - ✅ Size check fonctionnel
@@ -230,6 +241,7 @@ def validate_profile_picture(file):
 ### ✅ BUG #4: String .join() Logic [RÉSOLU]
 
 **Problème Identifié (30 avril):**
+
 ```python
 # ❌ BROKEN - Misuse de .join() sur string
 
@@ -243,6 +255,7 @@ except ValidationError as e:
 **Solutions Implémentées (1 mai):**
 
 **Fichier 1: password_reset_service.py (ligne 106)**
+
 ```python
 # ✅ FIXED - Correct usage pour agréger messages d'erreur
 
@@ -258,6 +271,7 @@ except ValidationError as e:
 ```
 
 **Fichier 2: profile/services.py (ligne 149)**
+
 ```python
 # ✅ FIXED - Également dans update_profile
 
@@ -270,6 +284,7 @@ except ValidationError as e:
 ```
 
 **Fichier 3: auth/services.py (ligne 65)**
+
 ```python
 # ✅ FIXED - Et dans serializer validation
 
@@ -283,6 +298,7 @@ except ValidationError as e:
 ```
 
 **Verificatifs:**
+
 - ✅ `.join()` utilisé correctement sur listes de messages
 - ✅ Messages d'erreur formatés lisiblement
 - ✅ Errors multiples correctement agrégées
@@ -295,6 +311,7 @@ except ValidationError as e:
 ### ✅ BUG #5: permission_classes Typo [RÉSOLU]
 
 **Problème Identifié (30 avril):**
+
 ```python
 # ❌ BROKEN - Typo: permissions_classes (plural wrong)
 
@@ -347,6 +364,7 @@ class VerificationStatusView(APIView):
 ```
 
 **Verificatifs:**
+
 - ✅ 12+ views utilisant l'attribut correct `permission_classes`
 - ✅ Pas de typo `permissions_classes` trouvée
 - ✅ RBAC appliqué correctement partout
@@ -368,6 +386,7 @@ class VerificationStatusView(APIView):
 **Sévérité:** 🔴 CRITIQUE
 
 **Code Défectueux:**
+
 ```python
 # ❌ BROKEN - Typo: request.COOKIE (singular)
 
@@ -390,11 +409,13 @@ class LogOutView(BaseAPIView):
 ```
 
 **Impact:**
-- 🔴 **CRITIQUE** — Logout échoue si JWT stocké en cookie HTTP-only
+
+- 🔴 **CRITIQUE** - Logout échoue si JWT stocké en cookie HTTP-only
 - 🔴 Affecte configurations sécurisées (JWT_AUTH_COOKIE_SECURE=True)
 - 🔴 Production deployment impossible si cookies utilisés
 
 **Correction Requise:**
+
 ```python
 # ✅ FIXED - Utiliser request.COOKIES (plural)
 
@@ -421,9 +442,10 @@ class LogOutView(BaseAPIView):
 
 ## INCOHÉRENCES DE CONCEPTION
 
-### ⚠️ ISSUE #7: Token Blacklist TTL — AMÉLIORATION PARTIELLE
+### ⚠️ ISSUE #7: Token Blacklist TTL - AMÉLIORATION PARTIELLE
 
 **État Avant (30 avril):**
+
 ```
 ❌ Cache verification status TTL: 1 heure seulement
 ❌ Token lifetime: 14 jours
@@ -431,6 +453,7 @@ class LogOutView(BaseAPIView):
 ```
 
 **État Après (1 mai):**
+
 ```python
 # ✅ AMÉLIORÉ dans accounts/verification/services.py (ligne 52-53)
 
@@ -452,6 +475,7 @@ def verify_email(uidb64, token):
 **Amélioration:** TTL passé de 1h à 24h
 
 **Reste Problématique:**
+
 ```
 ⚠️ Token lifetime: 14 jours (refresh token max)
 ⚠️ Cache: 24 heures
@@ -465,7 +489,7 @@ def verify_email(uidb64, token):
 
 ---
 
-### ⚠️ ISSUE #8: Tokens Avant Email Verification — PERSISTE
+### ⚠️ ISSUE #8: Tokens Avant Email Verification - PERSISTE
 
 **État Actuel** ([accounts/auth/services.py#L81-L85](accounts/auth/services.py#L81-L85)):
 
@@ -497,6 +521,7 @@ def login(self, email, password):
 ```
 
 **Problèmes Persistants:**
+
 1. ❌ User peut appeler endpoints sensibles avant vérification
 2. ❌ Tokens valides même avec `is_verified=False`
 3. ❌ Chaque endpoint sensible doit checker `user.is_verified` (duplication code)
@@ -504,6 +529,7 @@ def login(self, email, password):
 5. ❌ Logique dispersée = difficile à maintenir
 
 **Exemple Problème:**
+
 ```python
 # Utilisateur non-vérifié peut quand même faire ceci:
 POST /api/user/profile/  # ✅ Marche même si not verified!
@@ -514,6 +540,7 @@ POST /api/check-permission/  # ✅ Marche aussi!
 **Solutions Recommandées:**
 
 **Option A: Bloquer endpoints sensibles avec middleware**
+
 ```python
 # middleware.py
 class EmailVerificationMiddleware:
@@ -537,6 +564,7 @@ class EmailVerificationMiddleware:
 ```
 
 **Option B: JWT claim "email_verified"**
+
 ```python
 def generate_token(self, user):
     payload = {
@@ -549,6 +577,7 @@ def generate_token(self, user):
 ```
 
 **Option C: Return refresh-token ONLY until verified**
+
 ```python
 if not user.is_verified:
     return refresh_token_only  # Access token refusé
@@ -558,9 +587,10 @@ if not user.is_verified:
 
 ---
 
-### ⚠️ ISSUE #9: UserActivity Logging — PARTIELLEMENT AMÉLIORER
+### ⚠️ ISSUE #9: UserActivity Logging - PARTIELLEMENT AMÉLIORER
 
 **État Avant (30 avril):**
+
 ```
 ✅ Loggé: login, logout
 ❌ Manquant: token refresh, password change, permission denied
@@ -569,6 +599,7 @@ if not user.is_verified:
 **État Après (1 mai):**
 
 **Loggé Correctement:**
+
 ```python
 ✅ Login         [accounts/auth/views.py#L167-L171]
 ✅ Logout        [accounts/auth/views.py#L331-L336]
@@ -578,6 +609,7 @@ if not user.is_verified:
 ```
 
 **Amélioration Token Refresh:** Fragile mais présent
+
 ```python
 # TokenRefreshView (essaie de logger) - FRAGILE
 try:
@@ -596,6 +628,7 @@ except Exception:
 ```
 
 **MANQUANT (Problématique):**
+
 ```python
 ❌ ChangePasswordView [accounts/auth/views.py#L380]
    # Pas de UserActivity.objects.create()
@@ -611,6 +644,7 @@ except Exception:
 ```
 
 **Exemple: ChangePasswordView sans logging**
+
 ```python
 # ❌ PROBLÉMATIQUE - Missing logging
 
@@ -640,6 +674,7 @@ class ChangePasswordView(BaseAPIView):
 ```
 
 **Recommandation:**
+
 ```python
 # ✅ AJOUTER partout:
 
@@ -656,9 +691,10 @@ UserActivity.objects.create(
 
 ---
 
-### ⚠️ ISSUE #10: CSRF Configuration — PARTIELLEMENT AMÉLIORY
+### ⚠️ ISSUE #10: CSRF Configuration - PARTIELLEMENT AMÉLIORY
 
 **État Avant (30 avril):**
+
 ```
 ❌ SESSION_COOKIE_DOMAIN commentée
 ❌ Pas d'exemple .env
@@ -691,12 +727,14 @@ else:  # Development
 **Problèmes Persistants:**
 
 1. ❌ `SESSION_COOKIE_DOMAIN` toujours commentée
+
    ```python
    # ❌ PROBLÈME en production multi-domaine:
    # Cookies pas partagés entre app.paroisse.com et api.paroisse.com
    ```
 
 2. ❌ `CORS_ALLOW_ALL_ORIGINS = True` (risqué même en dev)
+
    ```python
    # ❌ Implicite mais problématique:
    # Permet à n'importe quel domaine d'accéder l'API
@@ -705,6 +743,7 @@ else:  # Development
 3. ⚠️ Pas de configuration `.env` documentée
 
 **Configuration Production Recommandée:**
+
 ```python
 # .env
 if not DEBUG:
@@ -739,7 +778,7 @@ if not DEBUG:
 
 ## AMÉLIORATIONS DÉTECTÉES
 
-### ✅ JWT Token Management — ROBUSTE (93/100)
+### ✅ JWT Token Management - ROBUSTE (93/100)
 
 ```
 Score: 93/100 (+1 depuis rapport)
@@ -767,7 +806,7 @@ Score: 93/100 (+1 depuis rapport)
 
 ---
 
-### ✅ RBAC Implementation — COMPLET (87/100)
+### ✅ RBAC Implementation - COMPLET (87/100)
 
 ```
 Score: 87/100 (+2 depuis rapport)
@@ -789,7 +828,7 @@ Score: 87/100 (+2 depuis rapport)
 
 ---
 
-### ✅ Views Layer — MEILLEUR MAIS 1 BUG (80/100)
+### ✅ Views Layer - MEILLEUR MAIS 1 BUG (80/100)
 
 ```
 Score: 80/100 (+5 depuis rapport)
@@ -808,7 +847,7 @@ Vues fonctionnelles:
 
 ---
 
-### ✅ Threading Usage — CORRECT (95/100)
+### ✅ Threading Usage - CORRECT (95/100)
 
 ```
 Score: 95/100 (+25 depuis rapport)
@@ -829,7 +868,7 @@ Score: 95/100 (+25 depuis rapport)
 
 ---
 
-### ✅ isinstance() Calls — CORRECT (98/100)
+### ✅ isinstance() Calls - CORRECT (98/100)
 
 ```
 Score: 98/100 (+38 depuis rapport)
@@ -846,7 +885,7 @@ Score: 98/100 (+38 depuis rapport)
 
 ---
 
-### ✅ String Operations — CORRECT (97/100)
+### ✅ String Operations - CORRECT (97/100)
 
 ```
 Score: 97/100 (+0 depuis rapport)
@@ -864,7 +903,7 @@ Score: 97/100 (+0 depuis rapport)
 
 ---
 
-### ✅ permission_classes Attributes — CORRECT (100/100)
+### ✅ permission_classes Attributes - CORRECT (100/100)
 
 ```
 Score: 100/100 (+0 depuis rapport)
@@ -923,7 +962,7 @@ Score: 100/100 (+0 depuis rapport)
 ║ isinstance() Syntax      ❌ Broken     → ✅ Fixed       [+1]  ║
 ║ String .join() Logic     ❌ Broken     → ✅ Fixed       [+1]  ║
 ║ permission_classes Typo  ❌ Broken     → ✅ Fixed       [+1]  ║
-║ LogOutView COOKIE        —             → ❌ NEW BUG    [-1]  ║
+║ LogOutView COOKIE        -             → ❌ NEW BUG    [-1]  ║
 ║                                                                ║
 ║ Total Bugs: 5 → 1 (-4, ou -80% depuis rapport)               ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -965,6 +1004,7 @@ Score: 100/100 (+0 depuis rapport)
 ### 🔴 CRITIQUE (Fixer IMMÉDIATEMENT)
 
 #### #1: LogOutView COOKIE(S) Typo
+
 **Fichier:** [accounts/auth/views.py#L323](accounts/auth/views.py#L323)  
 **Priorité:** 🔴 CRÍTICA
 
@@ -984,6 +1024,7 @@ refresh_token = request.COOKIES.get(settings.JWT_COOKIE_NAME)
 ### 🟠 HAUTE PRIORITÉ (Avant production)
 
 #### #2: ChangePasswordView - Ajouter UserActivity Logging
+
 **Fichier:** [accounts/auth/views.py#L380-395](accounts/auth/views.py#L380-395)  
 **Priorité:** 🟠 HIGH
 
@@ -1005,6 +1046,7 @@ UserActivity.objects.create(
 ---
 
 #### #3: CSRF Production Configuration
+
 **Fichier:** [gestion_p/settings.py#L187-196](gestion_p/settings.py#L187-196)  
 **Priorité:** 🟠 HIGH
 
@@ -1025,6 +1067,7 @@ if not DEBUG:
 ---
 
 #### #4: Email Verification Middleware
+
 **Fichier:** À créer: [accounts/middleware.py](accounts/middleware.py)  
 **Priorité:** 🟠 HIGH
 
@@ -1063,6 +1106,7 @@ class EmailVerificationMiddleware:
 ### 🟡 MOYENNE PRIORITÉ (À court terme)
 
 #### #5: TokenRefreshView - Improve Logging
+
 **Fichier:** [accounts/auth/views.py#L210-240](accounts/auth/views.py#L210-240)  
 **Priorité:** 🟡 MEDIUM
 
@@ -1095,6 +1139,7 @@ if user:
 ---
 
 #### #6: Add Type Hints
+
 **Fichier:** services.py files  
 **Priorité:** 🟡 MEDIUM
 
@@ -1115,6 +1160,7 @@ def register(self, email: str, password: str, **kwargs: Any)
 ---
 
 #### #7: Reduce Password Reset Token Timeout
+
 **Fichier:** [gestion_p/settings.py](gestion_p/settings.py)  
 **Priorité:** 🟡 MEDIUM
 
@@ -1152,6 +1198,7 @@ Code Quality: 60/100        →    75/100 (+25%)
 ### Chemin vers Production
 
 #### Phase 1: IMMÉDIATE (0-2 heures)
+
 1. ✅ Fixer LogOutView COOKIE typo
 2. ✅ Ajouter ChangePasswordView logging
 3. ✅ CSRF config décommenter
@@ -1159,16 +1206,18 @@ Code Quality: 60/100        →    75/100 (+25%)
 **Résultat:** 85/100 ✅ **Production-ready**
 
 #### Phase 2: Court Terme (2-4 heures)
+
 4. ✅ Créer Email Verification middleware
-5. ✅ Improve TokenRefresh logging
-6. ✅ Add type hints aux services
+2. ✅ Improve TokenRefresh logging
+3. ✅ Add type hints aux services
 
 **Résultat:** 88/100 ✅ **Production-optimized**
 
 #### Phase 3: Long Terme (1-2 jours)
+
 7. ✅ Expand docstrings
-8. ✅ Reduce password reset TTL
-9. ✅ Add endpoint-level rate limiting
+2. ✅ Reduce password reset TTL
+3. ✅ Add endpoint-level rate limiting
 
 **Résultat:** 91/100+ ✅ **Enterprise-ready**
 
@@ -1178,7 +1227,8 @@ Code Quality: 60/100        →    75/100 (+25%)
 
 L'API Gestion Paroissiale a considérablement progressé. Les 4 bugs critiques majeurs ont été éliminés (80%), et le score est passé de 78 à 83 en 1 jour.
 
-**Production Status:** 
+**Production Status:**
+
 - 🟢 **GO** avec les 3 fixes critiques (30 min)
 - 🟡 **BETA** actuellement (1 bug majeur = LogOutView)
 - ✅ **FULL PRODUCTION** après Phase 1

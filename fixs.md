@@ -6,7 +6,7 @@ récentes en haut.
 
 ---
 
-## 2026-07-15 — Événements : conviés (convocations) + visibilité par convocation
+## 2026-07-15 - Événements : conviés (convocations) + visibilité par convocation
 
 **Besoin** : convier à un événement selon 4 axes cumulables (toute la paroisse /
 rôles / groupes entiers / membres précis) ; n'afficher à chaque utilisateur que
@@ -15,19 +15,19 @@ passé.
 
 **Solution** :
 
-- `evenements/models.py` — `Evenement` gagne `invite_tous` (bool),
+- `evenements/models.py` - `Evenement` gagne `invite_tous` (bool),
   `roles_invites` (JSONField, codes de rôle), `groupes_invites` (M2M Groupe),
   `membres_invites` (M2M Membre), plus une propriété `est_passe` (date_fin, ou
   date_debut si absente, dépassée). Migration `evenements/0002`.
-- `evenements/serializers.py` — champs conviés (écriture par ids/codes) +
+- `evenements/serializers.py` - champs conviés (écriture par ids/codes) +
   `groupes_invites_noms` / `membres_invites_noms` (lecture) + `est_passe`.
   Imports `User`/`Groupe`/`Membre`.
-- `evenements/services.py` — `get_evenements_for_user(user)` : `Q(invite_tous)`
+- `evenements/services.py` - `get_evenements_for_user(user)` : `Q(invite_tous)`
   | `Q(createur=user)` | `Q(roles_invites__contains=user.role)` |
   `Q(membres_invites=membre)` | `Q(groupes_invites=membre.groupe)`. Le
   **créateur** voit toujours ses événements (sinon le personnel perdrait l'accès
   à ce qu'il crée).
-- `evenements/views.py` — la liste passe par `get_evenements_for_user` (chacun
+- `evenements/views.py` - la liste passe par `get_evenements_for_user` (chacun
   ne voit que ses convocations) ; POST via `serializer.save(createur=...)` (au
   lieu du service) pour que DRF gère les M2M ; `context={"request": request}`
   ajouté partout pour des URLs absolues et l'affichage.
@@ -39,7 +39,7 @@ passé.
 `core/test_sync` qui sérialise les événements). Smoke-test shell :
 `est_passe`, création M2M, visibilité par rôle validés.
 
-## 2026-07-15 — Synchro nom/prénom User ↔ Membre rendue bidirectionnelle
+## 2026-07-15 - Synchro nom/prénom User ↔ Membre rendue bidirectionnelle
 
 **Problème** : la synchro nom/prénom entre `User` (compte) et `Membre` (fiche)
 était à sens unique (User → Membre via `update_membre_for_user`). Éditer
@@ -50,7 +50,7 @@ le `User` et était écrasé au prochain enregistrement du compte.
 risque classique de récursion infinie de signaux
 (User.save → Membre.save → User.save → …).
 
-**Solution** : `membres/signals.py` — nouveau `update_user_for_membre`
+**Solution** : `membres/signals.py` - nouveau `update_user_for_membre`
 (`post_save` sur `Membre`) : si `instance.user` existe et que nom/prénom
 diffèrent, répercussion sur le `User`
 (`save(update_fields=["nom", "prenom", "updated_at"])`). L'anti-récursion repose
@@ -63,7 +63,7 @@ s'arrête. Les fiches sans compte (`user=None`) sont ignorées.
 **Vérif** : test manuel en shell (création → auto-Membre ; Membre→User ;
 User→Membre) sans `RecursionError` ; suite `membres`/`accounts` : 82 tests OK.
 
-## 2026-07-10 — Serializers `id` modifiable + endpoint de synchronisation batch
+## 2026-07-10 - Serializers `id` modifiable + endpoint de synchronisation batch
 
 **Problème** : suite du socle UUID. Deux briques manquaient pour que la synchro
 offline fonctionne de bout en bout via l'API :
@@ -74,19 +74,19 @@ offline fonctionne de bout en bout via l'API :
 
 **Solution** :
 
-- `core/serializers.py` — mixin `WritableIDModelSerializer` : `id` redéclaré
+- `core/serializers.py` - mixin `WritableIDModelSerializer` : `id` redéclaré
   `UUIDField(required=False)` (fourni par le client → respecté ; absent →
   généré). `update()` interdit la réassignation de la PK. Appliqué à 8
   serializers : `Membre`, `Sacrement`, `Groupe`, `Evenement`, `Participation`,
   `Transaction`, `Article`, `Vente` (`MembreSelfSerializer` reste en lecture
   seule côté auto-service).
-- `core/sync.py` — moteur de synchro : registre des collections, `push_changes`
+- `core/sync.py` - moteur de synchro : registre des collections, `push_changes`
   (upsert par `id`, résolution *last-write-wins* sur `updated_at`, chaque
   enregistrement isolé dans son point de sauvegarde), `pull_changes` (delta
   depuis `since`, `is_deleted` compris), `run_sync` (push puis pull +
   `server_time`).
-- `core/views.py` — `SyncView` (`POST /api/v1/sync/`, `IsAuthenticated`).
-- `gestion_p/urls.py` — route `api/v1/sync/` (name=`sync`).
+- `core/views.py` - `SyncView` (`POST /api/v1/sync/`, `IsAuthenticated`).
+- `gestion_p/urls.py` - route `api/v1/sync/` (name=`sync`).
 
 **Contrat** : requête `{ "since": <iso|null>, "changes": { collection: [rec] } }` ;
 réponse `{ server_time, results:{collection:{applied,conflicts,errors}}, changes }`.
@@ -104,7 +104,7 @@ respecté, conflit serveur-gagne, client-gagne, soft delete propagé, lot partie
 
 ---
 
-## 2026-07-10 — Clés primaires UUID + socle de synchronisation offline
+## 2026-07-10 - Clés primaires UUID + socle de synchronisation offline
 
 **Problème** : préparation d'une architecture *offline-first* (le frontend stocke
 hors ligne puis synchronise vers le serveur central). Avec des clés primaires
@@ -118,7 +118,7 @@ génèrent le même ID (1, 2, 3…) et entrent en collision à la synchro.
 
 - Nouveau socle abstrait dans `core/models.py` :
   - `UUIDPrimaryKeyModel` : `id = UUIDField(primary_key=True, default=uuid4)`
-    — l'identifiant peut être généré côté client (aucune collision).
+    - l'identifiant peut être généré côté client (aucune collision).
   - `SyncableModel(UUIDPrimaryKeyModel)` : ajoute `created_at`, `updated_at`
     (base du *last-write-wins*) et `is_deleted` (soft delete).
 - Modèles migrés vers `SyncableModel` : `Membre`, `Sacrement`, `Groupe`,
@@ -154,7 +154,7 @@ l'ORM, FK UUID, signal de création de profil, décrément de stock `Vente`.
 
 ---
 
-## 2026-07-10 — Correctifs audit P3.8 (headers sécurité) & P3.10 (gouvernance)
+## 2026-07-10 - Correctifs audit P3.8 (headers sécurité) & P3.10 (gouvernance)
 
 **Problème** : deux points de l'audit restaient ouverts :
 
@@ -166,12 +166,12 @@ gouvernance projet jamais créés.
 
 **Solution** :
 
-- P3.8 — dans `gestion_p/settings.py` : `SECURE_CONTENT_TYPE_NOSNIFF`,
+- P3.8 - dans `gestion_p/settings.py` : `SECURE_CONTENT_TYPE_NOSNIFF`,
   `SECURE_BROWSER_XSS_FILTER`, `X_FRAME_OPTIONS = "DENY"` toujours actifs ;
   `SECURE_SSL_REDIRECT` + `SECURE_HSTS_SECONDS`/`INCLUDE_SUBDOMAINS`/`PRELOAD`
   uniquement en production (`if not DEBUG`) pour ne pas casser `http://localhost`.
   `SecurityMiddleware` et `XFrameOptionsMiddleware` étaient déjà présents.
-- P3.10 — création de `LICENSE` (MIT), `CHANGELOG.md` (format Keep a Changelog,
+- P3.10 - création de `LICENSE` (MIT), `CHANGELOG.md` (format Keep a Changelog,
   synthèse de l'audit en v1.0.0) et `CONTRIBUTING.md` (conventions du projet).
 
 **Fichiers** : `gestion_p/settings.py`, `LICENSE`, `CHANGELOG.md`,
@@ -183,7 +183,7 @@ géré par variable d'environnement en production).
 
 ---
 
-## 2026-07-09 — Ajout du versionning de l'API (`/api/v1/`)
+## 2026-07-09 - Ajout du versionning de l'API (`/api/v1/`)
 
 **Problème** : l'API n'était pas versionnée (`/api/...`), ce qui empêche toute
 évolution future incompatible sans casser les clients existants.
@@ -197,7 +197,7 @@ DRF n'était configurée.
 - Préfixage de toutes les routes métier sous `/api/v1/` (`accounts`, `groupes`,
   `membres`, `evenements`, `finances`, `librairie`) dans `gestion_p/urls.py`.
 - `/api/health/` laissé **non versionné** : c'est un endpoint d'infrastructure
-  référencé par le `HEALTHCHECK` du `Dockerfile` — le versionner casserait le
+  référencé par le `HEALTHCHECK` du `Dockerfile` - le versionner casserait le
   healthcheck Docker/Render.
 - Activation du versionning DRF dans `REST_FRAMEWORK` :
   `URLPathVersioning` + `DEFAULT_VERSION="v1"` + `ALLOWED_VERSIONS=["v1"]`, si
@@ -207,7 +207,7 @@ DRF n'était configurée.
   résolvent automatiquement vers `/api/v1/...` (vérifié).
 - Documentation mise à jour (`README.md`, `CLAUDE.md`).
 
-**Impact client** : changement cassant pour le frontend — les appels `/api/...`
+**Impact client** : changement cassant pour le frontend - les appels `/api/...`
 doivent devenir `/api/v1/...` (sauf `/api/health/`).
 
 **Fichiers** : `gestion_p/urls.py`, `gestion_p/settings.py`, `README.md`,
@@ -218,7 +218,7 @@ doivent devenir `/api/v1/...` (sauf `/api/health/`).
 
 ---
 
-## 2026-07-09 — Échec du build Docker : paquet `default-libmysqlclient21` introuvable
+## 2026-07-09 - Échec du build Docker : paquet `default-libmysqlclient21` introuvable
 
 **Problème** : `docker build` échouait à l'étape runtime (`stage-1 3/8`) avec
 `E: Unable to locate package default-libmysqlclient21`.
@@ -226,7 +226,7 @@ doivent devenir `/api/v1/...` (sauf `/api/health/`).
 **Cause** : l'image de base `python:3.14-slim` s'appuie désormais sur Debian
 "trixie", où le paquet runtime du client MySQL a été renommé : la
 bibliothèque partagée `libmysqlclient21` (nom hérité de Debian bookworm)
-n'existe plus — le client MySQL par défaut sur trixie est fourni par
+n'existe plus - le client MySQL par défaut sur trixie est fourni par
 MariaDB, sous le paquet `libmariadb3`.
 
 **Solution** : dans le `Dockerfile`, étape runtime, remplacement de
@@ -238,7 +238,7 @@ Docker vérifié en local avec succès après correctif.
 
 ---
 
-## 2026-07-08 — Finalisation de la configuration de déploiement Docker/Render
+## 2026-07-08 - Finalisation de la configuration de déploiement Docker/Render
 
 **Problème** : plusieurs bugs empêchaient un déploiement Render fiable via Docker :
 
@@ -246,13 +246,13 @@ Docker vérifié en local avec succès après correctif.
 2. `DATABASE_URL` (Postgres Render) n'était jamais appliqué à `DATABASES`.
 3. Le `Dockerfile` copiait tout le contexte de build (pas de `.dockerignore`) et
    exécutait `collectstatic` **au build**, alors que Render n'injecte les
-   variables d'environnement du Dashboard qu'**au runtime** — le build échouait
+   variables d'environnement du Dashboard qu'**au runtime** - le build échouait
    ou embarquait des valeurs bidon.
 4. `gunicorn` écoutait en dur sur le port 8000 au lieu du `$PORT` fourni par Render.
 
 **Cause** :
 
-1. `DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")` — `env("DEBUG")`
+1. `DEBUG = env("DEBUG") or os.environ.get("DEBUG", "False")` - `env("DEBUG")`
    (casté en bool via le schéma `environ.Env`) valait `False`, donc l'expression
    retombait sur `os.environ.get(...)` qui renvoie la **chaîne** `"False"`,
    truthy en Python.
@@ -284,7 +284,7 @@ Docker vérifié en local avec succès après correctif.
 
 ---
 
-## 2026-07-08 — Redis non configuré en production sur Render provoquant une erreur 500
+## 2026-07-08 - Redis non configuré en production sur Render provoquant une erreur 500
 
 **Problème** : déploiement Render déclenchait `redis.exceptions.ConnectionError: Error 111 connecting to localhost:6379. Connection refused.` lors de l'accès à `/docs/`.
 
@@ -296,7 +296,7 @@ Docker vérifié en local avec succès après correctif.
 
 ---
 
-## 2026-07-04 — `KeyError: 'request'` sur le profil (photo de profil)
+## 2026-07-04 - `KeyError: 'request'` sur le profil (photo de profil)
 
 **Problème** : `GET /api/user/profile/` plantait (500) dès qu'un utilisateur avait
 une photo de profil : `KeyError: 'request'` dans
@@ -318,7 +318,7 @@ instancient `UserSerializer(user)` sans passer `request` dans le contexte
 
 ---
 
-## 2026-07-04 — Suppression des vues API redondantes avec les pages HTML
+## 2026-07-04 - Suppression des vues API redondantes avec les pages HTML
 
 **Problème** : `VerifyEmailView` et `ConfirmPasswordResetView` (endpoints API qui
 consomment le token) faisaient doublon avec les pages `EmailVerifyPageView` et
@@ -335,11 +335,11 @@ consommation du token passe exclusivement par les pages HTML.
 
 ---
 
-## 2026-07-03 — Pages HTML conviviales pour la vérification d'email et la réinitialisation
+## 2026-07-03 - Pages HTML conviviales pour la vérification d'email et la réinitialisation
 
 **Problème** : les liens des emails pointaient vers les endpoints **API**
 (`/api/auth/email-verify`, `/api/auth/password-reset-confirm`) qui renvoient du
-JSON brut / une page DRF — illisible pour l'utilisateur final.
+JSON brut / une page DRF - illisible pour l'utilisateur final.
 
 **Solution** : de vraies pages web rendues par Django, au thème liturgique
 (cohérent avec les emails).
@@ -363,7 +363,7 @@ JSON brut / une page DRF — illisible pour l'utilisateur final.
 
 ---
 
-## 2026-07-02 — Refonte des templates d'email (contenu, UI, style) + correctif du nom d'app
+## 2026-07-02 - Refonte des templates d'email (contenu, UI, style) + correctif du nom d'app
 
 **Problème** :
 
@@ -387,10 +387,10 @@ JSON brut / une page DRF — illisible pour l'utilisateur final.
 
 ---
 
-## 2026-07-02 — Repli SMTP automatique en cas d'échec du backend email principal
+## 2026-07-02 - Repli SMTP automatique en cas d'échec du backend email principal
 
-**Problème** : à l'inscription, Resend renvoyait `403 (validation_error)` — « You can
-only send testing emails to your own email address » — car le domaine n'est pas
+**Problème** : à l'inscription, Resend renvoyait `403 (validation_error)` - « You can
+only send testing emails to your own email address » - car le domaine n'est pas
 vérifié sur Resend. L'email de vérification n'arrivait donc jamais aux autres
 destinataires (3 tentatives échouées puis abandon).
 
@@ -410,7 +410,7 @@ destinataires (3 tentatives échouées puis abandon).
 
 ---
 
-## 2026-07-02 — Tests unitaires de l'authentification
+## 2026-07-02 - Tests unitaires de l'authentification
 
 **Ajout** : suite de tests unitaires complète pour l'authentification (package
 `accounts/tests/`), couvrant modèle `User`, inscription, connexion (+ verrouillage
@@ -430,7 +430,7 @@ manquantes des apps `groupes/membres/evenements/finances/librairie`.
 
 ---
 
-## 2026-07-01 — `EMAIL_BACKEND` : import des settings cassé si la clé est absente
+## 2026-07-01 - `EMAIL_BACKEND` : import des settings cassé si la clé est absente
 
 **Problème** : `EMAIL_BACKEND = env("EMAIL_BACKEND") or ...` levait
 `ImproperlyConfigured` quand la clé n'était pas dans `.env` (le `or` de repli
@@ -444,7 +444,7 @@ inchangé.
 
 ---
 
-## 2026-06-30 — `UserListView` / `UserDetailView` cassées (héritage `APIView`)
+## 2026-06-30 - `UserListView` / `UserDetailView` cassées (héritage `APIView`)
 
 **Problème** :
 
@@ -464,7 +464,7 @@ inchangé.
 
 ---
 
-## 2026-06-29 — Conformité de toutes les réponses API au format Core
+## 2026-06-29 - Conformité de toutes les réponses API au format Core
 
 **Problème** : le format standardisé Core (`{success, data, error, message}`)
 n'était pas respecté partout.

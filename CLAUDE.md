@@ -60,20 +60,20 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 
 **Views** (`app/views.py`): HTTP handling via DRF ViewSets, validation, business logic, standardized responses.
 
-**Services** (in `accounts` subdirectories: `auth/`, `profile/`, `verification/`): Complex business logic. Other apps embed service logic in views or use a `services.py` file (e.g., `membres/services.py` — `MembreService`).
+**Services** (in `accounts` subdirectories: `auth/`, `profile/`, `verification/`): Complex business logic. Other apps embed service logic in views or use a `services.py` file (e.g., `membres/services.py` - `MembreService`).
 
 **Serializers** (`app/serializers.py`): Data validation and transformation.
 
 **Models** (`app/models.py`): Database models and custom managers.
 
-**Shared Utilities** — all live in the root-level `core/` app (NOT `accounts/core/`):
+**Shared Utilities** - all live in the root-level `core/` app (NOT `accounts/core/`):
 
 - `core/jwt_utils.py`: `TokenManager` handles JWT lifecycle (tracking in Redis by `jti`, blacklisting on logout/password change). Falls back to `LocMemCache` semantics when Redis is unavailable.
-- `core/response.py`: `standardized_response()`. Note it **omits** keys whose value is `None` — a success response is often just `{"success": true, "data": {...}}` with no `error`/`message`.
+- `core/response.py`: `standardized_response()`. Note it **omits** keys whose value is `None` - a success response is often just `{"success": true, "data": {...}}` with no `error`/`message`.
 - `core/exception_handler.py`: `custom_exception_handler` (wired via `REST_FRAMEWORK["EXCEPTION_HANDLER"]`) converts **every** DRF error (validation, 401, 403, 404, throttling) into the standardized format.
-- `core/base_view.py`: `BaseAPIView` — base class most auth/module views extend. Centralizes exception handling (`AuthenticationFailed` → standardized 401) and adds `check_extra_permission()`.
-- `core/rbac.py`: **Single source of truth** for business permissions — `PERMISSIONS_CATALOGUE` (the exhaustive permission catalogue, keyed by string id) + `ROLE_PERMISSIONS` (role→permission-set map) + helpers (`has_permission`, `has_any_permission`, `roles_with_permission`, …). Validates at import that every role only references catalogued permissions. `accounts.models.User.has_permission()` and the DRF permission classes both delegate here — never redefine these tables elsewhere.
-- `core/permissions.py`: DRF permission classes. Role-hierarchy style (`IsAdmin`, `IsSecretaryOrAbove`, `IsTreasurerOrAbove`) **and** granular factories adossed to `core/rbac.py` (`HasPermission("manage_membres")`, `HasAnyPermission(...)`, `HasAllPermissions(...)` — validate permission names, raise `ValueError` on typos). Prefer the granular factories in new code.
+- `core/base_view.py`: `BaseAPIView` - base class most auth/module views extend. Centralizes exception handling (`AuthenticationFailed` → standardized 401) and adds `check_extra_permission()`.
+- `core/rbac.py`: **Single source of truth** for business permissions - `PERMISSIONS_CATALOGUE` (the exhaustive permission catalogue, keyed by string id) + `ROLE_PERMISSIONS` (role→permission-set map) + helpers (`has_permission`, `has_any_permission`, `roles_with_permission`, …). Validates at import that every role only references catalogued permissions. `accounts.models.User.has_permission()` and the DRF permission classes both delegate here - never redefine these tables elsewhere.
+- `core/permissions.py`: DRF permission classes. Role-hierarchy style (`IsAdmin`, `IsSecretaryOrAbove`, `IsTreasurerOrAbove`) **and** granular factories adossed to `core/rbac.py` (`HasPermission("manage_membres")`, `HasAnyPermission(...)`, `HasAllPermissions(...)` - validate permission names, raise `ValueError` on typos). Prefer the granular factories in new code.
 - `core/health.py` + `core/views.py`: `HealthCheckView` (Redis + DB status, unauthenticated).
 
 ---
@@ -90,11 +90,11 @@ HTTP Request → gestion_p/urls.py → ViewSet/View (app/views.py) → Service/M
 | `librairie` | Library articles, sales, stock alerts |
 | `core` | Shared permissions and mixins |
 
-### `User` (accounts) vs `Membre` (membres) — deliberately separate, not redundant
+### `User` (accounts) vs `Membre` (membres) - deliberately separate, not redundant
 
 These two models look like they manage "the same people" but model **different
 things**, and merging them is a known anti-goal for this project (a parish must
-track parishioners who will never have a login — children, elderly, occasional
+track parishioners who will never have a login - children, elderly, occasional
 attendees):
 
 - **`accounts.User`** = the authentication identity: `email` (unique, the login
@@ -111,7 +111,7 @@ Relationship, both directions:
   (post_save on User, `created`) auto-creates the linked `Membre` copying
   `nom`/`prenom`; `update_membre_for_user` syncs `nom`/`prenom` User→Membre on
   every User save (with a create-if-missing rattrapage). So person identity is
-  managed **once, on the User** — the Membre fiche follows automatically.
+  managed **once, on the User** - the Membre fiche follows automatically.
 - **Membre → may have no user.** `MembreService.create_membre(user=None, …)`
   lets the secretariat register account-less parishioners.
 
@@ -119,10 +119,10 @@ Field "duplication" is limited to `nom`/`prenom` (needed so account-less
 membres still carry a name) and is **kept consistent by bidirectional sync
 signals** in `membres/signals.py`: `update_membre_for_user` (User→Membre on User
 save) and `update_user_for_membre` (Membre→User on Membre save, only when a user
-is linked). Both guard with an **equality check before saving** — after a
+is linked). Both guard with an **equality check before saving** - after a
 propagation the reciprocal signal sees equal values and stops, so there is no
 infinite recursion. Do not remove those equality guards. `Membre` stores no
-email/phone/photo — those are derived read-only from the linked user in
+email/phone/photo - those are derived read-only from the linked user in
 `MembreSerializer` (`email`, `phone_number`, `profile_picture_url`).
 
 ---
@@ -131,7 +131,7 @@ email/phone/photo — those are derived read-only from the linked user in
 
 - **Custom User Model**: `accounts.models.User` extends `AbstractBaseUser` with `USERNAME_FIELD = 'email'`.
 - **Roles** (hierarchical): fidèle < responsable < secrétaire < trésorier < prêtre < admin
-- **Business permissions (RBAC)**: string-id permissions (e.g. `manage_membres`, `view_finances`) live in `core/rbac.py`, mapped per role in `ROLE_PERMISSIONS`. Check them via `user.has_permission("…")` / `user.get_permissions()`, or enforce at the endpoint with `HasPermission(...)` from `core/permissions.py`. **Views currently gate mostly by role-hierarchy classes** (`IsSecretaryOrAbove`, etc.), not yet the granular permissions — the two can diverge (e.g. `IsSecretaryOrAbove` lets a trésorier list membres, but the catalogue withholds `view_membres` from trésorier), so pick deliberately when adding endpoints. `POST /api/v1/auth/check-permission/` returns `has_permission` + the caller's full permission list.
+- **Business permissions (RBAC)**: string-id permissions (e.g. `manage_membres`, `view_finances`) live in `core/rbac.py`, mapped per role in `ROLE_PERMISSIONS`. Check them via `user.has_permission("…")` / `user.get_permissions()`, or enforce at the endpoint with `HasPermission(...)` from `core/permissions.py`. **Views currently gate mostly by role-hierarchy classes** (`IsSecretaryOrAbove`, etc.), not yet the granular permissions - the two can diverge (e.g. `IsSecretaryOrAbove` lets a trésorier list membres, but the catalogue withholds `view_membres` from trésorier), so pick deliberately when adding endpoints. `POST /api/v1/auth/check-permission/` returns `has_permission` + the caller's full permission list.
 - **Required**: Email verification before first login. Failed login attempts (5) trigger 15-minute lockout via Redis.
 - **JWT** (`SIMPLE_JWT` in settings): access token 15 min, refresh token 7 days, with `ROTATE_REFRESH_TOKENS`. Tokens tracked in Redis by `jti` (JWT ID). Logout and password changes blacklist all of a user's tokens. `TokenManager.generate_token()` issues the pair; the standard `rest_framework_simplejwt.TokenRefreshView` name is overridden by the local `accounts/auth/views.TokenRefreshView`.
 
@@ -160,8 +160,8 @@ All sending goes through `accounts/verification/emails.py` (`EmailService`), nev
 
 - **Primary + fallback**: `_send_with_fallback()` tries the default backend (Resend via `django-anymail`), and on failure retries over an explicit SMTP connection (`EMAIL_FALLBACK_BACKEND` + `EMAIL_HOST*`). This is why a Resend 403 (unverified domain) can still deliver via Gmail SMTP. Set `EMAIL_FALLBACK_BACKEND=""` to disable.
 - **Production caveat**: SMTP outbound is **blocked on Render**, so in prod the primary Resend path is what actually delivers. Don't make SMTP the *primary* `EMAIL_BACKEND` in prod.
-- **Inline logo**: the header logo is embedded as an inline CID attachment (`EMAIL_LOGO_PATH`, referenced as `src="cid:logo"`) via `email.message.MIMEPart` — Django 6 removed `mixed_subtype`, so don't reintroduce it.
-- **Templates**: `templates/emails/` (`base_email.html` + `verify_email.html` / `password_reset.html`), French, table-based, inline styles. Context key is `app_name` (lowercase) — not `App_name`.
+- **Inline logo**: the header logo is embedded as an inline CID attachment (`EMAIL_LOGO_PATH`, referenced as `src="cid:logo"`) via `email.message.MIMEPart` - Django 6 removed `mixed_subtype`, so don't reintroduce it.
+- **Templates**: `templates/emails/` (`base_email.html` + `verify_email.html` / `password_reset.html`), French, table-based, inline styles. Context key is `app_name` (lowercase) - not `App_name`.
 
 ### Email link → HTML pages (not the API)
 
@@ -180,7 +180,7 @@ Verification and password-reset **links in emails point to server-rendered HTML 
 - **Models**: French plurals in field names where appropriate (e.g., `prenom`, `nom` instead of `first_name`, `last_name` in new code).
 - **Primary keys are UUID strings** (offline-first architecture). New models should inherit `core.models.SyncableModel` (UUID `id` + `created_at`/`updated_at`/`is_deleted` for offline sync) or `UUIDPrimaryKeyModel` (UUID only). `User` defines `id = UUIDField(...)` directly. Consequences: URL routes use `<uuid:pk>` (never `<int:pk>`); anything putting a user id into a JWT/JSON must `str()` it (a UUID isn't JSON-serializable); detect model creation with `self._state.adding`, not `not self.pk` (the UUID default fills `pk` before the first save); compare ids as strings, never `int(...)`.
 - **Serializers**: Mirror model field names for consistency.
-- **Offline sync**: `POST /api/v1/sync/` (`core/sync.py` + `SyncView`) is the bidirectional batch endpoint — push (upsert by UUID `id`, last-write-wins on `updated_at`, soft-delete via `is_deleted`) + pull (delta since a `server_time` cursor). Syncable serializers inherit `core.serializers.WritableIDModelSerializer` so the client-generated UUID is honored (DRF makes PKs read-only otherwise). Add new syncable collections to the registry in `core/sync.py`.
+- **Offline sync**: `POST /api/v1/sync/` (`core/sync.py` + `SyncView`) is the bidirectional batch endpoint - push (upsert by UUID `id`, last-write-wins on `updated_at`, soft-delete via `is_deleted`) + pull (delta since a `server_time` cursor). Syncable serializers inherit `core.serializers.WritableIDModelSerializer` so the client-generated UUID is honored (DRF makes PKs read-only otherwise). Add new syncable collections to the registry in `core/sync.py`.
 - **API Endpoints**: versioned under `/api/v1/<module>/` (e.g., `/api/v1/membres/`, `/api/v1/finances/transactions/`). Exception: `/api/health/` stays **unversioned** (infra endpoint referenced by the Docker `HEALTHCHECK`). Versioning is URL-path based (DRF `URLPathVersioning`, `DEFAULT_VERSION="v1"`), so `request.version` is available in views. Internal links use `reverse()` by name, so they follow the prefix automatically.
 
 ### Code Patterns
@@ -212,7 +212,7 @@ class UserSerializer(serializers.ModelSerializer):
 ### Testing Patterns
 
 - The `accounts` auth suite lives in the `accounts/tests/` package. `accounts/tests/base.py` provides `BaseAuthTest`, which makes tests hermetic: `LocMemCache`, in-memory email backend, Redis client neutralized (`TokenManager.get_redis_client` mocked to `None`), and helper factories (`create_user`, `auth`, `make_uid_token`).
-- **Migrations**: every local app now ships an `0001_initial.py` (generated with the UUID/offline-sync work in commit `7478693`, `Django 6.0.4`, `2026-07-10`). When you change a model, run `makemigrations <app>` and commit the migration separately. The historical MySQL `OperationalError 1824` (from running with no migrations, so tables came from syncdb and cross-app FKs were rejected) is resolved by these migrations — no throwaway SQLite settings module is needed anymore.
+- **Migrations**: every local app now ships an `0001_initial.py` (generated with the UUID/offline-sync work in commit `7478693`, `Django 6.0.4`, `2026-07-10`). When you change a model, run `makemigrations <app>` and commit the migration separately. The historical MySQL `OperationalError 1824` (from running with no migrations, so tables came from syncdb and cross-app FKs were rejected) is resolved by these migrations - no throwaway SQLite settings module is needed anymore.
 - Test auth flows thoroughly (login, logout, token refresh, blacklisting).
 
 ---
@@ -222,16 +222,16 @@ class UserSerializer(serializers.ModelSerializer):
 - **Branch naming**: Descriptive, lowercase (e.g., `feature/email-verification`, `fix/token-blacklist`).
 - **Commits**: Atomic, with clear messages (e.g., "feat: Add email verification", "fix: Correct JWT token expiration").
 - **Main branch**: Production-ready code only.
-- **Fix log**: Every bug fix / correctif must also be documented in `fixs.md` at the repo root — add a new dated entry at the TOP (newest first), in French, with **Problème / Cause / Solution / Fichiers** (and Tests when relevant). Follow the existing entry format.
+- **Fix log**: Every bug fix / correctif must also be documented in `fixs.md` at the repo root - add a new dated entry at the TOP (newest first), in French, with **Problème / Cause / Solution / Fichiers** (and Tests when relevant). Follow the existing entry format.
 
 ---
 
 ## Debugging & Logging
 
 - **Log files** (defined in settings):
-  - `logs/gestionparoisse.log` — main application
-  - `logs/auth.log` — security/authentication
-  - `logs/finance.log` — financial operations
+  - `logs/gestionparoisse.log` - main application
+  - `logs/auth.log` - security/authentication
+  - `logs/finance.log` - financial operations
 - **Log levels**: DEBUG, INFO, WARNING, ERROR, CRITICAL. Rotation at 5 MB.
 - **Console**: Logs output to terminal and files simultaneously.
 
@@ -244,10 +244,10 @@ See `LOGGING.md` for detailed configuration.
 - **Interactive API docs**: `/docs/` (Swagger), `/redoc/` (ReDoc)
 - **Admin panel**: `/admin/`
 - **Supplementary docs**:
-  - `README.md` — full project overview
-  - `LOGGING.md` — logging configuration
-  - `ANALYSE_COHERENCE_API.md` — API coherence analysis
-  - `fixs.md` — running log of every fix (newest first, in French); add an entry when you fix a bug
+  - `README.md` - full project overview
+  - `LOGGING.md` - logging configuration
+  - `ANALYSE_COHERENCE_API.md` - API coherence analysis
+  - `fixs.md` - running log of every fix (newest first, in French); add an entry when you fix a bug
 
 ---
 

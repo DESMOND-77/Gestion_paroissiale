@@ -1,4 +1,4 @@
-# Render Blueprint — déploie l'API Gestion Paroissiale via le Dockerfile du repo.
+# Render Blueprint - déploie l'API Gestion Paroissiale via le Dockerfile du repo.
 # Doc : https://render.com/docs/blueprint-spec
 #
 # `sync: false` => Render demande la valeur lors de la création du Blueprint puis
@@ -34,12 +34,12 @@ services:
 
       # --- Redis (tokens JWT, cache, verrouillage de compte) ---
       # Render n'a pas d'offre Redis/Key Value gratuite : pointer vers une instance
-      # externe (ex. Upstash) ou laisser vide — l'app bascule alors sur LocMemCache +
+      # externe (ex. Upstash) ou laisser vide - l'app bascule alors sur LocMemCache +
       # sessions en base (dégradé mais fonctionnel, voir fixs.md).
       - key: REDIS_URL
         sync: false
 
-      # --- Emails (Resend en primaire, cf. CLAUDE.md — SMTP est bloqué sur Render) ---
+      # --- Emails (Resend en primaire, cf. CLAUDE.md - SMTP est bloqué sur Render) ---
       - key: EMAIL_BACKEND
         value: anymail.backends.resend.EmailBackend
       - key: EMAIL_FALLBACK_BACKEND

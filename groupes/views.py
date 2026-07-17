@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 class GroupeListView(BaseAPIView):
     """
-    GET  /api/groupes/          — liste (filtrable via ?nom=)
-    POST /api/groupes/          — création (admin uniquement)
+    GET  /api/groupes/          - liste (filtrable via ?nom=)
+    POST /api/groupes/          - création (admin uniquement)
     """
 
     def get_permissions(self):
@@ -66,10 +66,10 @@ class GroupeListView(BaseAPIView):
 
 class GroupeDetailView(BaseAPIView):
     """
-    GET    /api/groupes/<pk>/   — détail
-    PUT    /api/groupes/<pk>/   — mise à jour complète (admin)
-    PATCH  /api/groupes/<pk>/   — mise à jour partielle (admin)
-    DELETE /api/groupes/<pk>/   — suppression (admin)
+    GET    /api/groupes/<pk>/   - détail
+    PUT    /api/groupes/<pk>/   - mise à jour complète (admin)
+    PATCH  /api/groupes/<pk>/   - mise à jour partielle (admin)
+    DELETE /api/groupes/<pk>/   - suppression (admin)
     """
 
     def get_permissions(self):
@@ -126,9 +126,9 @@ class GroupeDetailView(BaseAPIView):
 
 class GroupeMembresView(BaseAPIView):
     """
-    GET    /api/groupes/<pk>/membres/  — liste des membres du groupe + stats
-    POST   /api/groupes/<pk>/membres/  — ajoute un membre (body: {"membre": <id>})
-    DELETE /api/groupes/<pk>/membres/  — retire un membre (body/query: membre=<id>)
+    GET    /api/groupes/<pk>/membres/  - liste des membres du groupe + stats
+    POST   /api/groupes/<pk>/membres/  - ajoute un membre (body: {"membre": <id>})
+    DELETE /api/groupes/<pk>/membres/  - retire un membre (body/query: membre=<id>)
     """
 
     def get_permissions(self):

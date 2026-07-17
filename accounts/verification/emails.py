@@ -184,7 +184,7 @@ class EmailService:
                 f"{settings.PUBLIC_BASE_URL}{reverse('web_verify_email')}?{query}"
             )
             # compose email
-            subject = f"{settings.APP_NAME} — Confirmez votre adresse e-mail"
+            subject = f"{settings.APP_NAME} - Confirmez votre adresse e-mail"
 
             # template context
             context = {
@@ -202,7 +202,7 @@ class EmailService:
                 f"{verify_url}\n\n"
                 f"Ce lien est valable {context['code_expiry']}. "
                 f"Si vous n'êtes pas à l'origine de cette inscription, ignorez ce message.\n\n"
-                f"— L'équipe {settings.APP_NAME}"
+                f"- L'équipe {settings.APP_NAME}"
             )
 
             try:
@@ -307,7 +307,7 @@ class EmailService:
                 f"{settings.PUBLIC_BASE_URL}{reverse('web_password_reset')}?{query}"
             )
             # compose email
-            subject = f"{settings.APP_NAME} — Réinitialisez votre mot de passe"
+            subject = f"{settings.APP_NAME} - Réinitialisez votre mot de passe"
 
             # template context
             context = {
@@ -325,7 +325,7 @@ class EmailService:
                 f"{reset_url}\n\n"
                 f"Ce lien expire dans {context['code_expiry']}. "
                 f"Si vous n'avez pas fait cette demande, ignorez ce message : votre mot de passe reste inchangé.\n\n"
-                f"— L'équipe {settings.APP_NAME}"
+                f"- L'équipe {settings.APP_NAME}"
             )
 
             try:

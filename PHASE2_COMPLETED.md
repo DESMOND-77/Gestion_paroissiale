@@ -1,4 +1,4 @@
-# Phase 2 — Performance & Architecture — Completed ✅
+# Phase 2 - Performance & Architecture - Completed ✅
 
 **Date Completed**: 2026-06-27  
 **Status**: All 8 major performance & architecture fixes APPLIED
@@ -418,7 +418,7 @@ For production on Render:
 
 ## Next Steps
 
-Ready for **Phase 3 — Qualité & Tests** (1-2 months):
+Ready for **Phase 3 - Qualité & Tests** (1-2 months):
 
 - [ ] P3.1: Add trailing slash to `/api/auth/token/refresh`
 - [ ] P3.2: Implement API versioning (`/api/v1/`)

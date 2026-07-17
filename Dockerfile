@@ -43,11 +43,11 @@ RUN chmod +x entrypoint.sh
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# EXPOSE is documentation only — Render assigns the real port via $PORT at
+# EXPOSE is documentation only - Render assigns the real port via $PORT at
 # runtime and entrypoint.sh binds gunicorn to it (falls back to 8000 locally).
 EXPOSE 8000
 
-# Health check — uses $PORT so it still works when Render remaps it.
+# Health check - uses $PORT so it still works when Render remaps it.
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
     CMD sh -c "curl -f http://localhost:${PORT:-8000}/api/health/ || exit 1"
 

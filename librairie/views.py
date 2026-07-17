@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 
 class ArticleListView(BaseAPIView):
     """
-    GET  /api/librairie/articles/   — liste
-    POST /api/librairie/articles/   — création
+    GET  /api/librairie/articles/   - liste
+    POST /api/librairie/articles/   - création
     """
 
     def get_permissions(self):
@@ -79,10 +79,10 @@ class ArticleListView(BaseAPIView):
 
 class ArticleDetailView(BaseAPIView):
     """
-    GET    /api/librairie/articles/<pk>/    — détail
-    PUT    /api/librairie/articles/<pk>/    — mise à jour complète
-    PATCH  /api/librairie/articles/<pk>/    — mise à jour partielle
-    DELETE /api/librairie/articles/<pk>/    — suppression (admin)
+    GET    /api/librairie/articles/<pk>/    - détail
+    PUT    /api/librairie/articles/<pk>/    - mise à jour complète
+    PATCH  /api/librairie/articles/<pk>/    - mise à jour partielle
+    DELETE /api/librairie/articles/<pk>/    - suppression (admin)
     """
 
     def get_permissions(self):
@@ -135,7 +135,7 @@ class ArticleDetailView(BaseAPIView):
 
 class ArticleAlertesView(BaseAPIView):
     """
-    GET /api/librairie/alertes/     — articles dont le stock est sous le seuil d'alerte
+    GET /api/librairie/alertes/     - articles dont le stock est sous le seuil d'alerte
     """
 
     permission_classes = [IsSecretaryOrAbove]
@@ -156,8 +156,8 @@ class ArticleAlertesView(BaseAPIView):
 
 class VenteListView(BaseAPIView):
     """
-    GET  /api/librairie/ventes/     — liste des ventes
-    POST /api/librairie/ventes/     — enregistrer une vente (validation stock via service)
+    GET  /api/librairie/ventes/     - liste des ventes
+    POST /api/librairie/ventes/     - enregistrer une vente (validation stock via service)
     """
 
     permission_classes = [IsSecretaryOrAbove]

@@ -49,7 +49,7 @@ class FinanceService:
             solde = recettes - depenses
 
             logger.info(
-                f"Financial report: {date_debut} to {date_fin} — Solde: {solde} FCFA"
+                f"Financial report: {date_debut} to {date_fin} - Solde: {solde} FCFA"
             )
             return {
                 "date_debut": date_debut,

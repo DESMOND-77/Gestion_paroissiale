@@ -1,11 +1,11 @@
-"""Classes de permission DRF — Gestion Paroissiale.
+"""Classes de permission DRF - Gestion Paroissiale.
 
 Deux styles, tous deux adossés à la source de vérité `core/rbac.py` :
 
 1. Basées sur la **hiérarchie de rôles** (`IsAdmin`, `IsSecretaryOrAbove`,
-   `IsTreasurerOrAbove`) — pratiques et rétro-compatibles.
+   `IsTreasurerOrAbove`) - pratiques et rétro-compatibles.
 2. Basées sur les **permissions métier granulaires** (`HasPermission`,
-   `HasAnyPermission`, `HasAllPermissions`) — à privilégier dans le code neuf,
+   `HasAnyPermission`, `HasAllPermissions`) - à privilégier dans le code neuf,
    elles suivent automatiquement toute évolution de `ROLE_PERMISSIONS`.
 
 Exemples :

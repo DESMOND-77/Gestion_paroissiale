@@ -2,7 +2,7 @@
 
 <img src="static/logo.png" alt="Logo Gestion Paroissiale" width="120" />
 
-# Gestion Paroissiale — API REST
+# Gestion Paroissiale - API REST
 
 API REST de **gestion paroissiale** développée avec Django et Django REST Framework.
 Authentification JWT, rôles hiérarchiques, vérification d'e-mail, et gestion des
@@ -26,7 +26,7 @@ membres, groupes, événements, finances et de la librairie de la paroisse.
 
 ## Sommaire
 
-- [Gestion Paroissiale — API REST](#gestion-paroissiale--api-rest)
+- [Gestion Paroissiale - API REST](#gestion-paroissiale---api-rest)
   - [Sommaire](#sommaire)
   - [Fonctionnalités](#fonctionnalités)
   - [Pile technique](#pile-technique)
@@ -82,7 +82,7 @@ membres, groupes, événements, finances et de la librairie de la paroisse.
 | Framework | Django 6.0 |
 | API | Django REST Framework 3.17 (versionnage d'URL `v1`) |
 | Authentification | `djangorestframework-simplejwt` + `TokenManager` (suivi Redis) |
-| Base de données | MySQL/MariaDB (`mysqlclient`) — PostgreSQL via `DATABASE_URL` (`dj-database-url` / `psycopg2`) |
+| Base de données | MySQL/MariaDB (`mysqlclient`) - PostgreSQL via `DATABASE_URL` (`dj-database-url` / `psycopg2`) |
 | Cache / jetons / sessions | Redis 7 (`django-redis`) |
 | E-mail | Resend via `django-anymail`, repli SMTP en développement |
 | Documentation | drf-yasg (Swagger / ReDoc) |
@@ -154,11 +154,11 @@ flowchart TD
 
 ### Responsabilités des couches
 
-- **Views** (`app/views.py`) — gestion HTTP via les vues/ViewSets DRF, validation, réponses standardisées. La plupart héritent de `core/base_view.py::BaseAPIView`.
-- **Services** — logique métier complexe : sous-packages de `accounts` (`auth/`, `profile/`, `verification/`) et `services.py` dans les autres apps (ex. `membres/services.py`).
-- **Serializers** (`app/serializers.py`) — validation et transformation des données.
-- **Models** (`app/models.py`) — modèles UUID (héritent de `core.models.SyncableModel` pour la synchro hors ligne) et managers personnalisés.
-- **`core/`** (racine) — utilitaires transverses : `jwt_utils.py` (TokenManager), `response.py`, `exception_handler.py`, `base_view.py`, `rbac.py` (catalogue des permissions), `permissions.py`, `health.py`, `sync.py`.
+- **Views** (`app/views.py`) - gestion HTTP via les vues/ViewSets DRF, validation, réponses standardisées. La plupart héritent de `core/base_view.py::BaseAPIView`.
+- **Services** - logique métier complexe : sous-packages de `accounts` (`auth/`, `profile/`, `verification/`) et `services.py` dans les autres apps (ex. `membres/services.py`).
+- **Serializers** (`app/serializers.py`) - validation et transformation des données.
+- **Models** (`app/models.py`) - modèles UUID (héritent de `core.models.SyncableModel` pour la synchro hors ligne) et managers personnalisés.
+- **`core/`** (racine) - utilitaires transverses : `jwt_utils.py` (TokenManager), `response.py`, `exception_handler.py`, `base_view.py`, `rbac.py` (catalogue des permissions), `permissions.py`, `health.py`, `sync.py`.
 
 ### Modules applicatifs
 
@@ -173,7 +173,7 @@ flowchart TD
 | `core` | Utilitaires partagés (réponses, permissions, RBAC, sync, santé) |
 
 > **`User` vs `Membre`** : `accounts.User` est l'identité de connexion ; `membres.Membre`
-> est la fiche pastorale (liée par un `OneToOneField` *nullable* — une paroisse suit
+> est la fiche pastorale (liée par un `OneToOneField` *nullable* - une paroisse suit
 > aussi des personnes sans compte). Un signal crée automatiquement le `Membre` à la
 > création d'un `User` et synchronise `nom`/`prenom` dans les deux sens.
 
@@ -183,7 +183,7 @@ flowchart TD
 
 - **Python 3.14+**
 - **MySQL/MariaDB** (ou PostgreSQL via `DATABASE_URL`)
-- **Redis 7** (local ou via Docker) — facultatif en développement (repli `LocMemCache`)
+- **Redis 7** (local ou via Docker) - facultatif en développement (repli `LocMemCache`)
 - **Docker + Docker Compose** (optionnel, pour l'environnement complet)
 - Un compte **Resend** (envoi d'e-mails) ou des identifiants SMTP en développement
 
@@ -242,7 +242,7 @@ Principales variables :
 | `FRONTEND_URL` | URL du frontend (CORS, redirections) | `http://localhost:3000` |
 
 > **Important** : en production (Render), l'envoi d'e-mails passe par **Resend**
-> (via `django-anymail`) — le SMTP sortant y est bloqué. Ne pas revenir au backend
+> (via `django-anymail`) - le SMTP sortant y est bloqué. Ne pas revenir au backend
 > SMTP en production.
 
 ---
@@ -265,7 +265,7 @@ Environnement complet avec Docker (MariaDB + Redis + Django) :
 
 ```bash
 docker-compose up
-# API : http://127.0.0.1:8100/  —  MariaDB : port 3307  —  Redis : port 6380
+# API : http://127.0.0.1:8100/  -  MariaDB : port 3307  -  Redis : port 6380
 ```
 
 ### Production
@@ -315,9 +315,9 @@ docker-compose logs -f web                # Logs du conteneur API
 Le modèle utilisateur personnalisé (`accounts.models.User`) étend `AbstractBaseUser`
 (`USERNAME_FIELD` = **e-mail**). Deux mécanismes coexistent :
 
-1. **Hiérarchie de rôles** — classes DRF `IsAdmin`, `IsSecretaryOrAbove`,
+1. **Hiérarchie de rôles** - classes DRF `IsAdmin`, `IsSecretaryOrAbove`,
    `IsTreasurerOrAbove` (`core/permissions.py`).
-2. **Permissions métier granulaires (RBAC)** — identifiants texte
+2. **Permissions métier granulaires (RBAC)** - identifiants texte
    (`manage_membres`, `view_finances`, …) catalogués dans `core/rbac.py` et mappés
    par rôle dans `ROLE_PERMISSIONS`. À vérifier via `user.has_permission("…")` ou
    les fabriques `HasPermission(...)` / `HasAnyPermission(...)` / `HasAllPermissions(...)`.
@@ -340,7 +340,7 @@ des permissions de l'appelant.
 
 `TokenManager` (`core/jwt_utils.py`) gère le cycle de vie complet des jetons :
 
-- **Jeton d'accès** : 15 minutes — **Jeton de rafraîchissement** : 7 jours, avec
+- **Jeton d'accès** : 15 minutes - **Jeton de rafraîchissement** : 7 jours, avec
   **rotation** (`ROTATE_REFRESH_TOKENS`).
 - Les jetons sont suivis dans Redis par leur `jti` (repli `LocMemCache` sans Redis).
 - La déconnexion et le changement de mot de passe mettent **tous** les jetons de
@@ -445,7 +445,7 @@ curl http://127.0.0.1:8000/api/v1/membres/ \
 
 ## Captures d'écran
 
-> TODO: Complete with project-specific information — ajouter des captures d'écran
+> TODO: Complete with project-specific information - ajouter des captures d'écran
 > (Swagger UI, admin Django, e-mails) dans `docs/assets/` puis les référencer ici.
 
 | Swagger UI (`/docs/`) | Admin Django (`/admin/`) |
@@ -489,16 +489,16 @@ backend/
 
 ## Documentation
 
-- **Swagger UI** : [`/docs/`](http://127.0.0.1:8000/docs/) — **ReDoc** : [`/redoc/`](http://127.0.0.1:8000/redoc/) — **Admin Django** : [`/admin/`](http://127.0.0.1:8000/admin/)
-- [`docs/architecture.md`](docs/architecture.md) — architecture et choix de conception
-- [`docs/installation.md`](docs/installation.md) — installation pas à pas
-- [`docs/development.md`](docs/development.md) — guide du développeur (conventions, tests)
-- [`docs/deployment.md`](docs/deployment.md) — déploiement (Docker, Render)
-- [`docs/api.md`](docs/api.md) — référence de l'API
-- [`docs/database.md`](docs/database.md) — modèle de données
-- [`LOGGING.md`](LOGGING.md) — configuration de la journalisation
-- [`CHANGELOG.md`](CHANGELOG.md) — historique des versions
-- [`fixs.md`](fixs.md) — journal détaillé des correctifs (Problème / Cause / Solution / Fichiers)
+- **Swagger UI** : [`/docs/`](http://127.0.0.1:8000/docs/) - **ReDoc** : [`/redoc/`](http://127.0.0.1:8000/redoc/) - **Admin Django** : [`/admin/`](http://127.0.0.1:8000/admin/)
+- [`docs/architecture.md`](docs/architecture.md) - architecture et choix de conception
+- [`docs/installation.md`](docs/installation.md) - installation pas à pas
+- [`docs/development.md`](docs/development.md) - guide du développeur (conventions, tests)
+- [`docs/deployment.md`](docs/deployment.md) - déploiement (Docker, Render)
+- [`docs/api.md`](docs/api.md) - référence de l'API
+- [`docs/database.md`](docs/database.md) - modèle de données
+- [`LOGGING.md`](LOGGING.md) - configuration de la journalisation
+- [`CHANGELOG.md`](CHANGELOG.md) - historique des versions
+- [`fixs.md`](fixs.md) - journal détaillé des correctifs (Problème / Cause / Solution / Fichiers)
 
 ---
 
@@ -544,8 +544,8 @@ est définie (c'est le cas sur Render).
 
 Les contributions sont les bienvenues ! Lire :
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — workflow Git, conventions de commit, style, tests
-- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — code de conduite (Contributor Covenant v2.1)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) - workflow Git, conventions de commit, style, tests
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) - code de conduite (Contributor Covenant v2.1)
 
 Ouvrir une [issue](https://github.com/DESMOND-77/Gestion_paroissiale/issues/new/choose)
 pour un bug ou une proposition, puis une Pull Request depuis une branche dédiée.
@@ -561,15 +561,16 @@ Consultez la politique de sécurité : [`SECURITY.md`](SECURITY.md).
 
 ## Licence
 
-Distribué sous licence **MIT** — voir [`LICENSE`](LICENSE).
+Distribué sous licence **MIT** - voir [`LICENSE`](LICENSE).
 
 ---
 
 ## Auteurs
 
-- **DESMOND-77** — développement principal — [@DESMOND-77](https://github.com/DESMOND-77)
+- **DESMOND-77** - développement principal - [@DESMOND-77](https://github.com/DESMOND-77)
+- **ANLKS-LAB** - assistance - [@ANLKS-LAB](https://github.com/ANLKS-LAB)
 
-Projet de fin d'études (PFE) — DUT2 GRT, Université des Sciences et Techniques de Masuku (USTM).
+Projet de fin d'études (PFE) - DUT2 GRT, Université des Sciences et Techniques de Masuku (USTM).
 
 ---
 

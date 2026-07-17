@@ -6,7 +6,7 @@ labels: bug
 assignees: DESMOND-77
 ---
 
-> ⚠️ **Vulnérabilité de sécurité ?** N'ouvrez PAS d'issue publique — suivez
+> ⚠️ **Vulnérabilité de sécurité ?** N'ouvrez PAS d'issue publique - suivez
 > [SECURITY.md](../../SECURITY.md).
 
 ## Description

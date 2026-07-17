@@ -22,7 +22,7 @@ Closes #
 - [ ] `python manage.py check` passe sans erreur
 - [ ] `python manage.py test` passe (tests ajoutés pour la nouvelle logique)
 - [ ] Migrations générées et committées **séparément** si les modèles changent
-- [ ] Entrée ajoutée dans `fixs.md` (si correction de bug — Problème / Cause / Solution / Fichiers)
+- [ ] Entrée ajoutée dans `fixs.md` (si correction de bug - Problème / Cause / Solution / Fichiers)
 - [ ] `CHANGELOG.md` mis à jour (section « Non publié ») pour un changement notable
 - [ ] Documentation mise à jour (README, `docs/`, docstrings Swagger)
 - [ ] Réponses au format standardisé (`standardized_response()`) et permissions vérifiées

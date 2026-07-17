@@ -271,7 +271,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # X-Content-Type-Options: nosniff
 SECURE_BROWSER_XSS_FILTER = True  # X-XSS-Protection (legacy, sans effet négatif)
 X_FRAME_OPTIONS = "DENY"  # Anti-clickjacking
 
-# CSRF — config complète selon l'environnement
+# CSRF - config complète selon l'environnement
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
     # HTTPS strict + redirection : uniquement en production (derrière le proxy
@@ -481,12 +481,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-# Dossier source des fichiers statiques du projet (logo, etc.) — nécessaire pour
+# Dossier source des fichiers statiques du projet (logo, etc.) - nécessaire pour
 # que {% static %} les trouve en dev et que collectstatic les récupère en prod.
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # WhiteNoise sert les fichiers statiques en production (Render n'a pas de serveur
-# web dédié). En DEBUG, runserver les sert via les finders — pas de manifeste requis.
+# web dédié). En DEBUG, runserver les sert via les finders - pas de manifeste requis.
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",

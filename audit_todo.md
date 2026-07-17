@@ -1,4 +1,4 @@
-# Audit Todo — Gestion Paroissiale API
+# Audit Todo - Gestion Paroissiale API
 
 Rapport d'audit technique complet analysant le projet. Cette liste de tâches organise les 20 problèmes identifiés (5 critiques, 8 majeurs, 7 mineurs) en 3 phases de correction.
 
@@ -8,7 +8,7 @@ Rapport d'audit technique complet analysant le projet. Cette liste de tâches or
 
 ---
 
-## Phase 1 — Urgences Sécurité (0-1 semaine)
+## Phase 1 - Urgences Sécurité (0-1 semaine)
 
 ### Critique: P1.1 Rôle admin par défaut
 
@@ -20,7 +20,7 @@ Rapport d'audit technique complet analysant le projet. Cette liste de tâches or
 role = models.CharField(max_length=20, choices=ROLES_CHOICES, default="admin")
 ```
 
-**Impact**: Faille de sécurité critique — accès non autorisé à TOUS les modules.
+**Impact**: Faille de sécurité critique - accès non autorisé à TOUS les modules.
 
 **Correction requise**:
 
@@ -86,7 +86,7 @@ CORS_ALLOWED_ORIGINS = ["https://votre-domaine-front.com"]
 ### Critique: P1.3 Durée d'accès JWT (3 jours → 15 min)
 
 **Fichier**: `gestion_p/settings.py`  
-**Problème**: Access token valide 3 jours — trop long pour respecter les normes de sécurité.
+**Problème**: Access token valide 3 jours - trop long pour respecter les normes de sécurité.
 
 ```python
 # ❌ ACTUEL
@@ -190,7 +190,7 @@ print("Request data:", request)  # Debug print oublié
 - Peut exposer: adresses IP, user-agents, cookies, données sensibles
 - Pollution des logs en production
 
-**Localisation**: `accounts/auth/views.py` — fonction inscription
+**Localisation**: `accounts/auth/views.py` - fonction inscription
 
 **Correction requise**:
 
@@ -213,7 +213,7 @@ logger.debug(f"Registration attempt for email: {email}")  # Logué, pas affiché
 
 ---
 
-## Phase 2 — Performance & Architecture (1-4 semaines)
+## Phase 2 - Performance & Architecture (1-4 semaines)
 
 ### Majeur: P2.1 Absence de pagination globale
 
@@ -298,7 +298,7 @@ class Transaction(models.Model):
 
 ---
 
-### Majeur: P2.3 Requêtes N+1 — select_related/prefetch_related manquants
+### Majeur: P2.3 Requêtes N+1 - select_related/prefetch_related manquants
 
 **Fichier**: `groupes/views.py`, `membres/views.py`, `evenements/views.py`, `librairie/views.py`  
 **Problème**: ViewSets font des requêtes N+1 (une requête par objet lié).
@@ -313,7 +313,7 @@ class Transaction(models.Model):
 **Exemple du problème**:
 
 ```python
-# ❌ MAUVAIS — N+1 requêtes
+# ❌ MAUVAIS - N+1 requêtes
 class GroupeViewSet(viewsets.ModelViewSet):
     queryset = Groupe.objects.all()  # 1 requête
     # Dans la sérialisation: 1 requête par groupe pour accéder à user
@@ -477,7 +477,7 @@ CMD ["gunicorn", "gestion_p.wsgi:application", "--bind", "0.0.0.0:8000", "--work
 ```
 
 ```yaml
-# docker-compose.yaml — CORRIGÉ
+# docker-compose.yaml - CORRIGÉ
 version: "3.8"
 services:
   web:
@@ -512,7 +512,7 @@ services:
 
 ### Majeur: P2.7 Absence de service layer dans 5 modules
 
-*(Voir P2.5 — créer services.py pour membres, groupes, evenements, finances, librairie)*
+*(Voir P2.5 - créer services.py pour membres, groupes, evenements, finances, librairie)*
 
 ---
 
@@ -548,7 +548,7 @@ CHANNEL_LAYERS = {
 
 ---
 
-## Phase 3 — Qualité & Tests (1-2 mois)
+## Phase 3 - Qualité & Tests (1-2 mois)
 
 ### Mineur: P3.1 Slash final manquant sur `/api/auth/token/refresh`
 
@@ -603,7 +603,7 @@ urlpatterns = [
 ### Mineur: P3.3 Fichiers test vides (63 octets)
 
 **Fichier**: Tous les `tests.py` de chaque app  
-**Problème**: Seul `import Django` — aucun test.
+**Problème**: Seul `import Django` - aucun test.
 
 ```python
 # ❌ ACTUEL - accounts/tests.py, membres/tests.py, etc.
@@ -613,7 +613,7 @@ from django.test import TestCase
 
 **Impact**: Couverture de tests < 1%, risque majeur de regression.
 
-**Phase 3.1 — Écrire tests**:
+**Phase 3.1 - Écrire tests**:
 
 1. Tests d'authentification: inscription, connexion, logout, refresh, blocage après 5 tentatives
 2. Tests permissions: chaque rôle ne peut accéder qu'à ses ressources
@@ -689,7 +689,7 @@ class RegistrationTestCase(TestCase):
 ```python
 # ❌ ACTUEL
 BASE_DIR = Path(__file__).resolve().parent.parent  # Ligne 14
-BASE_DIR = Path(__file__).resolve().parent.parent  # Ligne 23 — DOUBLON
+BASE_DIR = Path(__file__).resolve().parent.parent  # Ligne 23 - DOUBLON
 ```
 
 **Correction**:
@@ -719,7 +719,7 @@ class TokenManager:
 ```python
 # ❌ ACTUEL
 from django.contrib import admin  # Ligne 2
-from django.contrib import admin  # Ligne 7 — DOUBLON
+from django.contrib import admin  # Ligne 7 - DOUBLON
 ```
 
 **Correction**: Supprimer un import.
@@ -855,8 +855,8 @@ MIDDLEWARE = [
 
 **À créer**:
 
-- `CHANGELOG.md` — suivi des versions
-- `CONTRIBUTING.md` — guide pour contributeurs
+- `CHANGELOG.md` - suivi des versions
+- `CONTRIBUTING.md` - guide pour contributeurs
 - Git tags avec format `v1.0.0`
 
 **Checklist**:
@@ -945,13 +945,13 @@ Voir `README.md` → sections à améliorer:
 
 ## Liens vers fichiers
 
-- `accounts/models.py` — User model
-- `accounts/auth/services.py` — Service inscription
-- `accounts/auth/views.py` — Views auth
-- `gestion_p/settings.py` — Configuration principal
-- `gestion_p/urls.py` — URLs
-- `docker-compose.yaml` — Composition Docker
-- `requirements.txt` — Dépendances
+- `accounts/models.py` - User model
+- `accounts/auth/services.py` - Service inscription
+- `accounts/auth/views.py` - Views auth
+- `gestion_p/settings.py` - Configuration principal
+- `gestion_p/urls.py` - URLs
+- `docker-compose.yaml` - Composition Docker
+- `requirements.txt` - Dépendances
 
 ---
 

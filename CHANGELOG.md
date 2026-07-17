@@ -36,7 +36,7 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 - Build Docker : remplacement du paquet runtime introuvable
   `default-libmysqlclient21` par `libmariadb3` (image de base Debian trixie).
 
-## [1.0.0] — 2026-07-08
+## [1.0.0] - 2026-07-08
 
 Première version consolidée après l'audit technique (20 problèmes traités sur
 3 phases).

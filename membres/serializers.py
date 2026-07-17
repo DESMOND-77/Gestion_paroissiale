@@ -87,7 +87,7 @@ class MembreDetailSerializer(MembreSerializer):
 
 class MembreSelfSerializer(serializers.ModelSerializer):
     """Auto-service : un membre ne peut modifier que ses propres
-    date_naissance / sexe / quartier — tout le reste (identité, sacrements,
+    date_naissance / sexe / quartier - tout le reste (identité, sacrements,
     groupe) reste réservé au personnel via MembreSerializer."""
 
     nom_complet = serializers.ReadOnlyField()

@@ -69,7 +69,7 @@ class EmailVerificationService:
             # set the verified status to true in cache
             cache.set(
                 cache_key, True, timeout=86400
-            )  # 24h — aligné avec le cycle de token
+            )  # 24h - aligné avec le cycle de token
 
             logger.info(f"Updated verification cache for user {user.id} set to True")
 
@@ -216,7 +216,7 @@ class EmailVerificationService:
                 # cache the result for future queries
                 cache.set(
                     cache_key, is_verified, timeout=86400
-                )  # 24h — aligné avec le cycle de token
+                )  # 24h - aligné avec le cycle de token
 
                 logger.info(
                     f"fetched verification status from DB for user: {user.pk}: {is_verified}"

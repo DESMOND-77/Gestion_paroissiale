@@ -46,7 +46,7 @@ Le Blueprint [`render.yaml`](../render.yaml) décrit le déploiement :
 
 - **Service web** `gestion-paroissiale-api` (runtime Docker, plan free, région
   Oregon), health check sur `/api/health/`, auto-deploy sur `main`.
-- **Base PostgreSQL** `gestion-paroissiale-db` — l'app bascule sur PostgreSQL
+- **Base PostgreSQL** `gestion-paroissiale-db` - l'app bascule sur PostgreSQL
   dès que `DATABASE_URL` est définie (prioritaire sur les `DB_*`).
 - **Secrets** (`sync: false`) à renseigner dans le Dashboard :
   `FRONTEND_URL`, `REDIS_URL`, `RESEND_API_KEY`, `FROM_EMAIL`,
@@ -60,7 +60,7 @@ Le Blueprint [`render.yaml`](../render.yaml) décrit le déploiement :
   `EMAIL_FALLBACK_BACKEND=""` (le repli SMTP échouerait de toute façon) et ne
   jamais faire du SMTP le backend principal en prod.
 - **Pas de Redis gratuit** : pointer `REDIS_URL` vers une instance externe
-  (ex. Upstash) ou laisser vide — l'app fonctionne alors en mode dégradé
+  (ex. Upstash) ou laisser vide - l'app fonctionne alors en mode dégradé
   (`LocMemCache` + sessions en base).
 - `PUBLIC_BASE_URL` doit pointer vers l'URL publique de l'API **suffixée
   `/api`** (ex. `https://gestiparr.onrender.com/api`) : c'est la base des liens
@@ -82,5 +82,5 @@ Le Blueprint [`render.yaml`](../render.yaml) décrit le déploiement :
 
 Render conserve les déploiements précédents : _Dashboard → service → Deploys →
 Rollback_. Les migrations étant appliquées au démarrage, un rollback de code
-n'annule pas une migration destructive — écrire des migrations
+n'annule pas une migration destructive - écrire des migrations
 rétro-compatibles.
