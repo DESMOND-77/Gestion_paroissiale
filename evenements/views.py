@@ -9,6 +9,7 @@ from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
 from membres.models import Membre
+
 from .models import Evenement
 from .serializers import EvenementSerializer, ParticipationSerializer
 from .services import EvenementService
@@ -58,7 +59,9 @@ class EvenementListView(BaseAPIView):
         logger.info(
             f"Creating evenement by user {request.user}: {request.data.get('titre', 'Unknown')}"
         )
-        serializer = EvenementSerializer(data=request.data, context={"request": request})
+        serializer = EvenementSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         # save() (et non le service) pour que DRF gère les M2M conviés
         # (groupes_invites / membres_invites) automatiquement.
@@ -68,9 +71,7 @@ class EvenementListView(BaseAPIView):
         )
         return Response(
             standardized_response(
-                data=EvenementSerializer(
-                    evenement, context={"request": request}
-                ).data,
+                data=EvenementSerializer(evenement, context={"request": request}).data,
                 message="Événement créé",
             ),
             status=status.HTTP_201_CREATED,
@@ -105,9 +106,7 @@ class EvenementDetailView(BaseAPIView):
         logger.debug(f"Retrieving evenement {pk} for user {request.user}")
         return Response(
             standardized_response(
-                data=EvenementSerializer(
-                    evenement, context={"request": request}
-                ).data
+                data=EvenementSerializer(evenement, context={"request": request}).data
             )
         )
 

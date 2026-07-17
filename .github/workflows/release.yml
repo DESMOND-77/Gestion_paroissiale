@@ -1,0 +1,38 @@
+name: Release
+
+# Publie automatiquement une release GitHub à chaque tag `vX.Y.Z`
+# (versionnage sémantique, cf. CHANGELOG.md).
+#
+#   git tag v1.1.0 && git push origin v1.1.0
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Créer la release GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Construire l'archive source (sans fichiers de dev)
+        run: |
+          git archive --format=tar.gz \
+            --prefix="gestion-paroissiale-${GITHUB_REF_NAME}/" \
+            -o "gestion-paroissiale-${GITHUB_REF_NAME}.tar.gz" \
+            "${GITHUB_REF_NAME}"
+
+      - name: Publier la release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: gestion-paroissiale-*.tar.gz
+          # Pré-release si le tag contient un suffixe (v1.2.0-rc1, v1.2.0-beta…)
+          prerelease: ${{ contains(github.ref_name, '-') }}

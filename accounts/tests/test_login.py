@@ -1,4 +1,5 @@
 """Tests de la connexion (login), y compris le verrouillage de compte."""
+
 from django.urls import reverse
 
 from .base import BaseAuthTest

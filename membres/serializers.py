@@ -12,8 +12,14 @@ class SacrementSerializer(WritableIDModelSerializer):
     class Meta:
         model = Sacrement
         fields = [
-            "id", "type", "type_display", "membre", "date",
-            "officiant", "officiant_nom", "observations",
+            "id",
+            "type",
+            "type_display",
+            "membre",
+            "date",
+            "officiant",
+            "officiant_nom",
+            "observations",
         ]
         read_only_fields = ["type_display", "officiant_nom"]
 
@@ -34,12 +40,27 @@ class MembreSerializer(WritableIDModelSerializer):
     class Meta:
         model = Membre
         fields = [
-            "id", "user", "nom", "prenom", "nom_complet", "date_naissance",
-            "sexe", "email", "phone_number", "profile_picture_url", "quartier",
-            "est_baptise", "est_confirme", "groupe", "groupe_nom",
+            "id",
+            "user",
+            "nom",
+            "prenom",
+            "nom_complet",
+            "date_naissance",
+            "sexe",
+            "email",
+            "phone_number",
+            "profile_picture_url",
+            "quartier",
+            "est_baptise",
+            "est_confirme",
+            "groupe",
+            "groupe_nom",
         ]
         read_only_fields = [
-            "nom_complet", "email", "phone_number", "profile_picture_url",
+            "nom_complet",
+            "email",
+            "phone_number",
+            "profile_picture_url",
         ]
 
     def get_groupe_nom(self, obj):
@@ -77,13 +98,31 @@ class MembreSelfSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membre
         fields = [
-            "id", "nom", "prenom", "nom_complet", "date_naissance",
-            "sexe", "email", "phone_number", "quartier",
-            "est_baptise", "est_confirme", "groupe", "groupe_nom",
+            "id",
+            "nom",
+            "prenom",
+            "nom_complet",
+            "date_naissance",
+            "sexe",
+            "email",
+            "phone_number",
+            "quartier",
+            "est_baptise",
+            "est_confirme",
+            "groupe",
+            "groupe_nom",
         ]
         read_only_fields = [
-            "id", "nom", "prenom", "nom_complet", "email", "phone_number",
-            "est_baptise", "est_confirme", "groupe", "groupe_nom",
+            "id",
+            "nom",
+            "prenom",
+            "nom_complet",
+            "email",
+            "phone_number",
+            "est_baptise",
+            "est_confirme",
+            "groupe",
+            "groupe_nom",
         ]
 
     def get_groupe_nom(self, obj):

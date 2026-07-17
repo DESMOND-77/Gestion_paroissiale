@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
@@ -66,7 +66,12 @@ class EmailService:
 
     @staticmethod
     def _build_message(
-            subject, plain_message, html_message, recipient_list, from_email, connection=None
+        subject,
+        plain_message,
+        html_message,
+        recipient_list,
+        from_email,
+        connection=None,
     ):
         """Construit un EmailMultiAlternatives (texte + HTML + logo inline)."""
         message = EmailMultiAlternatives(
@@ -121,9 +126,9 @@ class EmailService:
             logger.error("No SMTP fallback backend configured; giving up.")
             return False
         if not (
-                settings.EMAIL_HOST
-                and settings.EMAIL_HOST_USER
-                and settings.EMAIL_HOST_PASSWORD
+            settings.EMAIL_HOST
+            and settings.EMAIL_HOST_USER
+            and settings.EMAIL_HOST_PASSWORD
         ):
             logger.error(
                 "SMTP fallback credentials incomplete (EMAIL_HOST/USER/PASSWORD); giving up."
@@ -261,7 +266,7 @@ class EmailService:
                         f"Error sending background verification email to user {user.email} on attempt {attempt}: {str(e)}"
                     )
                 # exponential backoff before next attempt
-                backoff_time = 2 ** attempt + random.uniform(0, 1)
+                backoff_time = 2**attempt + random.uniform(0, 1)
                 if attempt < max_attempts:
                     time.sleep(backoff_time)
             logger.error(
@@ -279,7 +284,7 @@ class EmailService:
         thread = threading.Thread(
             target=EmailService._send_verification_email_with_retry,
             args=(user_id, max_attempts),
-            daemon=True
+            daemon=True,
         )
         thread.start()
 

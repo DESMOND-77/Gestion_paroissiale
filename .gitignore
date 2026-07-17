@@ -1,22 +1,51 @@
-.venv/
+# --- Python ---
 __pycache__/
-*.pyc
-*.cpython-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Environnements virtuels ---
+.venv/
+venv/
+env/
+
+# --- Environnement / secrets ---
+.env
+.env.*
+!.env.example
+to.env.prod
+
+# --- Django ---
+*.log
+logs/*
+!logs/.gitkeep
 *.db
 *.sqlite3
-*.log
-.env
-*.pot
-*.mo
-*.swp
-.DS_Store
+db.sqlite3
+staticfiles/
+media/profile_pics/*
+local_settings.py
+
+# --- Tests / outils ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- IDE / OS ---
 .idea/
 .vscode/
-staticfiles/
-# CLAUDE.md
-logs/*
+*.swp
+.DS_Store
+
+# --- i18n ---
+*.pot
+*.mo
+
+# --- Fichiers du projet non publiés ---
 Audit_Technique_Gestion_paroissiale.pdf
-media/profile_pics/*
-.gitignore

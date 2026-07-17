@@ -1,24 +1,25 @@
 from django.urls import path
 
 from accounts.verification.web_views import EmailVerifyPageView, PasswordResetPageView
+
 from .auth.views import (
     ChangePasswordView,
     CheckPermissionView,
+    LogOutView,
     MeView,
+    TokenRefreshView,
     UserActivityView,
     UserDetailView,
     UserListView,
     UserLoginView,
     UserRegistrationView,
-    TokenRefreshView,
     ValidateTokenView,
-    LogOutView,
 )
 from .profile.views import UserProfileView
 from .verification.views import (
-    SendVerificationEmailView,
     CheckVerificationStatusView,
     PasswordResetView,
+    SendVerificationEmailView,
 )
 
 urlpatterns = [

@@ -19,11 +19,9 @@ Rôles (hiérarchie) : fidele < responsable < secretaire < tresorier < pretre < 
 PERMISSIONS_CATALOGUE: dict[str, str] = {
     # ── Administration générale ──────────────────────────────────────────
     "admin_access": "Accès au panneau d'administration complet.",
-
     # ── Utilisateurs (comptes de l'application) ──────────────────────────
     "manage_users": "Créer, modifier, désactiver et supprimer des comptes utilisateurs.",
     "view_users": "Consulter la liste et les détails des comptes utilisateurs.",
-
     # ── Finances ─────────────────────────────────────────────────────────
     "manage_finances": (
         "Créer, modifier, supprimer des écritures comptables, gérer les "
@@ -32,7 +30,6 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
     "view_finances": "Consulter les écritures comptables, rapports financiers et soldes.",
     "export_finances": "Exporter les rapports financiers (PDF, Excel).",
     "approve_expenses": "Valider ou rejeter des demandes de dépenses.",
-
     # ── Événements ───────────────────────────────────────────────────────
     "manage_events": (
         "Créer, modifier, annuler des événements paroissiaux "
@@ -40,7 +37,6 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
     ),
     "view_events": "Consulter le calendrier et les détails des événements.",
     "manage_event_registrations": "Gérer les inscriptions aux événements.",
-
     # ── Groupes / mouvements ─────────────────────────────────────────────
     "manage_groups": "Créer, modifier, dissoudre tout groupe ou mouvement paroissial.",
     "view_groups": "Consulter la liste et les détails de tous les groupes.",
@@ -48,7 +44,6 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
     "add_membres_to_group": "Ajouter des membres dans son propre groupe.",
     "remove_membres_from_group": "Retirer des membres de son propre groupe.",
     "view_owned_group_members": "Consulter les membres de son propre groupe.",
-
     # ── Membres / paroissiens ────────────────────────────────────────────
     "manage_membres": (
         "Créer, modifier, archiver des fiches paroissiens "
@@ -60,14 +55,12 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
         "Enregistrer un sacrement (baptême, confirmation, mariage) "
         "dans la fiche d'un paroissien."
     ),
-
     # ── Activités / Journal de bord ──────────────────────────────────────
     "manage_activities": (
         "Créer, modifier, supprimer des entrées dans le journal "
         "d'activités paroissiales."
     ),
     "view_activities": "Consulter le journal des activités.",
-
     # ── Librairie / Bibliothèque ─────────────────────────────────────────
     "manage_librairie": (
         "Ajouter, modifier, retirer des ouvrages de la librairie "
@@ -76,7 +69,6 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
     "view_librairie": "Consulter le catalogue de la librairie.",
     "borrow_books": "Emprunter un ouvrage.",
     "manage_borrowings": "Gérer les emprunts (retours, relances, réservations).",
-
     # ── Communication ────────────────────────────────────────────────────
     "send_announcements": (
         "Envoyer des annonces/communications à tout ou partie des "
@@ -91,60 +83,101 @@ PERMISSIONS_CATALOGUE: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 ROLE_PERMISSIONS: dict[str, set[str]] = {
-
     # ── ADMINISTRATEUR : tous les droits sans exception ──────────────────
     "admin": {
         "admin_access",
-        "manage_users", "view_users",
-        "manage_finances", "view_finances", "export_finances", "approve_expenses",
-        "manage_events", "view_events", "manage_event_registrations",
-        "manage_groups", "view_groups", "manage_owned_group",
-        "add_membres_to_group", "remove_membres_from_group", "view_owned_group_members",
-        "manage_membres", "view_membres", "export_membres", "record_sacraments",
-        "manage_activities", "view_activities",
-        "manage_librairie", "view_librairie", "borrow_books", "manage_borrowings",
-        "send_announcements", "manage_website",
+        "manage_users",
+        "view_users",
+        "manage_finances",
+        "view_finances",
+        "export_finances",
+        "approve_expenses",
+        "manage_events",
+        "view_events",
+        "manage_event_registrations",
+        "manage_groups",
+        "view_groups",
+        "manage_owned_group",
+        "add_membres_to_group",
+        "remove_membres_from_group",
+        "view_owned_group_members",
+        "manage_membres",
+        "view_membres",
+        "export_membres",
+        "record_sacraments",
+        "manage_activities",
+        "view_activities",
+        "manage_librairie",
+        "view_librairie",
+        "borrow_books",
+        "manage_borrowings",
+        "send_announcements",
+        "manage_website",
     },
-
     # ── PRÊTRE : regard transversal (consultation) + ministère ───────────
     "pretre": {
         "view_users",
-        "view_finances", "export_finances",
-        "view_events", "manage_event_registrations",
-        "view_groups", "view_owned_group_members",
-        "view_membres", "export_membres", "record_sacraments",
-        "view_activities", "manage_activities",
-        "view_librairie", "borrow_books", "manage_borrowings",
+        "view_finances",
+        "export_finances",
+        "view_events",
+        "manage_event_registrations",
+        "view_groups",
+        "view_owned_group_members",
+        "view_membres",
+        "export_membres",
+        "record_sacraments",
+        "view_activities",
+        "manage_activities",
+        "view_librairie",
+        "borrow_books",
+        "manage_borrowings",
         "send_announcements",
     },
-
     # ── TRÉSORIER : gestion financière complète ──────────────────────────
     "tresorier": {
-        "manage_finances", "view_finances", "export_finances", "approve_expenses",
+        "manage_finances",
+        "view_finances",
+        "export_finances",
+        "approve_expenses",
         "view_activities",
     },
-
     # ── SECRÉTAIRE : gestion opérationnelle (hors finances/système) ──────
     "secretaire": {
-        "view_users", "view_events", "view_groups", "view_membres",
-        "view_activities", "view_librairie",
-        "manage_events", "manage_event_registrations",
-        "manage_groups", "manage_membres", "export_membres", "record_sacraments",
-        "manage_activities", "manage_librairie", "manage_borrowings", "borrow_books",
+        "view_users",
+        "view_events",
+        "view_groups",
+        "view_membres",
+        "view_activities",
+        "view_librairie",
+        "manage_events",
+        "manage_event_registrations",
+        "manage_groups",
+        "manage_membres",
+        "export_membres",
+        "record_sacraments",
+        "manage_activities",
+        "manage_librairie",
+        "manage_borrowings",
+        "borrow_books",
         "send_announcements",
     },
-
     # ── RESPONSABLE DE GROUPE : son groupe uniquement ────────────────────
     "responsable": {
-        "manage_owned_group", "add_membres_to_group",
-        "remove_membres_from_group", "view_owned_group_members",
-        "view_events", "view_groups", "view_membres",
-        "borrow_books", "view_librairie",
+        "manage_owned_group",
+        "add_membres_to_group",
+        "remove_membres_from_group",
+        "view_owned_group_members",
+        "view_events",
+        "view_groups",
+        "view_membres",
+        "borrow_books",
+        "view_librairie",
     },
-
     # ── FIDÈLE : consultation grand public ───────────────────────────────
     "fidele": {
-        "view_events", "view_librairie", "borrow_books",
+        "view_events",
+        "view_librairie",
+        "borrow_books",
     },
 }
 
@@ -167,6 +200,7 @@ del _unknown
 # ---------------------------------------------------------------------------
 # 3. FONCTIONS UTILITAIRES
 # ---------------------------------------------------------------------------
+
 
 def get_permissions(role: str) -> set[str]:
     """Retourne l'ensemble (copie) des permissions d'un rôle, ou set() si inconnu."""

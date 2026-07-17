@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Signaler une vulnérabilité (privé)
+    url: https://github.com/DESMOND-77/Gestion_paroissiale/security/advisories/new
+    about: Ne signalez jamais une faille de sécurité via une issue publique.
+  - name: 📖 Documentation du projet
+    url: https://github.com/DESMOND-77/Gestion_paroissiale/tree/main/docs
+    about: Consultez la documentation technique avant d'ouvrir une issue.

@@ -14,7 +14,6 @@ class UserRegistrationSerializer(serializers.Serializer):
     prenom = serializers.CharField(required=True, help_text="Prénom de l'utilisateur")
     nom = serializers.CharField(required=True, help_text="Nom de l'utilisateur")
 
-    
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(

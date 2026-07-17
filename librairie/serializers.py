@@ -6,14 +6,24 @@ from .models import Article, Vente
 
 
 class ArticleSerializer(WritableIDModelSerializer):
-    categorie_display = serializers.CharField(source="get_categorie_display", read_only=True)
+    categorie_display = serializers.CharField(
+        source="get_categorie_display", read_only=True
+    )
     en_alerte = serializers.ReadOnlyField()
 
     class Meta:
         model = Article
         fields = [
-            "id", "nom", "description", "categorie", "categorie_display",
-            "prix_unitaire", "stock_disponible", "seuil_alerte", "en_alerte", "date_ajout",
+            "id",
+            "nom",
+            "description",
+            "categorie",
+            "categorie_display",
+            "prix_unitaire",
+            "stock_disponible",
+            "seuil_alerte",
+            "en_alerte",
+            "date_ajout",
         ]
         read_only_fields = ["date_ajout ", "en_alerte", "categorie_display"]
 
@@ -26,10 +36,24 @@ class VenteSerializer(WritableIDModelSerializer):
     class Meta:
         model = Vente
         fields = [
-            "id", "article", "article_nom", "quantite", "prix_total",
-            "date", "membre", "membre_nom", "enregistre_par", "enregistre_par_nom",
+            "id",
+            "article",
+            "article_nom",
+            "quantite",
+            "prix_total",
+            "date",
+            "membre",
+            "membre_nom",
+            "enregistre_par",
+            "enregistre_par_nom",
         ]
-        read_only_fields = ["prix_total", "date", "article_nom", "membre_nom", "enregistre_par_nom"]
+        read_only_fields = [
+            "prix_total",
+            "date",
+            "article_nom",
+            "membre_nom",
+            "enregistre_par_nom",
+        ]
 
     def get_membre_nom(self, obj):
         return str(obj.membre) if obj.membre else None
@@ -44,6 +68,8 @@ class VenteSerializer(WritableIDModelSerializer):
         quantite = data.get("quantite", 0)
         if article and article.stock_disponible < quantite:
             raise serializers.ValidationError(
-                {"quantite": f"Stock insuffisant. Disponible : {article.stock_disponible}"}
+                {
+                    "quantite": f"Stock insuffisant. Disponible : {article.stock_disponible}"
+                }
             )
         return data

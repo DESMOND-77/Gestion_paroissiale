@@ -64,7 +64,9 @@ class Sacrement(SyncableModel):
     ]
 
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    membre = models.ForeignKey(Membre, on_delete=models.CASCADE, related_name="sacrements")
+    membre = models.ForeignKey(
+        Membre, on_delete=models.CASCADE, related_name="sacrements"
+    )
     date = models.DateField()
     officiant = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
@@ -10,6 +10,7 @@ from rest_framework.views import status
 from accounts.models import UserActivity
 from core.base_view import BaseAPIView
 from core.response import standardized_response
+
 from .services import ProfileService
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,10 @@ class UserProfileView(BaseAPIView):
         """Update full user profile"""
         try:
             success, response_data, status_code = ProfileService.update_profile(
-                user=request.user, data=request.data, files=request.FILES, request=request
+                user=request.user,
+                data=request.data,
+                files=request.FILES,
+                request=request,
             )
             if success:
                 self._log_profile_update(request)
@@ -68,7 +72,10 @@ class UserProfileView(BaseAPIView):
         """Partial user profile update"""
         try:
             success, response_data, status_code = ProfileService.update_profile(
-                user=request.user, data=request.data, files=request.FILES, request=request
+                user=request.user,
+                data=request.data,
+                files=request.FILES,
+                request=request,
             )
             if success:
                 self._log_profile_update(request)

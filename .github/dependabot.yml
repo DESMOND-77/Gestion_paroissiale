@@ -1,0 +1,48 @@
+# Mises à jour automatiques des dépendances (hebdomadaires) + alertes de sécurité.
+# Doc : https://docs.github.com/en/code-security/dependabot
+
+version: 2
+updates:
+  # Dépendances Python (requirements.txt)
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Africa/Libreville
+    labels: [dependencies, python]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      django:
+        patterns:
+          - "django*"
+          - "djangorestframework*"
+          - "drf-*"
+      minor-et-patch:
+        update-types: [minor, patch]
+
+  # Actions GitHub (workflows)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Africa/Libreville
+    labels: [dependencies, ci]
+    commit-message:
+      prefix: "chore(ci)"
+
+  # Image de base Docker
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Africa/Libreville
+    labels: [dependencies, docker]
+    commit-message:
+      prefix: "chore(docker)"

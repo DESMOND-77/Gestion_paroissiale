@@ -37,7 +37,6 @@ class AuthenticationService:
                 f"Registration attempt from IP: {request_meta.get('REMOTE_ADDR')} "
             )
         try:
-
             if User.objects.filter(email=email).exists():
                 return (
                     False,
@@ -234,7 +233,7 @@ class AuthenticationService:
                         "tokens": tokens,
                         "email_verified": user.is_verified,
                         "verification_needed": not user.is_verified
-                                               and settings.REQUIRE_EMAIL_VERIFICATION,
+                        and settings.REQUIRE_EMAIL_VERIFICATION,
                     }
                 },
                 200,

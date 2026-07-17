@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 
 from accounts.verification.tokens import TokenVerifier
+
 from .emails import EmailService
 
 User = get_user_model()
@@ -40,7 +41,7 @@ class EmailVerificationService:
                 {
                     "success": False,
                     "error": error
-                             or "Invalid verification link. Please request a new one",
+                    or "Invalid verification link. Please request a new one",
                 },
                 400,
             )
@@ -114,7 +115,7 @@ class EmailVerificationService:
                     False,
                     {
                         "success": False,
-                        "error": f"Veuillez patienter avant de renvoyer l'email de vérification.",
+                        "error": "Veuillez patienter avant de renvoyer l'email de vérification.",
                         "retry_after": timeout_value,
                     },
                     429,
@@ -226,7 +227,7 @@ class EmailVerificationService:
                     200,
                 )
             except User.DoesNotExist:
-                logger.error(f"User not found in database")
+                logger.error("User not found in database")
                 return False, {"success": False, "error": "User not found"}, 404
         except Exception as e:
             logger.error(f"Check verification status error: {str(e)}")

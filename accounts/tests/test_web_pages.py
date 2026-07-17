@@ -1,4 +1,5 @@
 """Tests des pages HTML conviviales : vérification d'email et réinitialisation."""
+
 from django.urls import reverse
 
 from .base import BaseAuthTest
@@ -79,7 +80,12 @@ class PasswordResetPageTests(BaseAuthTest):
         uid, token = self.make_uid_token(self.user)
         resp = self.client.post(
             self.url,
-            {"uid": uid, "token": token, "new_password": "123", "confirm_password": "123"},
+            {
+                "uid": uid,
+                "token": token,
+                "new_password": "123",
+                "confirm_password": "123",
+            },
         )
         self.assertEqual(resp.status_code, 400)
         self.user.refresh_from_db()

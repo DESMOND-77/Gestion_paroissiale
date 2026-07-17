@@ -8,11 +8,12 @@ from rest_framework.response import Response
 from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
+
 from .models import Membre
 from .serializers import (
-    MembreSerializer,
     MembreDetailSerializer,
     MembreSelfSerializer,
+    MembreSerializer,
     SacrementSerializer,
 )
 from .services import MembreService
@@ -40,8 +41,11 @@ class MembreListView(BaseAPIView):
         )
         qs = qs.select_related("groupe", "user")
         logger.info(f"Retrieved {qs.count()} membres for user {request.user}")
-        return Response(standardized_response(
-            data=MembreSerializer(qs, many=True, context={"request": request}).data))
+        return Response(
+            standardized_response(
+                data=MembreSerializer(qs, many=True, context={"request": request}).data
+            )
+        )
 
     def post(self, request):
         logger.info(f"Creating membre by user {request.user}: {request.data}")
@@ -51,7 +55,9 @@ class MembreListView(BaseAPIView):
         membre = MembreService.create_membre(**serializer.validated_data)
         logger.info(f"Membre created successfully: {membre.id}")
         return Response(
-            standardized_response(data=MembreSerializer(membre).data, message="Membre créé avec succès"),
+            standardized_response(
+                data=MembreSerializer(membre).data, message="Membre créé avec succès"
+            ),
             status=status.HTTP_201_CREATED,
         )
 
@@ -84,7 +90,11 @@ class MembreDetailView(BaseAPIView):
         serializer.is_valid(raise_exception=True)
         membre = MembreService.update_membre(membre, **serializer.validated_data)
         logger.info(f"Membre {pk} updated successfully")
-        return Response(standardized_response(data=MembreSerializer(membre).data, message="Membre modifié"))
+        return Response(
+            standardized_response(
+                data=MembreSerializer(membre).data, message="Membre modifié"
+            )
+        )
 
     def patch(self, request, pk):
         membre = self._get_membre(pk)
@@ -93,7 +103,11 @@ class MembreDetailView(BaseAPIView):
         serializer.is_valid(raise_exception=True)
         membre = MembreService.update_membre(membre, **serializer.validated_data)
         logger.info(f"Membre {pk} updated successfully")
-        return Response(standardized_response(data=MembreSerializer(membre).data, message="Membre modifié"))
+        return Response(
+            standardized_response(
+                data=MembreSerializer(membre).data, message="Membre modifié"
+            )
+        )
 
     def delete(self, request, pk):
         self.check_extra_permission(request, IsAdmin())
@@ -101,7 +115,10 @@ class MembreDetailView(BaseAPIView):
         logger.warning(f"Deleting membre {pk} by user {request.user}")
         membre.delete()
         logger.info(f"Membre {pk} deleted successfully")
-        return Response(standardized_response(message="Membre supprimé"), status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            standardized_response(message="Membre supprimé"),
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class MembreMeView(BaseAPIView):
@@ -162,7 +179,9 @@ class MembreSacrementsView(BaseAPIView):
         logger.debug(f"Retrieving sacrements for membre {pk}")
         sacrements = membre.sacrements.all()
         logger.info(f"Retrieved {sacrements.count()} sacrements for membre {pk}")
-        return Response(standardized_response(data=SacrementSerializer(sacrements, many=True).data))
+        return Response(
+            standardized_response(data=SacrementSerializer(sacrements, many=True).data)
+        )
 
     def post(self, request, pk):
         membre = get_object_or_404(Membre, pk=pk)
@@ -172,6 +191,8 @@ class MembreSacrementsView(BaseAPIView):
         sacrement = serializer.save(membre=membre)
         logger.info(f"Sacrement {sacrement.id} added to membre {pk}")
         return Response(
-            standardized_response(data=SacrementSerializer(sacrement).data, message="Sacrement enregistré"),
+            standardized_response(
+                data=SacrementSerializer(sacrement).data, message="Sacrement enregistré"
+            ),
             status=status.HTTP_201_CREATED,
         )

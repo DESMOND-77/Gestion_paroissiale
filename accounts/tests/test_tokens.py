@@ -1,7 +1,9 @@
 """Tests des endpoints de tokens : refresh et validation."""
+
 from django.urls import reverse
 
 from core.jwt_utils import TokenManager
+
 from .base import BaseAuthTest
 
 

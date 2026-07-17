@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -23,7 +23,6 @@ urlpatterns = [
     # Le health check reste NON versionné : c'est un point de terminaison
     # d'infrastructure (référencé par le HEALTHCHECK du Dockerfile et Render).
     path("api/health/", HealthCheckView.as_view(), name="health-check"),
-
     # API versionnée sous /api/v1/. Toutes les routes métier passent par ce
     # préfixe. Pour introduire une v2, ajouter un bloc `api/v2/` en parallèle.
     path("api/v1/", include("accounts.urls")),
@@ -34,8 +33,14 @@ urlpatterns = [
     path("api/v1/evenements/", include("evenements.urls")),
     path("api/v1/finances/", include("finances.urls")),
     path("api/v1/librairie/", include("librairie.urls")),
-    path("docs/", schema_view.with_ui("swagger", cache_timeout=10), name="schema-swagger-ui"),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=10), name="schema-redoc-ui"),
+    path(
+        "docs/",
+        schema_view.with_ui("swagger", cache_timeout=10),
+        name="schema-swagger-ui",
+    ),
+    path(
+        "redoc/", schema_view.with_ui("redoc", cache_timeout=10), name="schema-redoc-ui"
+    ),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

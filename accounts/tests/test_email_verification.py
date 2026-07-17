@@ -1,4 +1,5 @@
 """Tests de la vérification d'email (verify, send, status)."""
+
 from unittest import mock
 
 from django.urls import reverse

@@ -7,7 +7,6 @@ from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from groupes.models import Groupe
-from membres.models import Membre
 
 User = get_user_model()
 
@@ -52,7 +51,11 @@ class SyncEndpointTests(APITestCase):
         stale = (timezone.now() - timedelta(hours=1)).isoformat()
         resp = self.client.post(
             self.url,
-            {"changes": {"groupes": [{"id": gid, "nom": "Client", "updated_at": stale}]}},
+            {
+                "changes": {
+                    "groupes": [{"id": gid, "nom": "Client", "updated_at": stale}]
+                }
+            },
             format="json",
         )
         result = resp.json()["data"]["results"]["groupes"]
@@ -67,7 +70,11 @@ class SyncEndpointTests(APITestCase):
         newer = (timezone.now() + timedelta(hours=1)).isoformat()
         resp = self.client.post(
             self.url,
-            {"changes": {"groupes": [{"id": gid, "nom": "Client", "updated_at": newer}]}},
+            {
+                "changes": {
+                    "groupes": [{"id": gid, "nom": "Client", "updated_at": newer}]
+                }
+            },
             format="json",
         )
         self.assertEqual(resp.json()["data"]["results"]["groupes"]["applied"], [gid])
@@ -79,9 +86,18 @@ class SyncEndpointTests(APITestCase):
         newer = (timezone.now() + timedelta(hours=1)).isoformat()
         resp = self.client.post(
             self.url,
-            {"changes": {"groupes": [
-                {"id": gid, "nom": "A supprimer", "is_deleted": True, "updated_at": newer}
-            ]}},
+            {
+                "changes": {
+                    "groupes": [
+                        {
+                            "id": gid,
+                            "nom": "A supprimer",
+                            "is_deleted": True,
+                            "updated_at": newer,
+                        }
+                    ]
+                }
+            },
             format="json",
         )
         self.assertEqual(resp.status_code, 200)
@@ -91,10 +107,14 @@ class SyncEndpointTests(APITestCase):
         good = str(uuid.uuid4())
         resp = self.client.post(
             self.url,
-            {"changes": {"groupes": [
-                {"id": good, "nom": "Valide"},
-                {"id": str(uuid.uuid4())},  # nom manquant → invalide
-            ]}},
+            {
+                "changes": {
+                    "groupes": [
+                        {"id": good, "nom": "Valide"},
+                        {"id": str(uuid.uuid4())},  # nom manquant → invalide
+                    ]
+                }
+            },
             format="json",
         )
         result = resp.json()["data"]["results"]["groupes"]

@@ -14,6 +14,15 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ### Ajouté
 
+- Outillage qualité : `pyproject.toml` (métadonnées du projet, groupe de
+  dépendances `dev`) + linter/formateur **ruff** (règles E, W, F, I, DJ, B, UP)
+  branché dans la CI ; base de code reformatée et corrigée en conséquence
+  (`except` nu typé, `raise … from`, variable inutilisée, imports triés).
+- Standardisation open source du dépôt : README refondu (badges, roadmap, FAQ),
+  `CODE_OF_CONDUCT.md` (Contributor Covenant v2.1), `SECURITY.md`,
+  `.env.example`, dossier `.github/` (modèles d'issues et de PR, workflows CI /
+  release / CodeQL, Dependabot, CODEOWNERS) et documentation technique `docs/`
+  (architecture, installation, développement, déploiement, API, base de données).
 - Versionnage de l'API sous le préfixe `/api/v1/` (DRF `URLPathVersioning`,
   `DEFAULT_VERSION="v1"`). Le health check `/api/health/` reste non versionné.
 - Headers de sécurité HTTP : `SECURE_CONTENT_TYPE_NOSNIFF`,

@@ -1,0 +1,15 @@
+# Propriétaires du code — demandés automatiquement en revue sur chaque PR
+
+# Doc : <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>
+
+# Par défaut, tout le dépôt
+
+*                   @DESMOND-77
+
+# Zones sensibles (sécurité) — revue obligatoire du mainteneur
+
+/accounts/          @DESMOND-77
+/core/              @DESMOND-77
+/gestion_p/         @DESMOND-77
+/.github/           @DESMOND-77
+SECURITY.md         @DESMOND-77

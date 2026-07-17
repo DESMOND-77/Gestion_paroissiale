@@ -3,7 +3,7 @@ import traceback
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import status
@@ -12,6 +12,7 @@ from accounts.serializers import PasswordResetSerializer
 from accounts.verification.password_reset_service import PasswordResetService
 from core.base_view import BaseAPIView
 from core.response import standardized_response
+
 from .services import EmailVerificationService
 
 logger = logging.getLogger(__name__)

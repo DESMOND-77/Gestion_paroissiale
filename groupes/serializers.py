@@ -16,9 +16,13 @@ class GroupeSerializer(WritableIDModelSerializer):
     class Meta:
         model = Groupe
         fields = [
-            "id", "nom", "description",
-            "responsable", "responsable_nom",
-            "responsables", "responsables_noms",
+            "id",
+            "nom",
+            "description",
+            "responsable",
+            "responsable_nom",
+            "responsables",
+            "responsables_noms",
             "date_creation",
         ]
         read_only_fields = ["date_creation", "responsables_noms"]
@@ -29,6 +33,4 @@ class GroupeSerializer(WritableIDModelSerializer):
         return None
 
     def get_responsables_noms(self, obj):
-        return {
-            str(u.id): (u.full_name or u.email) for u in obj.responsables.all()
-        }
+        return {str(u.id): (u.full_name or u.email) for u in obj.responsables.all()}

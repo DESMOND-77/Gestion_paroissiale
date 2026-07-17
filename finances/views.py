@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsTreasurerOrAbove
 from core.response import standardized_response
+
 from .models import Transaction
 from .serializers import TransactionSerializer
 from .services import FinanceService
@@ -43,7 +44,9 @@ class TransactionListView(BaseAPIView):
             qs = qs.filter(membre_id=membre)
 
         logger.info(f"Retrieved {qs.count()} transactions")
-        return Response(standardized_response(data=TransactionSerializer(qs, many=True).data))
+        return Response(
+            standardized_response(data=TransactionSerializer(qs, many=True).data)
+        )
 
     def post(self, request):
         logger.info(f"Creating transaction for user {request.user}: {request.data}")
@@ -55,12 +58,21 @@ class TransactionListView(BaseAPIView):
             type_transaction=validated["type"],
             montant=validated["montant"],
             date=validated["date"],
-            **{k: v for k, v in validated.items() if k not in ("type", "montant", "date")},
+            **{
+                k: v
+                for k, v in validated.items()
+                if k not in ("type", "montant", "date")
+            },
             enregistre_par=request.user,
         )
-        logger.info(f"Transaction created successfully: {transaction.id} by user {request.user}")
+        logger.info(
+            f"Transaction created successfully: {transaction.id} by user {request.user}"
+        )
         return Response(
-            standardized_response(data=TransactionSerializer(transaction).data, message="Transaction enregistrée"),
+            standardized_response(
+                data=TransactionSerializer(transaction).data,
+                message="Transaction enregistrée",
+            ),
             status=status.HTTP_201_CREATED,
         )
 
@@ -74,12 +86,16 @@ class TransactionDetailView(BaseAPIView):
     permission_classes = [IsTreasurerOrAbove]
 
     def _get_transaction(self, pk):
-        return get_object_or_404(Transaction.objects.select_related("membre", "enregistre_par"), pk=pk)
+        return get_object_or_404(
+            Transaction.objects.select_related("membre", "enregistre_par"), pk=pk
+        )
 
     def get(self, request, pk):
         transaction = self._get_transaction(pk)
         logger.debug(f"Retrieving transaction {pk} for user {request.user}")
-        return Response(standardized_response(data=TransactionSerializer(transaction).data))
+        return Response(
+            standardized_response(data=TransactionSerializer(transaction).data)
+        )
 
     def delete(self, request, pk):
         self.check_extra_permission(request, IsAdmin())
@@ -87,7 +103,10 @@ class TransactionDetailView(BaseAPIView):
         logger.warning(f"Deleting transaction {pk} by user {request.user}")
         transaction.delete()
         logger.info(f"Transaction {pk} deleted successfully")
-        return Response(standardized_response(message="Transaction supprimée"), status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            standardized_response(message="Transaction supprimée"),
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class RapportFinancierView(BaseAPIView):
@@ -103,11 +122,15 @@ class RapportFinancierView(BaseAPIView):
         date_debut = request.query_params.get("date_debut")
         date_fin = request.query_params.get("date_fin")
         categorie = request.query_params.get("categorie")
-        logger.info(f"Generating financial report for user {request.user} ({date_debut} → {date_fin})")
+        logger.info(
+            f"Generating financial report for user {request.user} ({date_debut} → {date_fin})"
+        )
 
         try:
             rapport = FinanceService.calculate_rapport(date_debut, date_fin)
-            par_categorie = FinanceService.get_transactions_by_category(date_debut, date_fin, categorie)
+            par_categorie = FinanceService.get_transactions_by_category(
+                date_debut, date_fin, categorie
+            )
 
             qs = Transaction.objects.select_related("membre", "enregistre_par").all()
             if date_debut:
@@ -142,10 +165,12 @@ class MembreDonsView(BaseAPIView):
     Paramètres optionnels: ?date_debut=&date_fin=
     Retourne les dons d'un membre avec le total calculé via le service.
     """
+
     permission_classes = [IsTreasurerOrAbove]
 
     def get(self, request, pk):
         from membres.models import Membre
+
         logger.debug(f"Retrieving donations for membre {pk} by user {request.user}")
 
         try:
@@ -160,7 +185,9 @@ class MembreDonsView(BaseAPIView):
         date_debut = request.query_params.get("date_debut")
         date_fin = request.query_params.get("date_fin")
 
-        total = FinanceService.get_donor_total(membre, date_debut=date_debut, date_fin=date_fin)
+        total = FinanceService.get_donor_total(
+            membre, date_debut=date_debut, date_fin=date_fin
+        )
 
         dons_qs = Transaction.objects.filter(membre=membre, categorie="don")
         if date_debut:
@@ -168,12 +195,16 @@ class MembreDonsView(BaseAPIView):
         if date_fin:
             dons_qs = dons_qs.filter(date__lte=date_fin)
 
-        logger.info(f"Retrieved {dons_qs.count()} donations for membre {pk}, total: {total}")
+        logger.info(
+            f"Retrieved {dons_qs.count()} donations for membre {pk}, total: {total}"
+        )
         return Response(
-            standardized_response(data={
-                "membre": str(membre),
-                "total_dons": float(total),
-                "periode": {"debut": date_debut, "fin": date_fin},
-                "dons": TransactionSerializer(dons_qs, many=True).data,
-            })
+            standardized_response(
+                data={
+                    "membre": str(membre),
+                    "total_dons": float(total),
+                    "periode": {"debut": date_debut, "fin": date_fin},
+                    "dons": TransactionSerializer(dons_qs, many=True).data,
+                }
+            )
         )

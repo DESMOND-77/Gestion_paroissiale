@@ -87,9 +87,7 @@ class EvenementService:
         return (
             Evenement.objects.filter(q)
             .select_related("createur")
-            .prefetch_related(
-                "participations", "groupes_invites", "membres_invites"
-            )
+            .prefetch_related("participations", "groupes_invites", "membres_invites")
             .distinct()
         )
 

@@ -8,9 +8,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, generics
+from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
@@ -18,15 +18,16 @@ from rest_framework.views import APIView
 from accounts.models import User, UserActivity
 from accounts.serializers import (
     ChangePasswordSerializer,
-    UserActivitySerializer,
-    UserSerializer,
-    UserRegistrationSerializer,
-    UserLoginSerializer,
-    TokenRefreshSerializer,
     LogoutSerializer,
+    TokenRefreshSerializer,
+    UserActivitySerializer,
+    UserLoginSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
 )
 from core.base_view import BaseAPIView
 from core.response import standardized_response
+
 from .services import AuthenticationService
 
 logger = logging.getLogger(__name__)
@@ -117,9 +118,9 @@ class UserRegistrationView(BaseAPIView):
             )
             # set refresh token cookie of registration was successful and cookie security is enable
             if (
-                    success
-                    and status_code in (200, 201)
-                    and settings.JWT_AUTH_COOKIE_SECURE
+                success
+                and status_code in (200, 201)
+                and settings.JWT_AUTH_COOKIE_SECURE
             ):
                 tokens = response_data.get("data", {}).get("tokens", {})
                 if "refresh_token" in tokens and "refresh_expires_in" in tokens:
@@ -206,7 +207,6 @@ class UserLoginView(APIView):
     )
     def post(self, request):
         try:
-
             email = request.data.get("email")
             password = request.data.get("password")
             device_info = request.data.get("device_info", {})
@@ -232,7 +232,7 @@ class UserLoginView(APIView):
                         key=settings.JWT_COOKIE_NAME,
                         value=tokens["refresh_token"],
                         expires=timezone.now()
-                                + timedelta(seconds=tokens["refresh_expires_in"]),
+                        + timedelta(seconds=tokens["refresh_expires_in"]),
                         secure=True,
                         httponly=True,
                         path="/",
@@ -319,7 +319,6 @@ class TokenRefreshView(BaseAPIView):
     )
     def post(self, request):
         try:
-
             # first try to get refresh token from request body
             refresh_token = request.data.get("refresh_token")
             # if not in body, try get from HTTP-only cookie
@@ -345,7 +344,7 @@ class TokenRefreshView(BaseAPIView):
                         key=settings.JWT_COOKIE_NAME,
                         value=tokens["refresh"],
                         expires=timezone.now()
-                                + timedelta(seconds=tokens["refresh_expires_in"]),
+                        + timedelta(seconds=tokens["refresh_expires_in"]),
                         samesite="Strict",
                         secure=True,
                         httponly=True,

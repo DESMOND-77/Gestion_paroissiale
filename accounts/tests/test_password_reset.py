@@ -1,4 +1,5 @@
 """Tests de la réinitialisation du mot de passe (demande + confirmation)."""
+
 from unittest import mock
 
 from django.urls import reverse

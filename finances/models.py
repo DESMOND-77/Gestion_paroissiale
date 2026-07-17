@@ -14,8 +14,14 @@ class Transaction(SyncableModel):
         ("autre", "Autre"),
     ]
 
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES, )
-    categorie = models.CharField(max_length=20, choices=CATEGORIE_CHOICES, )
+    type = models.CharField(
+        max_length=10,
+        choices=TYPE_CHOICES,
+    )
+    categorie = models.CharField(
+        max_length=20,
+        choices=CATEGORIE_CHOICES,
+    )
     montant = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.TextField(blank=True)
     date = models.DateField()

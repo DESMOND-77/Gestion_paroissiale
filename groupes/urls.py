@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import GroupeListView, GroupeDetailView, GroupeMembresView
+from .views import GroupeDetailView, GroupeListView, GroupeMembresView
 
 urlpatterns = [
     path("", GroupeListView.as_view(), name="groupe-list"),

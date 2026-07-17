@@ -12,11 +12,7 @@ class GroupeService:
     def create_groupe(nom, responsable=None, **kwargs):
         """Create a new group"""
         try:
-            groupe = Groupe.objects.create(
-                nom=nom,
-                responsable=responsable,
-                **kwargs
-            )
+            groupe = Groupe.objects.create(nom=nom, responsable=responsable, **kwargs)
             logger.info(f"Groupe created: {groupe.id} ({nom})")
             return groupe
         except Exception as e:

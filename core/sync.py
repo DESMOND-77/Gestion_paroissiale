@@ -26,16 +26,16 @@ def get_sync_registry():
     Construit à l'appel (et non à l'import) pour éviter tout import circulaire
     au chargement de `core`.
     """
-    from membres.models import Membre, Sacrement
-    from membres.serializers import MembreSerializer, SacrementSerializer
-    from groupes.models import Groupe
-    from groupes.serializers import GroupeSerializer
     from evenements.models import Evenement, Participation
     from evenements.serializers import EvenementSerializer, ParticipationSerializer
     from finances.models import Transaction
     from finances.serializers import TransactionSerializer
+    from groupes.models import Groupe
+    from groupes.serializers import GroupeSerializer
     from librairie.models import Article, Vente
     from librairie.serializers import ArticleSerializer, VenteSerializer
+    from membres.models import Membre, Sacrement
+    from membres.serializers import MembreSerializer, SacrementSerializer
 
     return {
         "groupes": (Groupe, GroupeSerializer),

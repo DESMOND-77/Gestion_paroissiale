@@ -16,12 +16,11 @@ class FinanceService:
         """Create a new transaction with validation"""
         try:
             transaction = Transaction.objects.create(
-                type=type_transaction,
-                montant=montant,
-                date=date,
-                **kwargs
+                type=type_transaction, montant=montant, date=date, **kwargs
             )
-            logger.info(f"Transaction created: {transaction.id} ({type_transaction}) {montant} FCFA")
+            logger.info(
+                f"Transaction created: {transaction.id} ({type_transaction}) {montant} FCFA"
+            )
             return transaction
         except Exception as e:
             logger.error(f"Error creating transaction: {e}")
@@ -41,11 +40,17 @@ class FinanceService:
                 qs_recettes = qs_recettes.filter(date__lte=date_fin)
                 qs_depenses = qs_depenses.filter(date__lte=date_fin)
 
-            recettes = qs_recettes.aggregate(total=Sum("montant"))["total"] or Decimal("0.00")
-            depenses = qs_depenses.aggregate(total=Sum("montant"))["total"] or Decimal("0.00")
+            recettes = qs_recettes.aggregate(total=Sum("montant"))["total"] or Decimal(
+                "0.00"
+            )
+            depenses = qs_depenses.aggregate(total=Sum("montant"))["total"] or Decimal(
+                "0.00"
+            )
             solde = recettes - depenses
 
-            logger.info(f"Financial report: {date_debut} to {date_fin} — Solde: {solde} FCFA")
+            logger.info(
+                f"Financial report: {date_debut} to {date_fin} — Solde: {solde} FCFA"
+            )
             return {
                 "date_debut": date_debut,
                 "date_fin": date_fin,
@@ -72,7 +77,9 @@ class FinanceService:
     @staticmethod
     def get_donor_total(membre, date_debut=None, date_fin=None):
         """Get total donations from a member, optionally filtered by date range."""
-        queryset = Transaction.objects.filter(type="recette", categorie="don", membre=membre)
+        queryset = Transaction.objects.filter(
+            type="recette", categorie="don", membre=membre
+        )
         if date_debut:
             queryset = queryset.filter(date__gte=date_debut)
         if date_fin:

@@ -1,0 +1,63 @@
+# Métadonnées du projet + configuration des outils de qualité.
+# Les dépendances applicatives restent gérées via requirements.txt
+# (déploiement Docker/Render) ; ce fichier ne sert pas au packaging.
+
+[project]
+name = "gestion-paroissiale"
+version = "1.0.0"
+description = "API REST de gestion paroissiale (Django + DRF) : authentification JWT, membres, groupes, événements, finances, librairie."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "DESMOND-77", email = "guimapidesmond@outlook.com" }]
+keywords = ["django", "drf", "api", "paroisse", "gestion"]
+classifiers = [
+    "Framework :: Django :: 6.0",
+    "Programming Language :: Python :: 3.14",
+    "Intended Audience :: Religion",
+    "Natural Language :: French",
+]
+
+[project.urls]
+Homepage = "https://github.com/DESMOND-77/Gestion_paroissiale"
+Documentation = "https://github.com/DESMOND-77/Gestion_paroissiale/tree/main/docs"
+Changelog = "https://github.com/DESMOND-77/Gestion_paroissiale/blob/main/CHANGELOG.md"
+Issues = "https://github.com/DESMOND-77/Gestion_paroissiale/issues"
+
+# Outils de développement : pip install --group dev
+[dependency-groups]
+dev = ["ruff>=0.15"]
+
+# ---------------------------------------------------------------------------
+# Ruff — linter + formateur (exécuté en CI : ruff check . && ruff format --check .)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+extend-exclude = ["*/migrations/*", ".venv", "media", "logs", "static"]
+
+[tool.ruff.lint]
+# E/W : pycodestyle — F : pyflakes — I : tri des imports (isort)
+# DJ : règles Django — B : bugbear (pièges courants) — UP : modernisation syntaxe
+select = ["E", "W", "F", "I", "DJ", "B", "UP"]
+ignore = [
+    # Lignes longues : héritées du code existant (messages français, URLs) ;
+    # le formateur gère la longueur des lignes de code.
+    "E501",
+    # `null=True` sur des CharField existants (accounts.User.phone_number,
+    # membres.Membre.quartier) : la correction exige des migrations de données —
+    # à traiter séparément, ne pas introduire de nouveaux cas.
+    "DJ001",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# settings.py importe après le chargement du .env (ordre volontaire)
+"gestion_p/settings.py" = ["E402"]
+# Scripts autonomes : imports après django.setup() (ordre obligatoire)
+"test_logging.py" = ["E402"]
+"test_redis.py" = ["E402"]
+
+[tool.ruff.format]
+# Réglages par défaut de ruff format (style black)
+docstring-code-format = true

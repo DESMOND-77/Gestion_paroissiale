@@ -3,8 +3,8 @@ import uuid
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     BaseUserManager,
+    PermissionsMixin,
 )
 from django.core.validators import RegexValidator
 from django.db import models

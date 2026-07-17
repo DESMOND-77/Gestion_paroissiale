@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 
 from accounts.verification.tokens import TokenVerifier
 from core.jwt_utils import TokenManager
+
 from .emails import EmailService
 
 User = get_user_model()

@@ -7,7 +7,7 @@ import jwt
 import redis
 from django.conf import settings
 from django.core.cache import cache
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,6 @@ class TokenManager:
     def generate_token(user):
         """Génère un token JWT pour un utilisateur donné."""
         try:
-
             # Récupérer la configuration D'ABORD
             access_expiry = settings.SIMPLE_JWT.get(
                 "ACCESS_TOKEN_LIFETIME", timedelta(minutes=15)
@@ -119,9 +118,9 @@ class TokenManager:
 
             try:
                 user = User.objects.get(id=user_id)
-            except:
+            except User.DoesNotExist:
                 logger.warning(f"User not found for token refresh: {user_id}")
-                raise TokenError("Invalid token ")
+                raise TokenError("Invalid token ") from None
 
             if not user.is_active:
                 logger.warning(
@@ -139,7 +138,7 @@ class TokenManager:
             raise
         except Exception as e:
             logger.error(f"unexpected error during token refresh: {str(e)}")
-            raise TokenError(f"Failed to refresh token: {str(e)}")
+            raise TokenError(f"Failed to refresh token: {str(e)}") from e
 
     @staticmethod
     def validate_token(token_str):

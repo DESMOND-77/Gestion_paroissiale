@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from core.serializers import WritableIDModelSerializer
 from accounts.models import User
+from core.serializers import WritableIDModelSerializer
 from groupes.models import Groupe
 from membres.models import Membre
 

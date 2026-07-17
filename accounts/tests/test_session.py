@@ -1,8 +1,9 @@
 """Tests déconnexion, profil courant (me) et changement de mot de passe."""
+
 from django.urls import reverse
 
 from accounts.models import UserActivity
-from core.jwt_utils import TokenManager
+
 from .base import BaseAuthTest
 
 

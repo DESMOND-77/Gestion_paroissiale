@@ -1,4 +1,5 @@
 """Tests du modèle User et de son manager."""
+
 from django.test import TestCase
 
 from accounts.models import User, UserActivity

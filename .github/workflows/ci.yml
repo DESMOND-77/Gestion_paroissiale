@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Installer ruff
+        run: pip install --group dev
+
+      - name: Lint
+        run: ruff check --output-format=github .
+
+      - name: Formatage
+        run: ruff format --check .
+
+  checks:
+    name: Vérifications Django
+    runs-on: ubuntu-latest
+    env:
+      # SQLite pour la CI : la suite de tests est hermétique (Redis neutralisé,
+      # e-mail en mémoire) et ne nécessite ni MySQL ni Redis.
+      DATABASE_URL: sqlite:///ci.sqlite3
+      REDIS_URL: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Installer les dépendances système (mysqlclient)
+        run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+
+      - name: Installer les dépendances Python
+        run: pip install -r requirements.txt
+
+      - name: Préparer l'environnement (.env)
+        run: cp .env.example .env
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Vérifier que les migrations sont à jour
+        run: python manage.py makemigrations --check --dry-run
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: sqlite:///ci.sqlite3
+      REDIS_URL: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Installer les dépendances système (mysqlclient)
+        run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+
+      - name: Installer les dépendances Python
+        run: pip install -r requirements.txt
+
+      - name: Préparer l'environnement (.env)
+        run: cp .env.example .env
+
+      - name: Lancer la suite de tests
+        run: python manage.py test --verbosity 2
+
+  docker-build:
+    name: Build de l'image Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Construire l'image (sans push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: gestion-paroissiale:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -14,12 +14,7 @@ class MembreService:
     def create_membre(user=None, nom="", prenom="", **kwargs):
         """Create a new member with validation"""
         try:
-            membre = Membre.objects.create(
-                user=user,
-                nom=nom,
-                prenom=prenom,
-                **kwargs
-            )
+            membre = Membre.objects.create(user=user, nom=nom, prenom=prenom, **kwargs)
             logger.info(f"Membre created: {membre.id} ({prenom} {nom})")
             return membre
         except Exception as e:

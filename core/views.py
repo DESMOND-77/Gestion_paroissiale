@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from core.base_view import BaseAPIView
 from core.response import standardized_response
 from core.sync import run_sync
+
 from .health import get_health_status
 
 

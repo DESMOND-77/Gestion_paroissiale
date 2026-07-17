@@ -1,4 +1,5 @@
 """Tests du repli SMTP et de l'embarquement du logo (CID) de EmailService."""
+
 import os
 import tempfile
 from unittest import mock
@@ -114,10 +115,12 @@ class InlineLogoTests(SimpleTestCase):
         with override_settings(EMAIL_LOGO_PATH="/chemin/inexistant/logo.png"):
             message = self._build()
         # Pas d'image embarquée, mais le message reste valide (HTML présent).
-        self.assertTrue(any(
-            part.get_content_type() == "text/html"
-            for part in _walk(message.message())
-        ))
+        self.assertTrue(
+            any(
+                part.get_content_type() == "text/html"
+                for part in _walk(message.message())
+            )
+        )
 
 
 def _walk(msg):

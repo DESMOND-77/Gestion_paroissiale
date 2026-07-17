@@ -1,11 +1,13 @@
 """Tests unitaires de la couche service (sans passer par HTTP)."""
+
 from unittest import mock
 
-from accounts.models import User
 from accounts.auth.services import AuthenticationService
-from accounts.verification.services import EmailVerificationService
+from accounts.models import User
 from accounts.verification.password_reset_service import PasswordResetService
+from accounts.verification.services import EmailVerificationService
 from core.jwt_utils import TokenManager
+
 from .base import BaseAuthTest
 
 PATCH_BG = "accounts.verification.services.EmailVerificationService.send_verification_email_background"

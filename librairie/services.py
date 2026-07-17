@@ -16,10 +16,7 @@ class LibrairieService:
         """Create a new article"""
         try:
             article = Article.objects.create(
-                nom=nom,
-                categorie=categorie,
-                prix_unitaire=prix_unitaire,
-                **kwargs
+                nom=nom, categorie=categorie, prix_unitaire=prix_unitaire, **kwargs
             )
             logger.info(f"Article created: {article.id} ({nom})")
             return article
@@ -41,7 +38,7 @@ class LibrairieService:
                 quantite=quantite,
                 prix_total=prix_total,
                 membre=membre,
-                enregistre_par=enregistre_par
+                enregistre_par=enregistre_par,
             )
 
             logger.info(f"Vente created: {vente.id} ({article.nom} × {quantite})")
@@ -66,12 +63,14 @@ class LibrairieService:
         articles = []
         for article in Article.objects.all():
             if article.en_alerte:
-                articles.append({
-                    "id": article.id,
-                    "nom": article.nom,
-                    "stock": article.stock_disponible,
-                    "seuil": article.seuil_alerte
-                })
+                articles.append(
+                    {
+                        "id": article.id,
+                        "nom": article.nom,
+                        "stock": article.stock_disponible,
+                        "seuil": article.seuil_alerte,
+                    }
+                )
         logger.debug(f"Articles in alert: {len(articles)}")
         return articles
 

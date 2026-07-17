@@ -24,13 +24,15 @@ def create_membre_for_user(sender, instance, created, **kwargs):
         if membre is None:
             try:
                 Membre.objects.create(
-                    user=instance,
-                    nom=instance.nom,
-                    prenom=instance.prenom
+                    user=instance, nom=instance.nom, prenom=instance.prenom
                 )
-                logger.info(f"Membre créé automatiquement pour l'utilisateur: {instance.email}")
+                logger.info(
+                    f"Membre créé automatiquement pour l'utilisateur: {instance.email}"
+                )
             except Exception as e:
-                logger.error(f"Erreur lors de la création du Membre pour {instance.email}: {str(e)}")
+                logger.error(
+                    f"Erreur lors de la création du Membre pour {instance.email}: {str(e)}"
+                )
 
 
 @receiver(post_save, sender=Membre)
@@ -54,9 +56,7 @@ def update_user_for_membre(sender, instance, **kwargs):
             user.nom = instance.nom
             user.prenom = instance.prenom
             user.save(update_fields=["nom", "prenom", "updated_at"])
-            logger.debug(
-                f"Infos du User synchronisées depuis le Membre: {user.email}"
-            )
+            logger.debug(f"Infos du User synchronisées depuis le Membre: {user.email}")
         except Exception as e:
             logger.error(
                 f"Erreur lors de la synchro User depuis Membre {instance.pk}: {str(e)}"
@@ -81,12 +81,16 @@ def update_membre_for_user(sender, instance, created, **kwargs):
             # Si le Membre n'existe pas, le créer
             try:
                 Membre.objects.create(
-                    user=instance,
-                    nom=instance.nom,
-                    prenom=instance.prenom
+                    user=instance, nom=instance.nom, prenom=instance.prenom
                 )
-                logger.info(f"Membre créé (rattrappage) pour l'utilisateur: {instance.email}")
+                logger.info(
+                    f"Membre créé (rattrappage) pour l'utilisateur: {instance.email}"
+                )
             except Exception as e:
-                logger.error(f"Erreur lors de la création du Membre pour {instance.email}: {str(e)}")
+                logger.error(
+                    f"Erreur lors de la création du Membre pour {instance.email}: {str(e)}"
+                )
         except Exception as e:
-            logger.error(f"Erreur lors de la synchronisation du Membre pour {instance.email}: {str(e)}")
+            logger.error(
+                f"Erreur lors de la synchronisation du Membre pour {instance.email}: {str(e)}"
+            )

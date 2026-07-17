@@ -106,7 +106,6 @@ class ProfileService:
                 return False
             # Validate file size (e.g, max 5Mb)
             max_size = 5 * 1024 * 1024  # 5 MB
-            max_dim = (1024, 1024)  # max width/height
             if file.size > max_size:
                 logger.error(f"File too large: {file.size}")
                 return False

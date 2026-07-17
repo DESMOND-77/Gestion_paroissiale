@@ -1,9 +1,11 @@
 """Tests de l'inscription (register)."""
+
 from unittest import mock
 
 from django.urls import reverse
 
 from accounts.models import User, UserActivity
+
 from .base import BaseAuthTest
 
 # On neutralise l'envoi d'email de vérification déclenché par l'inscription.

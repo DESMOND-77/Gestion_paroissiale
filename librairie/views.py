@@ -12,6 +12,7 @@ from core.base_view import BaseAPIView
 from core.permissions import IsAdmin, IsSecretaryOrAbove
 from core.response import standardized_response
 from finances.models import Transaction
+
 from .models import Article, Vente
 from .serializers import ArticleSerializer, VenteSerializer
 from .services import LibrairieService
@@ -45,10 +46,14 @@ class ArticleListView(BaseAPIView):
             qs = qs.filter(stock_disponible__lte=models.F("seuil_alerte"))
 
         logger.info(f"Retrieved {qs.count()} articles")
-        return Response(standardized_response(data=ArticleSerializer(qs, many=True).data))
+        return Response(
+            standardized_response(data=ArticleSerializer(qs, many=True).data)
+        )
 
     def post(self, request):
-        logger.info(f"Creating article by user {request.user}: {request.data.get('nom', 'Unknown')}")
+        logger.info(
+            f"Creating article by user {request.user}: {request.data.get('nom', 'Unknown')}"
+        )
         serializer = ArticleSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated = serializer.validated_data
@@ -57,11 +62,17 @@ class ArticleListView(BaseAPIView):
             nom=validated["nom"],
             categorie=validated["categorie"],
             prix_unitaire=validated["prix_unitaire"],
-            **{k: v for k, v in validated.items() if k not in ("nom", "categorie", "prix_unitaire")},
+            **{
+                k: v
+                for k, v in validated.items()
+                if k not in ("nom", "categorie", "prix_unitaire")
+            },
         )
         logger.info(f"Article created successfully: {article.id} ({article.nom})")
         return Response(
-            standardized_response(data=ArticleSerializer(article).data, message="Article ajouté"),
+            standardized_response(
+                data=ArticleSerializer(article).data, message="Article ajouté"
+            ),
             status=status.HTTP_201_CREATED,
         )
 
@@ -96,7 +107,9 @@ class ArticleDetailView(BaseAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         logger.info(f"Article {pk} updated successfully")
-        return Response(standardized_response(data=serializer.data, message="Article modifié"))
+        return Response(
+            standardized_response(data=serializer.data, message="Article modifié")
+        )
 
     def patch(self, request, pk):
         article = self._get_article(pk)
@@ -105,14 +118,19 @@ class ArticleDetailView(BaseAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         logger.info(f"Article {pk} updated successfully")
-        return Response(standardized_response(data=serializer.data, message="Article modifié"))
+        return Response(
+            standardized_response(data=serializer.data, message="Article modifié")
+        )
 
     def delete(self, request, pk):
         article = self._get_article(pk)
         logger.warning(f"Deleting article {pk} ({article.nom}) by user {request.user}")
         article.delete()
         logger.info(f"Article {pk} deleted successfully")
-        return Response(standardized_response(message="Article supprimé"), status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            standardized_response(message="Article supprimé"),
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class ArticleAlertesView(BaseAPIView):
@@ -187,12 +205,16 @@ class VenteListView(BaseAPIView):
                 enregistre_par=request.user,
                 membre=membre,
             )
-            logger.info(f"Transaction {transaction.id} created for vente {vente.id}: {montant} FCFA")
+            logger.info(
+                f"Transaction {transaction.id} created for vente {vente.id}: {montant} FCFA"
+            )
         except Exception as e:
             logger.error(f"Error creating transaction for vente {vente.id}: {e}")
 
         return Response(
-            standardized_response(data=VenteSerializer(vente).data, message="Vente enregistrée"),
+            standardized_response(
+                data=VenteSerializer(vente).data, message="Vente enregistrée"
+            ),
             status=status.HTTP_201_CREATED,
         )
 
@@ -209,14 +231,20 @@ class VenteRapportView(BaseAPIView):
     def get(self, request):
         date_debut = request.query_params.get("date_debut")
         date_fin = request.query_params.get("date_fin")
-        logger.info(f"Generating vente report for user {request.user} ({date_debut} → {date_fin})")
+        logger.info(
+            f"Generating vente report for user {request.user} ({date_debut} → {date_fin})"
+        )
 
         try:
             rapport = LibrairieService.get_ventes_report(date_debut, date_fin)
-            return Response(standardized_response(data={
-                "periode": {"debut": date_debut, "fin": date_fin},
-                "par_categorie": list(rapport),
-            }))
+            return Response(
+                standardized_response(
+                    data={
+                        "periode": {"debut": date_debut, "fin": date_fin},
+                        "par_categorie": list(rapport),
+                    }
+                )
+            )
         except Exception as e:
             logger.error(f"Error generating vente rapport: {e}")
             return Response(
