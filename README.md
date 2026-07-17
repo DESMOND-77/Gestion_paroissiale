@@ -290,6 +290,7 @@ Guide complet : [`docs/deployment.md`](docs/deployment.md).
 python manage.py migrate                  # Appliquer les migrations
 python manage.py makemigrations           # Générer les migrations
 python manage.py createsuperuser          # Créer un administrateur
+python manage.py seed_demo                # Données de démo (~100/module ; --wipe pour régénérer)
 python manage.py check                    # Vérifications Django
 
 pip install --group dev                   # Outils de dev (ruff)

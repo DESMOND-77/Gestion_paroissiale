@@ -14,6 +14,10 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ### Ajouté
 
+- Commande `python manage.py seed_demo` (`core/management/commands/seed_demo.py`) :
+  insère ~100 enregistrements de démonstration par module (utilisateurs, membres,
+  sacrements, groupes, événements, transactions, articles, ventes) ; option
+  `--wipe` pour purger et régénérer les données de démo.
 - Outillage qualité : `pyproject.toml` (métadonnées du projet, groupe de
   dépendances `dev`) + linter/formateur **ruff** (règles E, W, F, I, DJ, B, UP)
   branché dans la CI ; base de code reformatée et corrigée en conséquence
