@@ -44,7 +44,7 @@ python-dateutil==2.9.0.post0
 pytz==2026.1.post1
 PyYAML==6.0.3
 redis==7.4.0
-reportlab==4.5.1
+reportlab==5.0.0
 requests==2.34.2
 six==1.17.0
 sqlparse==0.5.5
