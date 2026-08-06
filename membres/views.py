@@ -40,7 +40,8 @@ class MembreListView(BaseAPIView):
             nom=nom, prenom=prenom, groupe=groupe, sexe=sexe, search=search
         )
         qs = qs.select_related("groupe", "user")
-        logger.info(f"Retrieved {qs.count()} membres for user {request.user}")
+        safe_user = str(request.user).replace("\r", " ").replace("\n", " ")
+        logger.info(f"Retrieved {qs.count()} membres for user {safe_user}")
         return Response(
             standardized_response(
                 data=MembreSerializer(qs, many=True, context={"request": request}).data
