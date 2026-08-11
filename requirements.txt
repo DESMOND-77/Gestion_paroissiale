@@ -15,7 +15,7 @@ Django==6.1
 django-anymail==15.1
 django-cors-headers==4.9.0
 django-environ==0.14.0
-django-redis==6.0.0
+django-redis==7.0.0
 djangorestframework==3.17.2
 djangorestframework_simplejwt==5.5.1
 drf-yasg==1.21.15
