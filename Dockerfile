@@ -1,5 +1,5 @@
 # Build stage
-FROM python:3.14-slim AS builder
+FROM python:3.15-slim AS builder
 
 # Prevent Python from writing .pyc files to disk.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -21,7 +21,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Runtime stage
-FROM python:3.14-slim
+FROM python:3.15-slim
 
 WORKDIR /app
 
