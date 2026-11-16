@@ -37,7 +37,7 @@ pydantic==2.13.5
 pyHanko==0.37.0
 pyhanko-certvalidator==0.32.0
 PyJWT==2.13.0
-pypdf==6.16.2
+pypdf==7.0.1
 python-bidi==0.6.11
 python-dateutil==2.9.0.post0
 pytz==2026.3.post1
